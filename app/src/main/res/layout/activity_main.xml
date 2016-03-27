@@ -3,14 +3,117 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.loncar.stemi.MainActivity">
+    android:background="@drawable/bck"
+    android:paddingEnd="15dp"
+    android:paddingStart="15dp"
+    android:paddingTop="15dp"
+    tools:context="mario.com.stemi.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
+
+    <ImageView
+        android:id="@+id/ivWifi"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@null"
+        android:scaleType="fitCenter"
+        android:src="@drawable/wifi_icon" />
+
+    <ImageButton
+        android:id="@+id/ibSettings"
+        android:layout_width="49dp"
+        android:layout_height="37dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:background="@null"
+        android:onClick="onClick"
+        android:scaleType="fitCenter"
+        android:src="@drawable/settings_selector" />
+
+    <ImageButton
+        android:id="@+id/ibHeight"
+        android:layout_width="49dp"
+        android:layout_height="37dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="13dp"
+        android:layout_toStartOf="@+id/ibSettings"
+        android:background="@null"
+        android:onClick="onClick"
+        android:scaleType="fitCenter"
+        android:src="@drawable/height" />
+
+    <ImageButton
+        android:id="@+id/ibOrientation"
+        android:layout_width="49dp"
+        android:layout_height="37dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="21dp"
+        android:layout_toStartOf="@+id/ibHeight"
+        android:background="@null"
+        android:onClick="onClick"
+        android:scaleType="fitCenter"
+        android:src="@drawable/orientation_selector" />
+
+    <ImageButton
+        android:id="@+id/ibRotation"
+        android:layout_width="49dp"
+        android:layout_height="37dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="25dp"
+        android:layout_toStartOf="@+id/ibOrientation"
+        android:background="@null"
+        android:onClick="onClick"
+        android:scaleType="fitCenter"
+        android:src="@drawable/rotation_selector" />
+
+    <ImageButton
+        android:id="@+id/ibMovement"
+        android:layout_width="49dp"
+        android:layout_height="37dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="25dp"
+        android:layout_toStartOf="@+id/ibRotation"
+        android:background="@null"
+        android:onClick="onClick"
+        android:scaleType="fitCenter"
+        android:src="@drawable/movement_selector" />
+
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/ibMovement"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:paddingBottom="20dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="10dp"
+        android:paddingTop="20dp"
+        android:weightSum="100">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:orientation="horizontal">
+
+            <include layout="@layout/joystick_l" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="30dp"
+            android:layout_weight="50"
+            android:orientation="horizontal">
+
+            <include layout="@layout/joystick_r" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
 </RelativeLayout>
