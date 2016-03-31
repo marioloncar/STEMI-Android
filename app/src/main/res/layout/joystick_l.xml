@@ -1,48 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout
-
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/relativni"
+    >
+
 
     <ImageView
-        android:id="@+id/ivjoystick_l"
+        android:id="@+id/ivJoystick_l"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:src="@drawable/joystick_path_l" />
 
     <ImageView
-        android:id="@+id/ivjoystick_l_l"
+        android:id="@+id/ivJoystick_l_l"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
+        android:alpha="0.0"
         android:src="@drawable/joystick_path_l_l" />
 
     <ImageView
-        android:id="@+id/ivjoystick_l_r"
+        android:id="@+id/ivJoystick_l_r"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:alpha="0.0"
         android:scaleType="fitCenter"
         android:src="@drawable/joystick_path_l_r" />
 
     <ImageView
-        android:id="@+id/ivjoystick_l_down"
+        android:id="@+id/ivJoystick_l_down"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
+        android:alpha="0.0"
         android:src="@drawable/joystick_path_l_down" />
 
     <ImageView
-        android:id="@+id/ivjoystick_l_up"
+        android:id="@+id/ivJoystick_l_up"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
+        android:alpha="0.0"
         android:src="@drawable/joystick_path_l_up" />
 
     <ImageView
-        android:id="@+id/ivjoystick_center"
+        android:id="@+id/imageView2"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_centerHorizontal="true"
@@ -56,7 +62,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
-
+        android:layout_centerVertical="true"/>
 
 </RelativeLayout>

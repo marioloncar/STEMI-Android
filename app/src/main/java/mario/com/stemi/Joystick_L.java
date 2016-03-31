@@ -1,49 +1,60 @@
 package mario.com.stemi;
 
+import android.app.Activity;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.Image;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
+import android.view.View;
+
+
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
+
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
+import android.view.ViewStub;
+import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+
 
 /**
  * Created by Mario on 24/03/16.
  */
-public class Joystick_L extends View {
+public class Joystick_L extends RelativeLayout {
     // Constants
+
 
     private final double RAD = 57.2957795;
     protected byte onTouchCounter = 0;
     protected byte invalidateFrequency = 2;
 
     // Variables
-    protected int xPosition = 0; // Touch x position
-    protected int yPosition = 0; // Touch y position
-    protected double centerX = 0; // Center view x position
-    protected double centerY = 0; // Center view y position
+    protected float xPosition = 0; // Touch x position
+    protected float yPosition = 0; // Touch y position
+    protected float centerX = 0; // Center view x position -> default: double
+    protected float centerY = 0; // Center view y position -> default: double
     protected Paint mainCircle;
     protected Paint backgroundCircle;
     protected Paint line;
     private Paint button;
 
-    //Drawable d = ContextCompat.getDrawable(getContext(), R.drawable.joystick);
-   // Bitmap src = BitmapFactory.decodeResource(getResources(), R.drawable.joystick);
-  //  Bitmap bitmap = Bitmap.createScaledBitmap(src, 200, 200, true);
-    protected int joystickRadius;
+    Bitmap src;
+    Bitmap bitmap, levi;
+
+
+    protected float joystickRadius;
     protected int buttonRadius;
-    private int lastAngle = 0;
+    private double lastAngle = 0;
     protected double sod = 0;
     protected double sod2 = 0;
     protected double sod3 = 0;
@@ -51,40 +62,47 @@ public class Joystick_L extends View {
     public byte power = 0;
     public byte angle = 0;
 
+    ImageView path_left_Up, path_left_Down, path_left_L, path_left_R;
+
+
     public Joystick_L(Context context) {
-        super(context);
+        this(context, null);
+        initJoystickView(context);
+        System.out.println("PRVI KONSTRUKTOR");
+
     }
 
     public Joystick_L(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initJoystickView();
+        this(context, attrs, 0);
+        initJoystickView(context);
+        System.out.println("DRUGI KONSTRUKTOR");
     }
 
     public Joystick_L(Context context, AttributeSet attrs, int defaultStyle) {
         super(context, attrs, defaultStyle);
-        initJoystickView();
+
+        initJoystickView(context);
+        System.out.println("TRECI KONSTRUKTOR");
     }
 
-    protected void initJoystickView() {
-        backgroundCircle = new Paint(Paint.ANTI_ALIAS_FLAG);
-        backgroundCircle.setColor(Color.WHITE);
-        backgroundCircle.setStyle(Paint.Style.FILL);
 
-        mainCircle = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mainCircle.setColor(Color.rgb(132, 71, 142));
-        mainCircle.setStrokeWidth(8);
-        mainCircle.setStyle(Paint.Style.STROKE);
-
-        button = new Paint(Paint.ANTI_ALIAS_FLAG);
-        button.setColor(Color.rgb(53, 194, 240));
-        button.setStyle(Paint.Style.FILL);
+    protected void initJoystickView(Context context) {
 
 
-        line = new Paint(Paint.ANTI_ALIAS_FLAG);
-        line.setColor(Color.rgb(132, 71, 142));
-        line.setStrokeWidth(8);
-        line.setStyle(Paint.Style.STROKE);
-        line.setStrokeCap(Paint.Cap.ROUND);
+        final float scale = this.getResources().getDisplayMetrics().density;
+        int p = (int) (60 * scale + 0.5f);
+
+
+        src = BitmapFactory.decodeResource(getResources(), R.drawable.joystick);
+
+        bitmap = Bitmap.createScaledBitmap(src, p, p, true);
+
+
+        //  ((Activity)getContext()).getLayoutInflater().inflate(R.layout.joystick_l, this, true);
+
+
+        path_left_Down = (ImageView) findViewById(R.id.ivJoystick_l_down);
+        System.out.println("SIRINA KURCA  -> " + path_left_Down);
 
 
     }
@@ -141,14 +159,19 @@ public class Joystick_L extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        //super.onDraw(canvas);
+        super.onDraw(canvas);
         centerX = (getWidth()) / 2;
         centerY = (getHeight()) / 2;
 
+        float bitmapWidth = bitmap.getWidth() / 2;
+        float bitmapHeight = bitmap.getHeight() / 2;
+
         // drawing the move button
-        canvas.drawCircle(xPosition, yPosition, buttonRadius, button);
-       // canvas.drawBitmap(bitmap, xPosition, yPosition , button );
+        //canvas.drawCircle(xPosition, yPosition, buttonRadius, button);
+        canvas.drawBitmap(bitmap, xPosition - bitmapWidth, yPosition - bitmapHeight, null);
         //d.draw(canvas);
+        //  canvas.draw(path_left_Down, 0, 0, null);
+
 
     }
 
@@ -174,29 +197,29 @@ public class Joystick_L extends View {
 
 //        power = (byte) getPower();
         //      angle = (byte) (getAngle() / 2);
-
+        //path_left_Down.setAlpha(1.0f);
         return true;
     }
 
-    protected int getAngle() {
+    protected double getAngle() {
         if (xPosition > centerX) {
             if (yPosition < centerY) {
-                return lastAngle = (int) (Math.atan((yPosition - centerY)
+                return lastAngle = (Math.atan((yPosition - centerY)
                         / (xPosition - centerX))
                         * RAD + 90);
             } else if (yPosition > centerY) {
-                return lastAngle = (int) (Math.atan((yPosition - centerY)
+                return lastAngle = (Math.atan((yPosition - centerY)
                         / (xPosition - centerX)) * RAD) + 90;
             } else {
                 return lastAngle = 90;
             }
         } else if (xPosition < centerX) {
             if (yPosition < centerY) {
-                return lastAngle = (int) (Math.atan((yPosition - centerY)
+                return lastAngle = (Math.atan((yPosition - centerY)
                         / (xPosition - centerX))
                         * RAD - 90);
             } else if (yPosition > centerY) {
-                return lastAngle = (int) (Math.atan((yPosition - centerY)
+                return lastAngle = (Math.atan((yPosition - centerY)
                         / (xPosition - centerX)) * RAD) - 90;
             } else {
                 return lastAngle = -90;
@@ -214,10 +237,11 @@ public class Joystick_L extends View {
         }
     }
 
-    protected int getPower() {
-        return (int) (100 * Math.sqrt((xPosition - centerX)
+    protected double getPower() {
+        return (100 * Math.sqrt((xPosition - centerX)
                 * (xPosition - centerX) + (yPosition - centerY)
                 * (yPosition - centerY)) / joystickRadius);
     }
+
 
 }

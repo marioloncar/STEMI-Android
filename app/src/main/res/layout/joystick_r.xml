@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/ivjoystick_r"
+        android:id="@+id/ivJoystick_r"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
@@ -15,21 +15,23 @@
         android:src="@drawable/joystick_path_r" />
 
     <ImageView
-        android:id="@+id/ivjoystick_r_l"
+        android:id="@+id/ivJoystick_r_l"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
+        android:alpha="0.0"
         android:src="@drawable/joystick_path_r_l" />
 
     <ImageView
-        android:id="@+id/ivjoystick_r_r"
+        android:id="@+id/ivJoystick_r_r"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:scaleType="fitCenter"
         android:layout_centerVertical="true"
+        android:alpha="0.0"
         android:src="@drawable/joystick_path_r_r" />
 
 
