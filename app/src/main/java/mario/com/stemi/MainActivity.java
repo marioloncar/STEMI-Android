@@ -1,9 +1,15 @@
 package mario.com.stemi;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -25,10 +31,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibHeight = (ImageButton) findViewById(R.id.ibHeight);
         ibSettings = (ImageButton) findViewById(R.id.ibSettings);
 
+        LinearLayout levi = (LinearLayout) findViewById(R.id.levi);
+        assert levi != null;
+        levi.addView(new Joystick_L(this));
+
+
         ibMovement.setSelected(true);
 
-
     }
+
 
     public void onClick(View v) {
 
@@ -52,6 +63,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
             case R.id.ibHeight:
+                if (ibHeight.isSelected()) {
+                    ibHeight.setSelected(false);
+                } else {
+                    ibHeight.setSelected(true);
+                }
+
 
                 break;
             case R.id.ibSettings:
