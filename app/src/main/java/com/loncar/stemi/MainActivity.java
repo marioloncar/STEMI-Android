@@ -1,17 +1,13 @@
-package mario.com.stemi;
+package com.loncar.stemi;
 
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.crashlytics.android.Crashlytics;
+import com.loncar.stemi.R;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -22,7 +18,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //   Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
         ibMovement = (ImageButton) findViewById(R.id.ibMovement);
@@ -31,15 +27,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibHeight = (ImageButton) findViewById(R.id.ibHeight);
         ibSettings = (ImageButton) findViewById(R.id.ibSettings);
 
+
         LinearLayout levi = (LinearLayout) findViewById(R.id.levi);
         assert levi != null;
         levi.addView(new Joystick_L(this));
 
+        LinearLayout desni = (LinearLayout) findViewById(R.id.desni);
+        assert desni != null;
+        desni.addView(new Joystick_R(this));
+
 
         ibMovement.setSelected(true);
 
+
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+//        ViewGroup insertPoint = (ViewGroup) findViewById(R.id.levi);
+//        assert insertPoint != null;
+//
+//        Joystick_L.setLayouts(insertPoint.getLayoutParams());
+//
+//
+//        insertPoint.addView(new Joystick_L(insertPoint.getContext()));
+//
+//        System.out.println("Pocetni parametri" parametri+ insertPoint.getLayoutParams().width);
+    }
 
     public void onClick(View v) {
 

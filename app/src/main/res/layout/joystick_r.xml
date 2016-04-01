@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
 
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    >
 
     <ImageView
         android:id="@+id/ivJoystick_r"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
         android:scaleType="fitCenter"
         android:src="@drawable/joystick_path_r" />
 
@@ -19,8 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
         android:alpha="0.0"
         android:src="@drawable/joystick_path_r_l" />
 
@@ -28,29 +23,12 @@
         android:id="@+id/ivJoystick_r_r"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
         android:scaleType="fitCenter"
-        android:layout_centerVertical="true"
         android:alpha="0.0"
         android:src="@drawable/joystick_path_r_r" />
 
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:scaleType="fitCenter"
-        android:src="@drawable/joystick_center"/>
-
-    <mario.com.stemi.Joystick_R
-        android:id="@+id/joy1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
 
 
 
-</RelativeLayout>
+</merge>
