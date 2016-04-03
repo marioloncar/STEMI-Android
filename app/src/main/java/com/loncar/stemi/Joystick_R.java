@@ -1,25 +1,14 @@
 package com.loncar.stemi;
 
+import android.animation.Animator;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.RectF;
-import android.media.Image;
 import android.support.annotation.NonNull;
-import android.text.Layout;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
-import com.loncar.stemi.R;
 
 /**
  * Created by Mario on 24/03/16.
@@ -38,30 +27,26 @@ public class Joystick_R extends RelativeLayout {
     protected float joystickRadius;
     private double lastAngle = 0;
 
+    TranslateAnimation animation;
+
     int d;
 
     ImageView path_right_L, path_right_R, joystickView, plus, path;
-    protected  float leftAlpha, rightAlpha;
+    protected float leftAlpha, rightAlpha;
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
 
-        for(int i = 0 ; i < getChildCount() ; i++){
+        for (int i = 0; i < getChildCount(); i++) {
             getChildAt(i).layout(l, t, r, b);
         }
-
-        centerX = (getWidth()) / 2;
-        centerY = (getHeight()) / 2;
-
+        centerX = getWidth() / 2;
+        centerY = getHeight() / 2;
     }
-
-
-
 
     public Joystick_R(Context context) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.joystick_r, this, true);
-
     }
 
     public Joystick_R(Context context, AttributeSet attrs) {
@@ -82,7 +67,6 @@ public class Joystick_R extends RelativeLayout {
         joystickView.setImageResource(R.drawable.joystick);
         this.addView(joystickView);
 
-
     }
 
 
@@ -94,7 +78,6 @@ public class Joystick_R extends RelativeLayout {
         yPosition = getWidth() / 2;
         d = Math.min(xNew, yNew);
         joystickRadius = (int) (d / 2 * 0.8);
-
     }
 
 
@@ -103,9 +86,7 @@ public class Joystick_R extends RelativeLayout {
         // setting the measured values to resize the view to a certain width and
         // height
         d = Math.min(measure(widthMeasureSpec), measure(heightMeasureSpec));
-
         setMeasuredDimension(d, d);
-
     }
 
     @Override
@@ -131,12 +112,12 @@ public class Joystick_R extends RelativeLayout {
         return result;
     }
 
-
     // Fixate yPosition
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         xPosition = event.getX();
-        double abs = Math.sqrt(Math.pow(xPosition - centerX,2) + Math.pow(yPosition - centerY,2));
+
+        double abs = Math.sqrt(Math.pow(xPosition - centerX, 2) + Math.pow(yPosition - centerY, 2));
         if (abs > joystickRadius) {
             xPosition = (float) ((xPosition - centerX) * joystickRadius / abs + centerX);
         }
@@ -145,36 +126,39 @@ public class Joystick_R extends RelativeLayout {
         onTouchCounter++;
 
         if (event.getAction() == MotionEvent.ACTION_UP) {
+            animation = new TranslateAnimation(xPosition - joystickView.getWidth() / 2, 0, yPosition - joystickView.getWidth() / 2, 0);
+            animation.setDuration(200);
+            joystickView.startAnimation(animation);
 
-            //Pocetak bloka za animaciju
             xPosition = centerX;
             path_right_R.setAlpha(0f);
             path_right_L.setAlpha(0f);
-            //Kraj bloka za animaciju
             invalidate();
         }
 
         if (getAngle() < 0) {
-            leftAlpha = (float)(getPower() / 100);
+            leftAlpha = (float) (getPower() / 100);
             rightAlpha = 0;
         } else {
             leftAlpha = 0;
-            rightAlpha = (float)(getPower() / 100);
+            rightAlpha = (float) (getPower() / 100);
         }
 
-        //Pocetak bloka za animaciju
+
+
+        //pocetak animacije
         joystickView.setX(xPosition - joystickView.getWidth() / 2);
         joystickView.setY(yPosition - joystickView.getWidth() / 2);
         path_right_R.setAlpha(rightAlpha);
         path_right_L.setAlpha(leftAlpha);
-        //Kraj bloka za animaciju
 
+        //kraj animacije
 
         return true;
     }
 
     protected double getPower() {
-        return (100 * Math.sqrt(Math.pow(xPosition - centerX,2)) / joystickRadius);
+        return (100 * Math.sqrt(Math.pow(xPosition - centerX, 2)) / joystickRadius);
     }
 
     protected double getAngle() {
