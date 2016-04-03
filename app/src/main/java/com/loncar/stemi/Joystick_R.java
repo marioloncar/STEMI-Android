@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.animation.TranslateAnimation;
@@ -16,8 +17,6 @@ import android.widget.RelativeLayout;
 public class Joystick_R extends RelativeLayout {
 
     private final double RAD = 57.2957795;
-    protected byte onTouchCounter = 0;
-    protected byte invalidateFrequency = 2;
 
     protected float xPosition = 0; // Touch x position
     protected float yPosition = 0; // Touch y position
@@ -117,23 +116,10 @@ public class Joystick_R extends RelativeLayout {
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         xPosition = event.getX();
 
-        double abs = Math.sqrt(Math.pow(xPosition - centerX, 2) + Math.pow(yPosition - centerY, 2));
-        if (abs > joystickRadius) {
-            xPosition = (float) ((xPosition - centerX) * joystickRadius / abs + centerX);
-        }
+        double bounds = Math.sqrt(Math.pow(xPosition - centerX, 2));
 
-        if (onTouchCounter % invalidateFrequency == 0) invalidate();
-        onTouchCounter++;
-
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            animation = new TranslateAnimation(xPosition - joystickView.getWidth() / 2, 0, yPosition - joystickView.getWidth() / 2, 0);
-            animation.setDuration(200);
-            joystickView.startAnimation(animation);
-
-            xPosition = centerX;
-            path_right_R.setAlpha(0f);
-            path_right_L.setAlpha(0f);
-            invalidate();
+        if (bounds > joystickRadius) {
+            xPosition = (float) ((xPosition - centerX) * joystickRadius / bounds + centerX);
         }
 
         if (getAngle() < 0) {
@@ -144,15 +130,37 @@ public class Joystick_R extends RelativeLayout {
             rightAlpha = (float) (getPower() / 100);
         }
 
+        switch (event.getAction() & MotionEvent.ACTION_MASK){
+            case MotionEvent.ACTION_DOWN:
 
+                joystickView.animate().setDuration(200).x(xPosition - joystickView.getWidth() / 2).start();
+                path_right_R.animate().setDuration(200).alpha(rightAlpha);
+                path_right_L.animate().setDuration(200).alpha(leftAlpha);
 
-        //pocetak animacije
-        joystickView.setX(xPosition - joystickView.getWidth() / 2);
-        joystickView.setY(yPosition - joystickView.getWidth() / 2);
-        path_right_R.setAlpha(rightAlpha);
-        path_right_L.setAlpha(leftAlpha);
+                break;
 
-        //kraj animacije
+            case MotionEvent.ACTION_MOVE:
+
+                joystickView.animate().setDuration(0).x(xPosition - joystickView.getWidth() / 2).start();
+                path_right_R.animate().setDuration(0).alpha(rightAlpha);
+                path_right_L.animate().setDuration(0).alpha(leftAlpha);
+
+                break;
+
+            case MotionEvent.ACTION_UP:
+
+                xPosition = centerX;
+                rightAlpha = 0;
+                leftAlpha = 0;
+
+                joystickView.animate().setDuration(200).x(xPosition - joystickView.getWidth() / 2).start();
+                path_right_R.animate().setDuration(200).alpha(rightAlpha);
+                path_right_L.animate().setDuration(200).alpha(leftAlpha);
+
+                break;
+        }
+
+        this.invalidate();
 
         return true;
     }
