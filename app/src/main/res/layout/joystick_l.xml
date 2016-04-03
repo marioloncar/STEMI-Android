@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    >
     <ImageView
         android:id="@+id/ivJoystick_l"
         android:layout_width="match_parent"
@@ -15,8 +12,8 @@
         android:id="@+id/ivJoystick_l_l"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"
         android:alpha="0.0"
+        android:scaleType="fitCenter"
         android:src="@drawable/joystick_path_l_l" />
 
     <ImageView
@@ -31,16 +28,16 @@
         android:id="@+id/ivJoystick_l_down"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"
         android:alpha="0.0"
+        android:scaleType="fitCenter"
         android:src="@drawable/joystick_path_l_down" />
 
     <ImageView
         android:id="@+id/ivJoystick_l_up"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"
         android:alpha="0.0"
+        android:scaleType="fitCenter"
         android:src="@drawable/joystick_path_l_up" />
 
 </merge>

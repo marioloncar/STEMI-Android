@@ -7,7 +7,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.crashlytics.android.Crashlytics;
-import com.loncar.stemi.R;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -18,7 +17,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
+       // Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
         ibMovement = (ImageButton) findViewById(R.id.ibMovement);
@@ -27,35 +26,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibHeight = (ImageButton) findViewById(R.id.ibHeight);
         ibSettings = (ImageButton) findViewById(R.id.ibSettings);
 
+        LinearLayout left_joystick = (LinearLayout) findViewById(R.id.llLeft_joystick);
+        assert left_joystick != null;
+        left_joystick.addView(new Joystick_L(this));
 
-        LinearLayout levi = (LinearLayout) findViewById(R.id.levi);
-        assert levi != null;
-        levi.addView(new Joystick_L(this));
-
-        LinearLayout desni = (LinearLayout) findViewById(R.id.desni);
-        assert desni != null;
-        desni.addView(new Joystick_R(this));
-
+        LinearLayout right_joystick = (LinearLayout) findViewById(R.id.llRight_joystick);
+        assert right_joystick != null;
+        right_joystick.addView(new Joystick_R(this));
 
         ibMovement.setSelected(true);
-
-
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-//        ViewGroup insertPoint = (ViewGroup) findViewById(R.id.levi);
-//        assert insertPoint != null;
-//
-//        Joystick_L.setLayouts(insertPoint.getLayoutParams());
-//
-//
-//        insertPoint.addView(new Joystick_L(insertPoint.getContext()));
-//
-//        System.out.println("Pocetni parametri" parametri+ insertPoint.getLayoutParams().width);
-    }
 
     public void onClick(View v) {
 
@@ -84,8 +65,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     ibHeight.setSelected(true);
                 }
-
-
                 break;
             case R.id.ibSettings:
 

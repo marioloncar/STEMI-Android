@@ -5,11 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bck"
-    tools:context="com.loncar.stemi.MainActivity"
-    android:paddingTop="10dp"
-    android:paddingStart="10dp"
     android:paddingEnd="10dp"
-    >
+    android:paddingStart="10dp"
+    android:paddingTop="10dp"
+    tools:context="com.loncar.stemi.MainActivity">
 
 
     <ImageView
@@ -86,46 +85,42 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/ibMovement"
+        android:layout_marginTop="20dp"
         android:baselineAligned="false"
         android:orientation="horizontal"
-        android:layout_marginTop="20dp"
         android:weightSum="100">
 
-       <!-- <include layout="@layout/joystick_l" />-->
-
         <LinearLayout
-            android:id="@+id/levi"
+            android:id="@+id/llLeft_joystick"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="50"
-            android:layout_marginStart="10dp"
             android:layout_marginBottom="5dp"
             android:layout_marginEnd="15dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="50"
             android:orientation="horizontal">
 
             <com.loncar.stemi.Joystick_L
-                android:layout_height = "match_parent"
-                android:layout_width = "match_parent"
-                />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
 
         </LinearLayout>
 
 
         <LinearLayout
-            android:id="@+id/desni"
+            android:id="@+id/llRight_joystick"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="50"
             android:layout_marginBottom="5dp"
-            android:layout_marginStart="15dp"
             android:layout_marginEnd="10dp"
+            android:layout_marginStart="15dp"
+            android:layout_weight="50"
             android:orientation="horizontal">
 
             <com.loncar.stemi.Joystick_R
-                android:layout_height = "match_parent"
-                android:layout_width = "match_parent"
-                />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
         </LinearLayout>
 
