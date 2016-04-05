@@ -1,8 +1,5 @@
 package com.loncar.stemi;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.transition.Transition;
 import android.view.LayoutInflater;
 
 
@@ -11,24 +8,18 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.ViewPropertyAnimator;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
+
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 
 
 /**
  * Created by Mario on 24/03/16.
  */
 
-public class Joystick_L extends RelativeLayout {
+public class Joystick_L extends LinearLayout {
 
     private final double RAD = 57.2957795;
-    protected byte onTouchCounter = 0;
-    protected byte invalidateFrequency = 2;
 
     protected float xPosition = 0; // Touch x position
     protected float yPosition = 0; // Touch y position
@@ -38,7 +29,9 @@ public class Joystick_L extends RelativeLayout {
     protected float joystickRadius;
     private double lastAngle = 0;
 
-    TranslateAnimation animation;
+    public byte power = 0;
+    public byte angle = 0;
+
 
     int d;
 
@@ -67,6 +60,7 @@ public class Joystick_L extends RelativeLayout {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.joystick_l, this, true);
 
+
         path_left_Down = (ImageView) findViewById(R.id.ivJoystick_l_down);
         path_left_Up = (ImageView) findViewById(R.id.ivJoystick_l_up);
         path_left_L = (ImageView) findViewById(R.id.ivJoystick_l_l);
@@ -82,7 +76,6 @@ public class Joystick_L extends RelativeLayout {
         joystickView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         joystickView.setImageResource(R.drawable.joystick);
         this.addView(joystickView);
-
 
     }
 
@@ -136,30 +129,15 @@ public class Joystick_L extends RelativeLayout {
 
         xPosition = event.getX();
         yPosition = event.getY();
-        float abs = (float) Math.sqrt((xPosition - centerX) * (xPosition - centerX)
-                + (yPosition - centerY) * (yPosition - centerY));
-        if (abs > joystickRadius) {
-            xPosition = ((xPosition - centerX) * joystickRadius / abs + centerX);
-            yPosition = ((yPosition - centerY) * joystickRadius / abs + centerY);
-        }
 
-        if (onTouchCounter % invalidateFrequency == 0) invalidate();
-        onTouchCounter++;
+        float bounds = (float) Math.sqrt(Math.pow(xPosition - centerX, 2) + Math.pow(yPosition - centerY, 2));
 
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            animation = new TranslateAnimation(xPosition - joystickView.getWidth() / 2, 0, yPosition - joystickView.getWidth() / 2, 0);
-            animation.setDuration(200);
-            joystickView.startAnimation(animation);
-
-            xPosition = centerX;
-            yPosition = centerY;
-            path_left_R.setAlpha(0f);
-            path_left_Down.setAlpha(0f);
-            path_left_L.setAlpha(0f);
-            path_left_Up.setAlpha(0f);
-            invalidate();
+        if (bounds > joystickRadius) {
+            xPosition = ((xPosition - centerX) * joystickRadius / bounds + centerX);
+            yPosition = ((yPosition - centerY) * joystickRadius / bounds + centerY);
 
         }
+
         double xDistanceTop = getWidth() / 2 - xPosition;
         double yDistanceTop = (getWidth() / 2 - joystickRadius) - yPosition;
         float distanceTop = (float) (Math.sqrt(Math.pow(xDistanceTop, 2) + Math.pow(yDistanceTop, 2)) / joystickRadius);
@@ -192,15 +170,51 @@ public class Joystick_L extends RelativeLayout {
         bottomAlpha = 1 - distanceBottom;
         leftAlpha = 1 - distanceLeft;
 
-        //animacija
-        joystickView.setX(xPosition - joystickView.getWidth() / 2);
-        joystickView.setY(yPosition - joystickView.getWidth() / 2);
-        path_left_R.setAlpha(rightAlpha);
-        path_left_Down.setAlpha(bottomAlpha);
-        path_left_L.setAlpha(leftAlpha);
-        path_left_Up.setAlpha(topAlpha);
 
-        //kraj animacije
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_DOWN:
+
+                joystickView.animate().setDuration(200).x(xPosition - joystickView.getWidth() / 2).y(yPosition - joystickView.getWidth() / 2).start();
+                path_left_R.animate().setDuration(200).alpha(rightAlpha);
+                path_left_Down.animate().setDuration(200).alpha(bottomAlpha);
+                path_left_L.animate().setDuration(200).alpha(leftAlpha);
+                path_left_Up.animate().setDuration(200).alpha(topAlpha);
+
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+
+                joystickView.animate().setDuration(0).x(xPosition - joystickView.getWidth() / 2).y(yPosition - joystickView.getWidth() / 2).start();
+                path_left_R.animate().setDuration(0).alpha(rightAlpha);
+                path_left_Down.animate().setDuration(0).alpha(bottomAlpha);
+                path_left_L.animate().setDuration(0).alpha(leftAlpha);
+                path_left_Up.animate().setDuration(0).alpha(topAlpha);
+
+                break;
+
+            case MotionEvent.ACTION_UP:
+
+                xPosition = centerX;
+                yPosition = centerY;
+                rightAlpha = 0;
+                leftAlpha = 0;
+                topAlpha = 0;
+                bottomAlpha = 0;
+
+                joystickView.animate().setDuration(200).x(xPosition - joystickView.getWidth() / 2).y(yPosition - joystickView.getWidth() / 2).start();
+                path_left_R.animate().setDuration(200).alpha(rightAlpha);
+                path_left_Down.animate().setDuration(200).alpha(bottomAlpha);
+                path_left_L.animate().setDuration(200).alpha(leftAlpha);
+                path_left_Up.animate().setDuration(200).alpha(topAlpha);
+
+                break;
+        }
+
+        power = (byte) getPower();
+        angle = (byte) (getAngle() / 2);
+
+        this.invalidate();
+
 
         return true;
     }
