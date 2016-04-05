@@ -101,6 +101,7 @@
             android:orientation="horizontal">
 
             <com.loncar.stemi.Joystick_L
+                android:id="@+id/joyL"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
@@ -119,9 +120,9 @@
             android:orientation="horizontal">
 
             <com.loncar.stemi.Joystick_R
+                android:id="@+id/joyR"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-
         </LinearLayout>
 
     </LinearLayout>

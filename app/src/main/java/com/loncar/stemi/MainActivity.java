@@ -1,12 +1,22 @@
 package com.loncar.stemi;
 
+import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-
-import com.crashlytics.android.Crashlytics;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.Socket;
+import java.net.URL;
+import java.util.Queue;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -14,10 +24,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     ImageButton ibMovement, ibRotation, ibOrientation, ibHeight, ibSettings;
 
+    private int IP;
+
+    public final String TAG = "MainActivity";
+
+    public Boolean connected = false;
+    public Boolean calibrationMode = false;
+    public int sleepingInterval = 200; // interval between packets [ms]
+
+    public byte[] sliders_array = {50, 25, 0, 0, 0, 50, 0, 0, 0, 0, 0};
+
+    // bytes of the LIN (linearization) packets
+    public byte[] calibrationArray = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 0};
+    public Queue<byte[]> calibrationQueue;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       // Fabric.with(this, new Crashlytics());
+        // Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
         ibMovement = (ImageButton) findViewById(R.id.ibMovement);
@@ -25,16 +49,110 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibOrientation = (ImageButton) findViewById(R.id.ibOrientation);
         ibHeight = (ImageButton) findViewById(R.id.ibHeight);
         ibSettings = (ImageButton) findViewById(R.id.ibSettings);
+//
+//        LinearLayout left_joystick = (LinearLayout) findViewById(R.id.llLeft_joystick);
+//        assert left_joystick != null;
+//        left_joystick.addView(new Joystick_L(this));
 
-        LinearLayout left_joystick = (LinearLayout) findViewById(R.id.llLeft_joystick);
-        assert left_joystick != null;
-        left_joystick.addView(new Joystick_L(this));
+//        LinearLayout right_joystick = (LinearLayout) findViewById(R.id.llRight_joystick);
+//        assert right_joystick != null;
+//        right_joystick.addView(new Joystick_R(this));
 
-        LinearLayout right_joystick = (LinearLayout) findViewById(R.id.llRight_joystick);
-        assert right_joystick != null;
-        right_joystick.addView(new Joystick_R(this));
 
         ibMovement.setSelected(true);
+
+
+        WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+        IP = wifiManager.getDhcpInfo().gateway;
+
+        String ipStr =
+                String.format("%d.%d.%d.%d",
+                        (IP & 0xff),
+                        (IP >> 8 & 0xff),
+                        (IP >> 16 & 0xff),
+                        (IP >> 24 & 0xff));
+
+        startSendingCommandsOverWiFi(ipStr);
+    }
+
+    public void startSendingCommandsOverWiFi(final String ip) {
+        connected = true;
+
+        Thread t = new Thread() {
+            public void run() {
+                try {
+                    Socket socket = new Socket(ip, 80);
+
+                    OutputStream outputStream = socket.getOutputStream();
+
+                    CommandSender wifiSender = new CommandSender(outputStream, socket);
+                    Thread thread = new Thread(wifiSender);
+
+                    thread.start();
+                } catch (IOException e) {
+                    Log.d(TAG, "TCP socket error: " + e.getMessage());
+                    //e.printStackTrace();
+                }
+            }
+        };
+        t.start();
+    }
+
+
+    private class CommandSender implements Runnable {
+
+        OutputStream outputStream;
+        Closeable socket;
+
+        CommandSender(OutputStream outputStream, Closeable socket) {
+            this.outputStream = outputStream;
+            this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Connection with robot established.");
+            }
+            try {
+                BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
+                while (connected) {
+                    Thread.sleep(sleepingInterval);
+
+                    if (!calibrationMode) {
+                        Joystick_L joyL = (Joystick_L) findViewById(R.id.joyL);
+                        Joystick_R joyR = (Joystick_R) findViewById(R.id.joyR);
+
+                        buffOutStream.write("PKT".getBytes());
+                        buffOutStream.write(joyL.power);
+                        buffOutStream.write(joyL.angle);
+                        buffOutStream.write(joyR.rotation);
+                        buffOutStream.write(sliders_array);
+                        buffOutStream.flush();
+                    } else {
+                        if (!calibrationQueue.isEmpty()) {
+                            buffOutStream.write("LIN".getBytes());
+                            buffOutStream.write(calibrationQueue.remove());
+                            buffOutStream.flush();
+                        }
+                    }
+                }
+
+                socket.close();
+
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "Connection with robot closed.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e(TAG, "Socket IOExceptopn.");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                Log.e(TAG, "Socket InterruptedException.");
+            } finally {
+                connected = false;
+            }
+        }
     }
 
 
@@ -86,6 +204,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            connected = false;
+            finish();
+        }
+        return true;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        connected = false;
+
     }
 
 }
