@@ -1,21 +1,19 @@
 package com.loncar.stemi;
 
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
-import java.io.BufferedInputStream;
+
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.Socket;
-import java.net.URL;
+import java.util.LinkedList;
 import java.util.Queue;
 
 import io.fabric.sdk.android.Fabric;
@@ -32,11 +30,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public Boolean calibrationMode = false;
     public int sleepingInterval = 200; // interval between packets [ms]
 
+    private byte staticTilt = 0;
+    private byte movingTilt = 0;
+    private byte onOff = 1;
+    private byte accelerometer_x = 0;
+    private byte accelerometer_y = 0;
     public byte[] sliders_array = {50, 25, 0, 0, 0, 50, 0, 0, 0, 0, 0};
 
     // bytes of the LIN (linearization) packets
-    public byte[] calibrationArray = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 0};
     public Queue<byte[]> calibrationQueue;
+
+    public MainActivity() {
+        calibrationQueue = new LinkedList<>();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,15 +55,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibOrientation = (ImageButton) findViewById(R.id.ibOrientation);
         ibHeight = (ImageButton) findViewById(R.id.ibHeight);
         ibSettings = (ImageButton) findViewById(R.id.ibSettings);
-//
-//        LinearLayout left_joystick = (LinearLayout) findViewById(R.id.llLeft_joystick);
-//        assert left_joystick != null;
-//        left_joystick.addView(new Joystick_L(this));
-
-//        LinearLayout right_joystick = (LinearLayout) findViewById(R.id.llRight_joystick);
-//        assert right_joystick != null;
-//        right_joystick.addView(new Joystick_R(this));
-
 
         ibMovement.setSelected(true);
 
@@ -127,6 +124,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         buffOutStream.write(joyL.power);
                         buffOutStream.write(joyL.angle);
                         buffOutStream.write(joyR.rotation);
+                        buffOutStream.write(staticTilt);
+                        buffOutStream.write(movingTilt);
+                        buffOutStream.write(onOff);
+                        buffOutStream.write(accelerometer_x);
+                        buffOutStream.write(accelerometer_y);
                         buffOutStream.write(sliders_array);
                         buffOutStream.flush();
                     } else {
@@ -214,6 +216,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             finish();
         }
         return true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        connected = false;
+        finish();
+
     }
 
     @Override
