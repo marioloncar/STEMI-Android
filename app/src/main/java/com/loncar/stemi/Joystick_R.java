@@ -14,7 +14,6 @@ import android.widget.LinearLayout;
 public class Joystick_R extends LinearLayout {
 
     private final double RAD = 57.2957795;
-    final float[] RADII = {32.0f, 32.0f, 32.0f, 32.0f, 32.0f, 32.0f, 32.0f, 32.0f};
 
     protected float xPosition = 0; // Touch x position
     protected float yPosition = 0; // Touch y position
@@ -65,8 +64,6 @@ public class Joystick_R extends LinearLayout {
         joystickView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         joystickView.setImageResource(R.drawable.joystick);
         this.addView(joystickView);
-
-        System.out.println("DESNI -> " + this.getHeight());
 
     }
 
