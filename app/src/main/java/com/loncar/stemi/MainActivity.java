@@ -214,6 +214,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             connected = false;
             finish();
+
         }
         return true;
     }
