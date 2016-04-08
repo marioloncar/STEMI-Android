@@ -1,5 +1,9 @@
 package com.loncar.stemi;
 
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.wifi.WifiManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,27 +22,27 @@ import java.util.Queue;
 
 import io.fabric.sdk.android.Fabric;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
 
     ImageButton ibMovement, ibRotation, ibOrientation, ibHeight, ibSettings;
-
-    private int IP;
 
     public final String TAG = "MainActivity";
 
     public Boolean connected = false;
     public Boolean calibrationMode = false;
-    public int sleepingInterval = 200; // interval between packets [ms]
+    public int sleepingInterval = 200;
 
-    private byte staticTilt = 0;
-    private byte movingTilt = 0;
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+
     private byte onOff = 1;
     private byte accelerometer_x = 0;
     private byte accelerometer_y = 0;
     public byte[] sliders_array = {50, 25, 0, 0, 0, 50, 0, 0, 0, 0, 0};
 
-    // bytes of the LIN (linearization) packets
     public Queue<byte[]> calibrationQueue;
+
+    private int IP;
 
     public MainActivity() {
         calibrationQueue = new LinkedList<>();
@@ -58,10 +62,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         ibMovement.setSelected(true);
 
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
         IP = wifiManager.getDhcpInfo().gateway;
 
+        //connect to IP address
         String ipStr =
                 String.format("%d.%d.%d.%d",
                         (IP & 0xff),
@@ -78,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Thread t = new Thread() {
             public void run() {
                 try {
+                    //connect to IP address, port 80
                     Socket socket = new Socket(ip, 80);
 
                     OutputStream outputStream = socket.getOutputStream();
@@ -116,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 while (connected) {
                     Thread.sleep(sleepingInterval);
 
+                    //send bytes
                     if (!calibrationMode) {
                         Joystick_L joyL = (Joystick_L) findViewById(R.id.joyL);
                         Joystick_R joyR = (Joystick_R) findViewById(R.id.joyR);
@@ -124,8 +133,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         buffOutStream.write(joyL.power);
                         buffOutStream.write(joyL.angle);
                         buffOutStream.write(joyR.rotation);
-                        buffOutStream.write(staticTilt);
-                        buffOutStream.write(movingTilt);
+                        buffOutStream.write(ibRotation.isSelected() ? 1 : 0); //static tilt
+                        buffOutStream.write(ibOrientation.isSelected() ? 1 : 0); //moving tilt
                         buffOutStream.write(onOff);
                         buffOutStream.write(accelerometer_x);
                         buffOutStream.write(accelerometer_y);
@@ -157,7 +166,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            if (event.values[0] < -4) accelerometer_x = -40;
+            else if (event.values[0] > 4) accelerometer_x = 40;
+            else accelerometer_x = (byte) (int) (event.values[0] * 10);
 
+            if (event.values[1] < -4) accelerometer_y = -40;
+            else if (event.values[1] > 4) accelerometer_y = 40;
+            else accelerometer_y = (byte) (int) (event.values[1] * 10);
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+
+    // buttons
     public void onClick(View v) {
 
         switch (v.getId()) {
@@ -194,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    // swipe to show notification bar and soft keys
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
@@ -209,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    // back button
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -224,8 +254,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onPause();
 
         connected = false;
+        sensorManager.unregisterListener(this);
         finish();
-
     }
 
     @Override
@@ -236,4 +266,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        connected = true;
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+    }
 }

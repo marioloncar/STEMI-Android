@@ -25,7 +25,6 @@ public class Joystick_R extends LinearLayout {
 
     public byte rotation = 0;
 
-
     int d;
 
     ImageView path_right_L, path_right_R, joystickView, plus, path;
