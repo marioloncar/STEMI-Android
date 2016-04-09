@@ -169,12 +169,15 @@ public class Joystick_L extends LinearLayout {
         rightAlpha = 1 - distanceRight;
         bottomAlpha = 1 - distanceBottom;
         leftAlpha = 1 - distanceLeft;
-
+//        Animation anim = new TranslateAnimation(0.0f, xPosition - joystickView.getWidth() / 2.f, 0.0f, yPosition - joystickView.getWidth() / 2.f);
+//        anim.setDuration(200);
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
 
+//                joystickView.startAnimation(anim);
                 joystickView.animate().setDuration(200).x(xPosition - joystickView.getWidth() / 2).y(yPosition - joystickView.getWidth() / 2).start();
+
                 path_left_R.animate().setDuration(200).alpha(rightAlpha);
                 path_left_Down.animate().setDuration(200).alpha(bottomAlpha);
                 path_left_L.animate().setDuration(200).alpha(leftAlpha);
@@ -183,8 +186,9 @@ public class Joystick_L extends LinearLayout {
                 break;
 
             case MotionEvent.ACTION_MOVE:
-
-                joystickView.animate().setDuration(0).x(xPosition - joystickView.getWidth() / 2).y(yPosition - joystickView.getWidth() / 2).start();
+                joystickView.setX(xPosition - joystickView.getWidth() / 2);
+                joystickView.setY(yPosition - joystickView.getWidth() / 2);
+//                joystickView.animate().setDuration(0).x(xPosition - joystickView.getWidth() / 2).y(yPosition - joystickView.getWidth() / 2).start();
                 path_left_R.animate().setDuration(0).alpha(rightAlpha);
                 path_left_Down.animate().setDuration(0).alpha(bottomAlpha);
                 path_left_L.animate().setDuration(0).alpha(leftAlpha);
