@@ -1,6 +1,7 @@
 package com.loncar.stemi;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -70,39 +71,25 @@ public class Joystick_R extends LinearLayout {
     protected void onSizeChanged(int xNew, int yNew, int xOld, int yOld) {
         super.onSizeChanged(xNew, yNew, xOld, yOld);
         // before measure, get the center of view
+
         xPosition = getWidth() / 2;
         yPosition = getHeight() / 2;
 
         d = Math.max(xNew, yNew);
 
-        joystickRadius = (int) (d / 2 * 0.8);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            joystickRadius = (int) (d / 2 * 0.7);
+        }
+        else{
+            joystickRadius = (int) (d / 2 * 0.8);
+        }
     }
 
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // setting the measured values to resize the view to a certain width and height
-       // d = Math.min(measure(widthMeasureSpec), measure(heightMeasureSpec));
         setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
-    }
-
-
-    private int measure(int measureSpec) {
-        int result;
-
-        // Decode the measurement specifications.
-        int specMode = MeasureSpec.getMode(measureSpec);
-        int specSize = MeasureSpec.getSize(measureSpec);
-
-        if (specMode == MeasureSpec.UNSPECIFIED) {
-            // Return a default size of 200 if no bounds are specified.
-            result = 200;
-        } else {
-            // As you want to fill the available space
-            // always return the full available bounds.
-            result = specSize;
-        }
-        return result;
     }
 
     @Override
