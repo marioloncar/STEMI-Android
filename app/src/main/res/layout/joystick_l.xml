@@ -2,14 +2,14 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageView
-        android:id="@+id/ivJoystick_l"
+        android:id="@+id/ivJoystickLeft"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:src="@drawable/joystick_path_l" />
 
     <ImageView
-        android:id="@+id/ivJoystick_l_l"
+        android:id="@+id/ivJoystickLeft_Left"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.0"
@@ -17,7 +17,7 @@
         android:src="@drawable/joystick_path_l_l" />
 
     <ImageView
-        android:id="@+id/ivJoystick_l_r"
+        android:id="@+id/ivJoystickLeft_Right"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.0"
@@ -25,7 +25,7 @@
         android:src="@drawable/joystick_path_l_r" />
 
     <ImageView
-        android:id="@+id/ivJoystick_l_down"
+        android:id="@+id/ivJoystickLeft_Down"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.0"
@@ -33,7 +33,7 @@
         android:src="@drawable/joystick_path_l_down" />
 
     <ImageView
-        android:id="@+id/ivJoystick_l_up"
+        android:id="@+id/ivJoystickLeft_Up"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.0"

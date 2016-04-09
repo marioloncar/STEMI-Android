@@ -20,8 +20,6 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import io.fabric.sdk.android.Fabric;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
 
     ImageButton ibMovement, ibRotation, ibOrientation, ibHeight, ibSettings;
@@ -69,17 +67,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         IP = wifiManager.getDhcpInfo().gateway;
 
         //connect to IP address
-        String ipStr =
+        String ipAddr =
                 String.format("%d.%d.%d.%d",
                         (IP & 0xff),
                         (IP >> 8 & 0xff),
                         (IP >> 16 & 0xff),
                         (IP >> 24 & 0xff));
 
-        startSendingCommandsOverWiFi(ipStr);
+        sendCommandsOverWiFi(ipAddr);
     }
 
-    public void startSendingCommandsOverWiFi(final String ip) {
+    public void sendCommandsOverWiFi(final String ip) {
         connected = true;
 
         Thread t = new Thread() {
@@ -120,31 +118,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(TAG, "Connection with robot established.");
             }
             try {
-                BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
+                BufferedOutputStream buffer = new BufferedOutputStream(outputStream, 30);
                 while (connected) {
                     Thread.sleep(sleepingInterval);
 
                     //send bytes
                     if (!calibrationMode) {
-                        Joystick_L joyL = (Joystick_L) findViewById(R.id.joyL);
-                        Joystick_R joyR = (Joystick_R) findViewById(R.id.joyR);
+                        JoystickL joyL = (JoystickL) findViewById(R.id.joyL);
+                        JoystickR joyR = (JoystickR) findViewById(R.id.joyR);
 
-                        buffOutStream.write("PKT".getBytes());
-                        buffOutStream.write(joyL.power);
-                        buffOutStream.write(joyL.angle);
-                        buffOutStream.write(joyR.rotation);
-                        buffOutStream.write(ibRotation.isSelected() ? 1 : 0); //static tilt
-                        buffOutStream.write(ibOrientation.isSelected() ? 1 : 0); //moving tilt
-                        buffOutStream.write(onOff);
-                        buffOutStream.write(accelerometerX);
-                        buffOutStream.write(accelerometerY);
-                        buffOutStream.write(slidersArray);
-                        buffOutStream.flush();
+                        buffer.write("PKT".getBytes());
+                        buffer.write(joyL.power);
+                        buffer.write(joyL.angle);
+                        buffer.write(joyR.rotation);
+                        buffer.write(ibRotation.isSelected() ? 1 : 0); //static tilt
+                        buffer.write(ibOrientation.isSelected() ? 1 : 0); //moving tilt
+                        buffer.write(onOff);
+                        buffer.write(accelerometerX);
+                        buffer.write(accelerometerY);
+                        buffer.write(slidersArray);
+                        buffer.flush();
                     } else {
                         if (!calibrationQueue.isEmpty()) {
-                            buffOutStream.write("LIN".getBytes());
-                            buffOutStream.write(calibrationQueue.remove());
-                            buffOutStream.flush();
+                            buffer.write("LIN".getBytes());
+                            buffer.write(calibrationQueue.remove());
+                            buffer.flush();
                         }
                     }
                 }
@@ -152,11 +150,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 socket.close();
 
                 if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "Connection with robot closed.");
+                    Log.d(TAG, "Connection with robot is closed.");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(TAG, "Socket IOExceptopn.");
+                Log.e(TAG, "Socket IOException.");
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 Log.e(TAG, "Socket InterruptedException.");
