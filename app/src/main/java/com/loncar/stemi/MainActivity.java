@@ -181,7 +181,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 
 
@@ -218,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
             default:
-                System.out.println("Error!");
+                Log.d(TAG, "Default");
         }
     }
 

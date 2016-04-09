@@ -23,8 +23,8 @@ public class Joystick_L extends LinearLayout {
 
     protected float xPosition = 0; // Touch x position
     protected float yPosition = 0; // Touch y position
-    protected float centerX = 0; // Center view x position -> default: double
-    protected float centerY = 0; // Center view y position -> default: double
+    protected float centerX = 0; // Center view x position
+    protected float centerY = 0; // Center view y position
 
     protected float joystickRadius;
     private double lastAngle = 0;
@@ -90,13 +90,10 @@ public class Joystick_L extends LinearLayout {
 
     }
 
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        // setting the measured values to resize the view to a certain width and
-        // height
+        // setting the measured values to resize the view to a certain width and height
         d = Math.min(measure(widthMeasureSpec), measure(heightMeasureSpec));
-
         setMeasuredDimension(d, d);
 
     }
@@ -133,8 +130,8 @@ public class Joystick_L extends LinearLayout {
         double bounds = Math.sqrt(Math.pow(xPosition - centerX, 2) + Math.pow(yPosition - centerY, 2));
 
         if (bounds > joystickRadius) {
-            xPosition = (float)((xPosition - centerX) * joystickRadius / bounds + centerX);
-            yPosition = (float)((yPosition - centerY) * joystickRadius / bounds + centerY);
+            xPosition = (float) ((xPosition - centerX) * joystickRadius / bounds + centerX);
+            yPosition = (float) ((yPosition - centerY) * joystickRadius / bounds + centerY);
 
         }
 
@@ -164,20 +161,14 @@ public class Joystick_L extends LinearLayout {
             distanceLeft = 1;
         }
 
-
         topAlpha = 1 - distanceTop;
         rightAlpha = 1 - distanceRight;
         bottomAlpha = 1 - distanceBottom;
         leftAlpha = 1 - distanceLeft;
-//        Animation anim = new TranslateAnimation(0.0f, xPosition - joystickView.getWidth() / 2.f, 0.0f, yPosition - joystickView.getWidth() / 2.f);
-//        anim.setDuration(200);
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
-
-//                joystickView.startAnimation(anim);
                 joystickView.animate().setDuration(200).x(xPosition - joystickView.getWidth() / 2).y(yPosition - joystickView.getWidth() / 2).start();
-
                 path_left_R.animate().setDuration(200).alpha(rightAlpha);
                 path_left_Down.animate().setDuration(200).alpha(bottomAlpha);
                 path_left_L.animate().setDuration(200).alpha(leftAlpha);
@@ -186,8 +177,6 @@ public class Joystick_L extends LinearLayout {
                 break;
 
             case MotionEvent.ACTION_MOVE:
-//                joystickView.setX(xPosition - joystickView.getWidth() / 2);
-//                joystickView.setY(yPosition - joystickView.getWidth() / 2);
                 joystickView.animate().setDuration(0).x(xPosition - joystickView.getWidth() / 2).y(yPosition - joystickView.getWidth() / 2).start();
                 path_left_R.animate().setDuration(0).alpha(rightAlpha);
                 path_left_Down.animate().setDuration(0).alpha(bottomAlpha);
@@ -218,7 +207,6 @@ public class Joystick_L extends LinearLayout {
         angle = (byte) (getAngle() / 2);
 
         this.invalidate();
-
 
         return true;
     }

@@ -18,8 +18,8 @@ public class Joystick_R extends LinearLayout {
 
     protected float xPosition = 0; // Touch x position
     protected float yPosition = 0; // Touch y position
-    protected float centerX = 0; // Center view x position -> default: double
-    protected float centerY = 0; // Center view y position -> default: double
+    protected float centerX = 0; // Center view x position
+    protected float centerY = 0; // Center view y position
 
     protected float joystickRadius;
     private double lastAngle = 0;
@@ -77,10 +77,9 @@ public class Joystick_R extends LinearLayout {
 
         d = Math.max(xNew, yNew);
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             joystickRadius = (int) (d / 2 * 0.7);
-        }
-        else{
+        } else {
             joystickRadius = (int) (d / 2 * 0.8);
         }
     }
@@ -149,7 +148,6 @@ public class Joystick_R extends LinearLayout {
         rotation = (byte) (int) (Math.sin(Math.toRadians(getAngle())) * getPower());
 
         this.invalidate();
-
 
         return true;
     }
