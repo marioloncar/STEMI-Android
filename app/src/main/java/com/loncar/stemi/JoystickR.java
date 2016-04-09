@@ -12,12 +12,12 @@ import android.widget.LinearLayout;
 /**
  * Created by Mario on 24/03/16.
  */
-public class Joystick_R extends LinearLayout {
+public class JoystickR extends LinearLayout {
 
-    private final double RAD = 57.2957795;
+    private final double radian = 57.2957795;
 
-    protected float xPosition = 0; // Touch x position
-    protected float yPosition = 0; // Touch y position
+    protected float positionX = 0; // Touch x position
+    protected float positionY = 0; // Touch y position
     protected float centerX = 0; // Center view x position
     protected float centerY = 0; // Center view y position
 
@@ -28,7 +28,7 @@ public class Joystick_R extends LinearLayout {
 
     int d;
 
-    ImageView path_right_L, path_right_R, joystickView, plus, path;
+    ImageView path_JoyRightLeft, path_JoyRightRight, joystickView, joystickPlus, joystickPath;
     protected float leftAlpha, rightAlpha;
 
     @Override
@@ -41,23 +41,23 @@ public class Joystick_R extends LinearLayout {
         centerY = getHeight() / 2;
     }
 
-    public Joystick_R(Context context) {
+    public JoystickR(Context context) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.joystick_r, this, true);
     }
 
-    public Joystick_R(Context context, AttributeSet attrs) {
+    public JoystickR(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.joystick_r, this, true);
 
-        path_right_L = (ImageView) findViewById(R.id.ivJoystick_r_l);
-        path_right_R = (ImageView) findViewById(R.id.ivJoystick_r_r);
-        path = (ImageView) findViewById(R.id.ivJoystick_r);
+        path_JoyRightLeft = (ImageView) findViewById(R.id.ivJoystickRight_Left);
+        path_JoyRightRight = (ImageView) findViewById(R.id.ivJoystickRight_Right);
+        joystickPath = (ImageView) findViewById(R.id.ivJoystickRight);
 
-        plus = new ImageView(context);
-        plus.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        plus.setImageResource(R.drawable.joystick_center);
-        this.addView(plus);
+        joystickPlus = new ImageView(context);
+        joystickPlus.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        joystickPlus.setImageResource(R.drawable.joystick_center);
+        this.addView(joystickPlus);
 
         joystickView = new ImageView(context);
         joystickView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -72,8 +72,8 @@ public class Joystick_R extends LinearLayout {
         super.onSizeChanged(xNew, yNew, xOld, yOld);
         // before measure, get the center of view
 
-        xPosition = getWidth() / 2;
-        yPosition = getHeight() / 2;
+        positionX = getWidth() / 2;
+        positionY = getHeight() / 2;
 
         d = Math.max(xNew, yNew);
 
@@ -96,15 +96,14 @@ public class Joystick_R extends LinearLayout {
         super.onFinishInflate();
     }
 
-    // Fixate yPosition
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-        xPosition = event.getX();
+        positionX = event.getX();
 
-        double bounds = Math.sqrt(Math.pow(xPosition - centerX, 2));
+        double bounds = Math.sqrt(Math.pow(positionX - centerX, 2));
 
         if (bounds > joystickRadius) {
-            xPosition = (float) ((xPosition - centerX) * joystickRadius / bounds + centerX);
+            positionX = (float) ((positionX - centerX) * joystickRadius / bounds + centerX);
         }
 
         if (getAngle() < 0) {
@@ -118,29 +117,29 @@ public class Joystick_R extends LinearLayout {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
 
-                joystickView.animate().setDuration(200).x(xPosition - joystickView.getWidth() / 2).start();
-                path_right_R.animate().setDuration(200).alpha(rightAlpha);
-                path_right_L.animate().setDuration(200).alpha(leftAlpha);
+                joystickView.animate().setDuration(200).x(positionX - joystickView.getWidth() / 2).start();
+                path_JoyRightRight.animate().setDuration(200).alpha(rightAlpha);
+                path_JoyRightLeft.animate().setDuration(200).alpha(leftAlpha);
 
                 break;
 
             case MotionEvent.ACTION_MOVE:
 
-                joystickView.animate().setDuration(0).x(xPosition - joystickView.getWidth() / 2).start();
-                path_right_R.animate().setDuration(0).alpha(rightAlpha);
-                path_right_L.animate().setDuration(0).alpha(leftAlpha);
+                joystickView.animate().setDuration(0).x(positionX - joystickView.getWidth() / 2).start();
+                path_JoyRightRight.animate().setDuration(0).alpha(rightAlpha);
+                path_JoyRightLeft.animate().setDuration(0).alpha(leftAlpha);
 
                 break;
 
             case MotionEvent.ACTION_UP:
 
-                xPosition = centerX;
+                positionX = centerX;
                 rightAlpha = 0;
                 leftAlpha = 0;
 
-                joystickView.animate().setDuration(200).x(xPosition - joystickView.getWidth() / 2).start();
-                path_right_R.animate().setDuration(200).alpha(rightAlpha);
-                path_right_L.animate().setDuration(200).alpha(leftAlpha);
+                joystickView.animate().setDuration(200).x(positionX - joystickView.getWidth() / 2).start();
+                path_JoyRightRight.animate().setDuration(200).alpha(rightAlpha);
+                path_JoyRightLeft.animate().setDuration(200).alpha(leftAlpha);
 
                 break;
         }
@@ -153,30 +152,30 @@ public class Joystick_R extends LinearLayout {
     }
 
     protected double getAngle() {
-        if (xPosition > centerX) {
-            if (yPosition < centerY) {
-                return lastAngle = (Math.atan((yPosition - centerY)
-                        / (xPosition - centerX))
-                        * RAD + 90);
-            } else if (yPosition > centerY) {
-                return lastAngle = (Math.atan((yPosition - centerY)
-                        / (xPosition - centerX)) * RAD) + 90;
+        if (positionX > centerX) {
+            if (positionY < centerY) {
+                return lastAngle = (Math.atan((positionY - centerY)
+                        / (positionX - centerX))
+                        * radian + 90);
+            } else if (positionY > centerY) {
+                return lastAngle = (Math.atan((positionY - centerY)
+                        / (positionX - centerX)) * radian) + 90;
             } else {
                 return lastAngle = 90;
             }
-        } else if (xPosition < centerX) {
-            if (yPosition < centerY) {
-                return lastAngle = (Math.atan((yPosition - centerY)
-                        / (xPosition - centerX))
-                        * RAD - 90);
-            } else if (yPosition > centerY) {
-                return lastAngle = (Math.atan((yPosition - centerY)
-                        / (xPosition - centerX)) * RAD) - 90;
+        } else if (positionX < centerX) {
+            if (positionY < centerY) {
+                return lastAngle = (Math.atan((positionY - centerY)
+                        / (positionX - centerX))
+                        * radian - 90);
+            } else if (positionY > centerY) {
+                return lastAngle = (Math.atan((positionY - centerY)
+                        / (positionX - centerX)) * radian) - 90;
             } else {
                 return lastAngle = -90;
             }
         } else {
-            if (yPosition <= centerY) {
+            if (positionY <= centerY) {
                 return lastAngle = 0;
             } else {
                 if (lastAngle < 0) {
@@ -189,7 +188,7 @@ public class Joystick_R extends LinearLayout {
     }
 
     protected double getPower() {
-        return (100 * Math.sqrt(Math.pow(xPosition - centerX, 2)) / joystickRadius);
+        return (100 * Math.sqrt(Math.pow(positionX - centerX, 2)) / joystickRadius);
     }
 
 }

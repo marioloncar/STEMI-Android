@@ -79,7 +79,7 @@
         android:weightSum="100">
 
         <LinearLayout
-            android:id="@+id/llLeft_joystick"
+            android:id="@+id/llJoystickLeft"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
@@ -88,7 +88,7 @@
             android:layout_marginStart="10dp"
             android:layout_weight="50">
 
-            <com.loncar.stemi.Joystick_L
+            <com.loncar.stemi.JoystickL
                 android:id="@+id/joyL"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
@@ -96,7 +96,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llRight_joystick"
+            android:id="@+id/llJoystickRight"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_gravity="center_vertical"
@@ -105,7 +105,7 @@
             android:layout_marginStart="15dp"
             android:layout_weight="50">
 
-            <com.loncar.stemi.Joystick_R
+            <com.loncar.stemi.JoystickR
                 android:id="@+id/joyR"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
