@@ -130,11 +130,11 @@ public class Joystick_L extends LinearLayout {
         xPosition = event.getX();
         yPosition = event.getY();
 
-        float bounds = (float) Math.sqrt(Math.pow(xPosition - centerX, 2) + Math.pow(yPosition - centerY, 2));
+        double bounds = Math.sqrt(Math.pow(xPosition - centerX, 2) + Math.pow(yPosition - centerY, 2));
 
         if (bounds > joystickRadius) {
-            xPosition = ((xPosition - centerX) * joystickRadius / bounds + centerX);
-            yPosition = ((yPosition - centerY) * joystickRadius / bounds + centerY);
+            xPosition = (float)((xPosition - centerX) * joystickRadius / bounds + centerX);
+            yPosition = (float)((yPosition - centerY) * joystickRadius / bounds + centerY);
 
         }
 
@@ -186,9 +186,9 @@ public class Joystick_L extends LinearLayout {
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                joystickView.setX(xPosition - joystickView.getWidth() / 2);
-                joystickView.setY(yPosition - joystickView.getWidth() / 2);
-//                joystickView.animate().setDuration(0).x(xPosition - joystickView.getWidth() / 2).y(yPosition - joystickView.getWidth() / 2).start();
+//                joystickView.setX(xPosition - joystickView.getWidth() / 2);
+//                joystickView.setY(yPosition - joystickView.getWidth() / 2);
+                joystickView.animate().setDuration(0).x(xPosition - joystickView.getWidth() / 2).y(yPosition - joystickView.getWidth() / 2).start();
                 path_left_R.animate().setDuration(0).alpha(rightAlpha);
                 path_left_Down.animate().setDuration(0).alpha(bottomAlpha);
                 path_left_L.animate().setDuration(0).alpha(leftAlpha);
