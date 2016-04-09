@@ -36,9 +36,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Sensor accelerometer;
 
     private byte onOff = 1;
-    private byte accelerometer_x = 0;
-    private byte accelerometer_y = 0;
-    public byte[] sliders_array = {50, 25, 0, 0, 0, 50, 0, 0, 0, 0, 0};
+    private byte accelerometerX = 0;
+    private byte accelerometerY = 0;
+    public byte[] slidersArray = {50, 25, 0, 0, 0, 50, 0, 0, 0, 0, 0};
 
     public Queue<byte[]> calibrationQueue;
 
@@ -136,9 +136,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         buffOutStream.write(ibRotation.isSelected() ? 1 : 0); //static tilt
                         buffOutStream.write(ibOrientation.isSelected() ? 1 : 0); //moving tilt
                         buffOutStream.write(onOff);
-                        buffOutStream.write(accelerometer_x);
-                        buffOutStream.write(accelerometer_y);
-                        buffOutStream.write(sliders_array);
+                        buffOutStream.write(accelerometerX);
+                        buffOutStream.write(accelerometerY);
+                        buffOutStream.write(slidersArray);
                         buffOutStream.flush();
                     } else {
                         if (!calibrationQueue.isEmpty()) {
@@ -169,13 +169,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            if (event.values[0] < -4) accelerometer_x = -40;
-            else if (event.values[0] > 4) accelerometer_x = 40;
-            else accelerometer_x = (byte) (int) (event.values[0] * 10);
+            if (event.values[0] < -4) accelerometerX = -40;
+            else if (event.values[0] > 4) accelerometerX = 40;
+            else accelerometerX = (byte) (int) (event.values[0] * 10);
 
-            if (event.values[1] < -4) accelerometer_y = -40;
-            else if (event.values[1] > 4) accelerometer_y = 40;
-            else accelerometer_y = (byte) (int) (event.values[1] * 10);
+            if (event.values[1] < -4) accelerometerY = -40;
+            else if (event.values[1] > 4) accelerometerY = 40;
+            else accelerometerY = (byte) (int) (event.values[1] * 10);
         }
     }
 

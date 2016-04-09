@@ -53,7 +53,6 @@ public class Joystick_R extends LinearLayout {
         path_right_R = (ImageView) findViewById(R.id.ivJoystick_r_r);
         path = (ImageView) findViewById(R.id.ivJoystick_r);
 
-
         plus = new ImageView(context);
         plus.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         plus.setImageResource(R.drawable.joystick_center);
@@ -72,24 +71,21 @@ public class Joystick_R extends LinearLayout {
         super.onSizeChanged(xNew, yNew, xOld, yOld);
         // before measure, get the center of view
         xPosition = getWidth() / 2;
-        yPosition = getWidth() / 2;
-        d = Math.min(xNew, yNew);
+        yPosition = getHeight() / 2;
+
+        d = Math.max(xNew, yNew);
+
         joystickRadius = (int) (d / 2 * 0.8);
     }
 
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        // setting the measured values to resize the view to a certain width and
-        // height
-        d = Math.min(measure(widthMeasureSpec), measure(heightMeasureSpec));
-        setMeasuredDimension(d, d);
+        // setting the measured values to resize the view to a certain width and height
+       // d = Math.min(measure(widthMeasureSpec), measure(heightMeasureSpec));
+        setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
     }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-    }
 
     private int measure(int measureSpec) {
         int result;
@@ -107,6 +103,11 @@ public class Joystick_R extends LinearLayout {
             result = specSize;
         }
         return result;
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
     }
 
     // Fixate yPosition
