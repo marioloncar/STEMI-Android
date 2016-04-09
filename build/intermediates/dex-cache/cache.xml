@@ -2,95 +2,95 @@
 <items version="2" >
 
     <item
-        jar="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/jars/classes.jar"
+        jar="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/jars/classes.jar"
         jumboMode="true"
         revision="23.0.2"
         sha1="e4d0cbb0b999604b349062f0214a0a228a7fd151">
-        <dex dex="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-appcompat-v7-23.2.1_dff908d6cb8607bb05a6b62efae046d8578e65c8/classes.dex" />
+        <dex dex="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/pre-dexed/debug/com.android.support-appcompat-v7-23.2.1_f0a7f4421232216fbc42f69b5808c93c75df0439.jar" />
     </item>
     <item
-        jar="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/exploded-aar/com.crashlytics.sdk.android/beta/1.1.4/jars/classes.jar"
+        jar="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
         jumboMode="true"
         revision="23.0.2"
-        sha1="ad5bb101ced4d3939225c9b57e5a3d81547c1fbb">
-        <dex dex="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.crashlytics.sdk.android-beta-1.1.4_a3ad56ae35862ea9b4fd05182188a4c9d4e8eb18/classes.dex" />
+        sha1="b6a1550406c70682b67aa00de1b552f3e746d344">
+        <dex dex="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/pre-dexed/debug/instant-run-bootstrap_fc0b2d5dc0662c121e97ff8bd69a2b9dfecc4ed0.jar" />
     </item>
     <item
-        jar="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
-        jumboMode="true"
-        revision="23.0.2"
-        sha1="40ee8a1c37a9292632b3fa1f2433e90498963deb">
-        <dex dex="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_cd88f11e43a38479bb5dece8697ec8990779cd8c/classes.dex" />
-    </item>
-    <item
-        jar="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
-        jumboMode="true"
-        revision="23.0.2"
-        sha1="d0a4bcd52e6f15533308696955dac70f986838da">
-        <dex dex="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_2f578ce6303a840f9bacace45fa6d0708918f937/classes.dex" />
-    </item>
-    <item
-        jar="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/exploded-aar/com.crashlytics.sdk.android/answers/1.3.6/jars/classes.jar"
-        jumboMode="true"
-        revision="23.0.2"
-        sha1="9af3b9b8114e685291aa00e6572b0a9131244956">
-        <dex dex="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.crashlytics.sdk.android-answers-1.3.6_f172c5de3a20af555135e89c462279b987bb6157/classes.dex" />
-    </item>
-    <item
-        jar="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.2.1/jars/classes.jar"
+        jar="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.2.1/jars/classes.jar"
         jumboMode="true"
         revision="23.0.2"
         sha1="3be474b1b21b31cf2fa93fe6bd641ae108d96452">
-        <dex dex="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-v4-23.2.1_3720e29a0aa2face9d3ed8d587d9f6c8df57f60f/classes.dex" />
+        <dex dex="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/pre-dexed/debug/com.android.support-support-v4-23.2.1_4554c1a890c9260176ec3b082392e4e26153cf9a.jar" />
     </item>
     <item
-        jar="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/exploded-aar/com.crashlytics.sdk.android/crashlytics/2.5.5/jars/classes.jar"
+        jar="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/exploded-aar/com.crashlytics.sdk.android/crashlytics/2.5.5/jars/classes.jar"
         jumboMode="true"
         revision="23.0.2"
         sha1="611605b6b640c1558f9bdea41de8ff837ab68ca8">
-        <dex dex="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.crashlytics.sdk.android-crashlytics-2.5.5_25316c1ee487cd3c3934739045baaaa36b047b7b/classes.dex" />
+        <dex dex="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/pre-dexed/debug/com.crashlytics.sdk.android-crashlytics-2.5.5_163f4c60a29d9ca903dbc934ab0bd874cec442e3.jar" />
     </item>
     <item
-        jar="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.2.1/jars/classes.jar"
-        jumboMode="true"
-        revision="23.0.2"
-        sha1="673d77a5bbddd766037f088e775df525c46407f0">
-        <dex dex="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-vector-drawable-23.2.1_8ccfaa6243316b424d7dc8c9887e684f233653a4/classes.dex" />
-    </item>
-    <item
-        jar="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.2.1/jars/libs/internal_impl-23.2.1.jar"
+        jar="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.2.1/jars/libs/internal_impl-23.2.1.jar"
         jumboMode="true"
         revision="23.0.2"
         sha1="607a3d0b8013b4ccbfeb0b7cb293351994e021fb">
-        <dex dex="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-23.2.1_1d1243c6c43988c7029e7b31de73f6975d51ecac/classes.dex" />
+        <dex dex="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/pre-dexed/debug/internal_impl-23.2.1_e0d0a2c0adcf4eff7e133a3ec1a23457a6b0ac50.jar" />
     </item>
     <item
-        jar="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/exploded-aar/com.crashlytics.sdk.android/crashlytics-core/2.3.8/jars/classes.jar"
-        jumboMode="true"
-        revision="23.0.2"
-        sha1="c9ef45dcbd082cd63aac09a5e2cd443adb5df837">
-        <dex dex="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.crashlytics.sdk.android-crashlytics-core-2.3.8_ccc42ebeac5b787e9eed5c1e1f2e02f2ca27e7aa/classes.dex" />
-    </item>
-    <item
-        jar="/Users/Jaco/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.2.1/support-annotations-23.2.1.jar"
-        jumboMode="true"
-        revision="23.0.2"
-        sha1="ccb693bc0774fcb637246f7360de25b4af7df318">
-        <dex dex="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-23.2.1_11e3a01210831b985933df85752f4e374bd7d4ee/classes.dex" />
-    </item>
-    <item
-        jar="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.2.1/jars/classes.jar"
-        jumboMode="true"
-        revision="23.0.2"
-        sha1="3469cb457f10f74c28cbc05f069b6c894f6cbdd0">
-        <dex dex="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-animated-vector-drawable-23.2.1_7e5855baffb8bec14ea169190c840b35dfb992ee/classes.dex" />
-    </item>
-    <item
-        jar="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/exploded-aar/io.fabric.sdk.android/fabric/1.3.10/jars/classes.jar"
+        jar="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/exploded-aar/io.fabric.sdk.android/fabric/1.3.10/jars/classes.jar"
         jumboMode="true"
         revision="23.0.2"
         sha1="a5db9a2dd46d84285ef737f65030b74b6e8ee2a4">
-        <dex dex="/Users/Jaco/Library/Mobile Documents/com~apple~CloudDocs/Programming/STEMI - Android/app/build/intermediates/transforms/dex/debug/folders/1000/10/io.fabric.sdk.android-fabric-1.3.10_22bf0d619e2c333050e2f87cee54384989d1c39c/classes.dex" />
+        <dex dex="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/pre-dexed/debug/io.fabric.sdk.android-fabric-1.3.10_e5db5ae0f1db08f327f6e45cddad8826d1a773e2.jar" />
+    </item>
+    <item
+        jar="/Users/Mario/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.2.1/support-annotations-23.2.1.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="ccb693bc0774fcb637246f7360de25b4af7df318">
+        <dex dex="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/pre-dexed/debug/support-annotations-23.2.1_daed566b10feb4b5e638266ef3869e56a1f43cd6.jar" />
+    </item>
+    <item
+        jar="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/exploded-aar/com.crashlytics.sdk.android/beta/1.1.4/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="ad5bb101ced4d3939225c9b57e5a3d81547c1fbb">
+        <dex dex="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/pre-dexed/debug/com.crashlytics.sdk.android-beta-1.1.4_4c4e7aecba9edf5e1ecab7f85fe0bf3d9ffe5060.jar" />
+    </item>
+    <item
+        jar="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="7e6642fc495999e171a96910dfc586fb955dcb72">
+        <dex dex="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/pre-dexed/debug/instant-run_173da6d49b03dabcda80e412192d3063cbacc5fe.jar" />
+    </item>
+    <item
+        jar="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/exploded-aar/com.crashlytics.sdk.android/answers/1.3.6/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="9af3b9b8114e685291aa00e6572b0a9131244956">
+        <dex dex="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/pre-dexed/debug/com.crashlytics.sdk.android-answers-1.3.6_0deae30edcac6e417f278e8214d34f4f19ea5149.jar" />
+    </item>
+    <item
+        jar="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/exploded-aar/com.crashlytics.sdk.android/crashlytics-core/2.3.8/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="c9ef45dcbd082cd63aac09a5e2cd443adb5df837">
+        <dex dex="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/pre-dexed/debug/com.crashlytics.sdk.android-crashlytics-core-2.3.8_db91c0b3d0f63d504979552a7dc20eaf0564a485.jar" />
+    </item>
+    <item
+        jar="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="3469cb457f10f74c28cbc05f069b6c894f6cbdd0">
+        <dex dex="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/pre-dexed/debug/com.android.support-animated-vector-drawable-23.2.1_a7ef1682e4381f392504c62a292b94ec703ea735.jar" />
+    </item>
+    <item
+        jar="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="673d77a5bbddd766037f088e775df525c46407f0">
+        <dex dex="/Users/Mario/Documents/AndroidProjects/STEMI/app/build/intermediates/pre-dexed/debug/com.android.support-support-vector-drawable-23.2.1_dbd26adfacd583ac84b5cfc20c66e05da36bc23e.jar" />
     </item>
 
 </items>

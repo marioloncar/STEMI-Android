@@ -12,7 +12,6 @@
         <!-- Customize your theme here. -->
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowBackground">@null</item>
-
     </style>
 
 </resources>
