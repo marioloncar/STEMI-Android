@@ -11,5 +11,8 @@ And you can create one all by yourself. We’ll show you how. <br>
 
 ##Version 1.0
 First version of STEMI controller.
-- feature 1
-- feature 2
+- Connection screen in which connection with STEMI is handled (if not connected automatically, user can change IP or choose WiFi network od STEMI)
+- Joystick view
+- Height view for changing height of STEMI
+- Calibration view for calibrating STEMI legs
+- Settings
