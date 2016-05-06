@@ -21,9 +21,9 @@ android {
 
     defaultConfig {
         applicationId "com.loncar.stemi"
-        minSdkVersion 19
+        minSdkVersion 17
         targetSdkVersion 23
-        versionCode 38
+        versionCode 39
         versionName "1.0"
     }
     buildTypes {

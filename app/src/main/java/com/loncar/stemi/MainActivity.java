@@ -12,6 +12,8 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
@@ -20,7 +22,9 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
+import io.fabric.sdk.android.Fabric;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener{
 
     ImageButton ibMovement, ibRotation, ibOrientation, ibHeight, ibSettings;
 
@@ -49,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
         ibMovement = (ImageButton) findViewById(R.id.ibMovement);
@@ -101,13 +105,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         t.start();
     }
 
-
     private class CommandSender implements Runnable {
 
         OutputStream outputStream;
-        Closeable socket;
+        Socket socket; // Closeable -> Socket (for API 17)
 
-        CommandSender(OutputStream outputStream, Closeable socket) {
+        CommandSender(OutputStream outputStream, Socket socket) {
             this.outputStream = outputStream;
             this.socket = socket;
         }
@@ -146,8 +149,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                     }
                 }
-
                 socket.close();
+
 
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "Connection with robot is closed.");
