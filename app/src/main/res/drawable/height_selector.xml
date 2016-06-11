@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/height_selected" android:state_selected="true" />
-    <item android:drawable="@drawable/height_selected" android:state_pressed="true" />
-    <item android:drawable="@drawable/height" android:state_selected="false" />
-    <item android:drawable="@drawable/height" />
+    <item android:drawable="@drawable/height_icon_active" android:state_selected="true" />
+    <item android:drawable="@drawable/height_icon" android:state_selected="false" />
+    <item android:drawable="@drawable/height_icon" />
 </selector>

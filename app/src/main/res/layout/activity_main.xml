@@ -1,89 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/flMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bck"
-    android:paddingEnd="10dp"
-    android:paddingStart="10dp"
-    android:paddingTop="10dp"
     tools:context="com.loncar.stemi.MainActivity">
 
-    <ImageButton
-        android:id="@+id/ibSettings"
-        android:layout_width="49dp"
-        android:layout_height="37dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:background="@null"
-        android:onClick="onClick"
-        android:scaleType="fitCenter"
-        android:src="@drawable/settings_selector" />
-
-    <ImageButton
-        android:id="@+id/ibHeight"
-        android:layout_width="49dp"
-        android:layout_height="37dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginEnd="13dp"
-        android:layout_toStartOf="@+id/ibSettings"
-        android:background="@null"
-        android:onClick="onClick"
-        android:scaleType="fitCenter"
-        android:src="@drawable/height_selector" />
-
-    <ImageButton
-        android:id="@+id/ibOrientation"
-        android:layout_width="49dp"
-        android:layout_height="37dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginEnd="21dp"
-        android:layout_toStartOf="@+id/ibHeight"
-        android:background="@null"
-        android:onClick="onClick"
-        android:scaleType="fitCenter"
-        android:src="@drawable/orientation_selector" />
-
-    <ImageButton
-        android:id="@+id/ibRotation"
-        android:layout_width="49dp"
-        android:layout_height="37dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginEnd="25dp"
-        android:layout_toStartOf="@+id/ibOrientation"
-        android:background="@null"
-        android:onClick="onClick"
-        android:scaleType="fitCenter"
-        android:src="@drawable/rotation_selector" />
-
-    <ImageButton
-        android:id="@+id/ibMovement"
-        android:layout_width="49dp"
-        android:layout_height="37dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginEnd="25dp"
-        android:layout_toStartOf="@+id/ibRotation"
-        android:background="@null"
-        android:onClick="onClick"
-        android:scaleType="fitCenter"
-        android:src="@drawable/movement_selector" />
-
-
     <LinearLayout
+        android:id="@+id/llMain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/ibMovement"
-        android:layout_marginTop="20dp"
         android:baselineAligned="false"
         android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
         android:weightSum="100">
 
         <LinearLayout
             android:id="@+id/llJoystickLeft"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginBottom="5dp"
             android:layout_marginEnd="15dp"
             android:layout_marginStart="10dp"
             android:layout_weight="50">
@@ -98,9 +38,8 @@
         <LinearLayout
             android:id="@+id/llJoystickRight"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="90dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginBottom="5dp"
             android:layout_marginEnd="10dp"
             android:layout_marginStart="15dp"
             android:layout_weight="50">
@@ -111,7 +50,42 @@
                 android:layout_height="match_parent" />
 
         </LinearLayout>
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/ibStandby"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@null"
+        android:onClick="onClick"
+        android:scaleType="fitCenter"
+        android:src="@drawable/standby_selector" />
+
+
+    <View
+        android:id="@+id/vOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.3"
+        android:background="#000000"
+        android:clickable="true"
+        android:onClick="onClick"
+        android:visibility="invisible" />
+
+    <LinearLayout
+        android:id="@+id/mLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal">
+
+        <com.loncar.stemi.Menu
+            android:id="@+id/menu"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
-</RelativeLayout>
+
+</FrameLayout>
