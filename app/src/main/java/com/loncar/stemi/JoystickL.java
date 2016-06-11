@@ -70,7 +70,7 @@ public class JoystickL extends LinearLayout {
         joystickView = new ImageView(context);
         joystickPlus = new ImageView(context);
         joystickPlus.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        joystickPlus.setImageResource(R.drawable.joystick_center);
+        joystickPlus.setImageResource(R.drawable.center);
         this.addView(joystickPlus);
 
         joystickView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -86,7 +86,7 @@ public class JoystickL extends LinearLayout {
         positionX = getWidth() / 2;
         positionY = getWidth() / 2;
         d = Math.min(xNew, yNew);
-        joystickRadius = (int) (d / 2 * 0.8);
+        joystickRadius = (int) (d / 2 * 0.75);
 
     }
 

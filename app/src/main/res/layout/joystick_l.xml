@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
-        android:src="@drawable/joystick_path_l" />
+        android:src="@drawable/joy_path_l" />
 
     <ImageView
         android:id="@+id/ivJoystickLeft_Left"
@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:alpha="0.0"
         android:scaleType="fitCenter"
-        android:src="@drawable/joystick_path_l_l" />
+        android:src="@drawable/joy_path_l_l" />
 
     <ImageView
         android:id="@+id/ivJoystickLeft_Right"
@@ -22,7 +22,7 @@
         android:layout_height="match_parent"
         android:alpha="0.0"
         android:scaleType="fitCenter"
-        android:src="@drawable/joystick_path_l_r" />
+        android:src="@drawable/joy_path_l_r" />
 
     <ImageView
         android:id="@+id/ivJoystickLeft_Down"
@@ -30,7 +30,7 @@
         android:layout_height="match_parent"
         android:alpha="0.0"
         android:scaleType="fitCenter"
-        android:src="@drawable/joystick_path_l_down" />
+        android:src="@drawable/joy_path_l_down" />
 
     <ImageView
         android:id="@+id/ivJoystickLeft_Up"
@@ -38,6 +38,6 @@
         android:layout_height="match_parent"
         android:alpha="0.0"
         android:scaleType="fitCenter"
-        android:src="@drawable/joystick_path_l_up" />
+        android:src="@drawable/joy_path_l_up" />
 
 </merge>

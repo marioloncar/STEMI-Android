@@ -1,32 +1,35 @@
 package com.loncar.stemi;
 
+import android.annotation.TargetApi;
+import android.app.Dialog;
+import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.wifi.WifiManager;
+import android.os.Build;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
+import android.view.*;
 import android.widget.ImageButton;
-
-import com.crashlytics.android.Crashlytics;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedOutputStream;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import io.fabric.sdk.android.Fabric;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener{
-
-    ImageButton ibMovement, ibRotation, ibOrientation, ibHeight, ibSettings;
+    ImageButton ibStandby, ibMovement, ibRotation, ibOrientation;
+    View vOverlay;
 
     public final String TAG = "MainActivity";
 
@@ -53,19 +56,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
+        //Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
+        ibStandby = (ImageButton) findViewById(R.id.ibStandby);
+        vOverlay = findViewById(R.id.vOverlay);
         ibMovement = (ImageButton) findViewById(R.id.ibMovement);
         ibRotation = (ImageButton) findViewById(R.id.ibRotation);
         ibOrientation = (ImageButton) findViewById(R.id.ibOrientation);
-        ibHeight = (ImageButton) findViewById(R.id.ibHeight);
-        ibSettings = (ImageButton) findViewById(R.id.ibSettings);
-
-        ibMovement.setSelected(true);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        ibMovement.setSelected(true);
+        ibStandby.setSelected(true);
 
         WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
         IP = wifiManager.getDhcpInfo().gateway;
@@ -79,6 +83,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         (IP >> 24 & 0xff));
 
         sendCommandsOverWiFi(ipAddr);
+
+        ibMovement.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                return true;
+            }
+        });
+
+
     }
 
     public void sendCommandsOverWiFi(final String ip) {
@@ -136,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         buffer.write(joyR.rotation);
                         buffer.write(ibRotation.isSelected() ? 1 : 0); //static tilt
                         buffer.write(ibOrientation.isSelected() ? 1 : 0); //moving tilt
-                        buffer.write(onOff);
+                        buffer.write(ibStandby.isSelected() ? 1 : 0);
                         buffer.write(accelerometerX);
                         buffer.write(accelerometerY);
                         buffer.write(slidersArray);
@@ -184,45 +198,72 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
-
-    // buttons
+    @Override
     public void onClick(View v) {
-
         switch (v.getId()) {
+            case R.id.ibStandby:
+                if (ibStandby.isSelected()) {
+                    ibStandby.setSelected(false);
+                } else {
+                    ibStandby.setSelected(true);
+                }
+                break;
+
+            case R.id.bMenu:
+                if (Menu.bMenu.isSelected()) {
+                    Menu.closeMenu();
+                    Menu.bMenu.setSelected(false);
+                    vOverlay.setVisibility(View.INVISIBLE);
+                } else {
+                    Menu.openMenu();
+                    Menu.bMenu.setSelected(true);
+                    vOverlay.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.vOverlay:
+                Menu.closeMenu();
+                Menu.bMenu.setSelected(false);
+                vOverlay.setVisibility(View.INVISIBLE);
+                break;
+
             case R.id.ibMovement:
                 ibMovement.setSelected(true);
                 ibRotation.setSelected(false);
                 ibOrientation.setSelected(false);
-
+                Menu.closeMenu();
+                Menu.bMenu.setSelected(false);
+                vOverlay.setVisibility(View.INVISIBLE);
+                showShortToast("MOVEMENT ENABLED");
                 break;
+
             case R.id.ibRotation:
                 ibRotation.setSelected(true);
                 ibMovement.setSelected(false);
                 ibOrientation.setSelected(false);
-
+                Menu.closeMenu();
+                Menu.bMenu.setSelected(false);
+                vOverlay.setVisibility(View.INVISIBLE);
+                showShortToast("ROTATION ENABLED");
                 break;
+
             case R.id.ibOrientation:
                 ibOrientation.setSelected(true);
                 ibMovement.setSelected(false);
                 ibRotation.setSelected(false);
+                Menu.closeMenu();
+                Menu.bMenu.setSelected(false);
+                vOverlay.setVisibility(View.INVISIBLE);
+                showShortToast("ORIENTATION ENABLED");
+                break;
 
-                break;
-            case R.id.ibHeight:
-                if (ibHeight.isSelected()) {
-                    ibHeight.setSelected(false);
-                } else {
-                    ibHeight.setSelected(true);
-                }
-                break;
-            case R.id.ibSettings:
-
-                break;
             default:
                 Log.d(TAG, "Default");
         }
+
     }
 
     // swipe to show notification bar and soft keys
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
@@ -272,5 +313,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         connected = true;
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+    }
+
+    private void showShortToast(String message) {
+        LayoutInflater inflater = getLayoutInflater();
+        View rlToastShort = inflater.inflate(R.layout.toast_short,
+                (ViewGroup) findViewById(R.id.rlToastShortRoot));
+
+        TextView tvEnabled = (TextView) rlToastShort.findViewById(R.id.tvEnabled);
+
+        int offset = Math.round(30 * getApplicationContext().getResources().getDisplayMetrics().density);
+
+        Typeface tf = Typeface.createFromAsset(getAssets(),
+                "fonts/ProximaNova-Regular.otf");
+        tvEnabled.setTypeface(tf);
+
+        tvEnabled.setText(message);
+        Toast toast = new Toast(getApplicationContext());
+        toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, offset, 0);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(rlToastShort);
+        toast.show();
+    }
+
+    private void showLongToast(String title, String message) {
+
+
+        LayoutInflater inflater = getLayoutInflater();
+        View rlToastLong = inflater.inflate(R.layout.toast_long,
+                (ViewGroup) findViewById(R.id.rlToastLongRoot));
+
+        TextView tvTitle = (TextView) rlToastLong.findViewById(R.id.tvTitle);
+        TextView tvDesc = (TextView) rlToastLong.findViewById(R.id.tvDesc);
+
+        int offset = Math.round(30 * getApplicationContext().getResources().getDisplayMetrics().density);
+
+        tvTitle.setText(title);
+        tvDesc.setText(message);
+        Toast toast = new Toast(getApplicationContext());
+        toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, offset, 0);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView(rlToastLong);
+        toast.show();
     }
 }
