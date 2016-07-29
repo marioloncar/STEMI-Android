@@ -52,14 +52,45 @@ public class Menu extends RelativeLayout {
     }
 
     public static void closeMenu() {
-        Animation fadeOut = new AlphaAnimation(1, 0);
-        fadeOut.setInterpolator(new AccelerateInterpolator());
+
+        AnimationSet close = new AnimationSet(false);
+
+        Animation leftMove = new TranslateAnimation(0, -10, 20, 0); //lijevi pomak
+        leftMove.setDuration(50);
+
+        Animation rightMove = new TranslateAnimation(0, 20, 20, 0); //desni pomak
+        rightMove.setStartOffset(50);
+        rightMove.setDuration(50);
+
+        Animation leftMove2 = new TranslateAnimation(0, -20, 20, 0); //lijevi pomak
+        leftMove2.setStartOffset(100);
+        leftMove2.setDuration(50);
+
+        Animation jumpUp = new TranslateAnimation(0, 10, 20, -60); //skok prema gore
+        jumpUp.setStartOffset(150);
+        jumpUp.setDuration(50);
+
+        Animation fallDown = new TranslateAnimation(0, 10, -60, 60); //spustanje prema dolje
+        fallDown.setStartOffset(200);
+        fallDown.setDuration(200);
+
+        Animation fadeOut = new AlphaAnimation(1, 0); //nestajanje
+        fadeOut.setStartOffset(200);
         fadeOut.setDuration(200);
+
         for (ImageButton button : buttons) {
             button.setAnimation(fadeOut);
             button.setVisibility(View.INVISIBLE);
         }
-        ivMenuActive.setAnimation(fadeOut);
+
+        close.addAnimation(leftMove);
+        close.addAnimation(rightMove);
+        close.addAnimation(leftMove2);
+        close.addAnimation(jumpUp);
+        close.addAnimation(fallDown);
+        close.addAnimation(fadeOut);
+        ivMenuActive.startAnimation(close);
+//        ivMenuActive.setAnimation(fadeOut);
         ivMenuActive.setVisibility(View.INVISIBLE);
         ivBck.setAnimation(fadeOut);
         ivBck.setVisibility(View.INVISIBLE);
@@ -73,18 +104,13 @@ public class Menu extends RelativeLayout {
         AnimationSet set = new AnimationSet(false);//false means don't share interpolators
         Animation animation = new TranslateAnimation(0, 0, 30, -20);
         animation.setFillAfter(true);
-        animation.setDuration(1000);
+        animation.setDuration(200);
 
         Animation animation2 = new AlphaAnimation(0, 1);
-        animation2.setDuration(1000);
-
-//        Animation animation3 = new TranslateAnimation(0, 0, -20, 0);
-//        animation3.setDuration(1000);
-//        animation3.setFillAfter(true);
+        animation2.setDuration(200);
 
         set.addAnimation(animation);
         set.addAnimation(animation2);
-//        set.addAnimation(animation3);
 
         ivMenuActive.startAnimation(set);
 
