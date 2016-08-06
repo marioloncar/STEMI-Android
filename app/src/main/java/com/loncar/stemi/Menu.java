@@ -1,6 +1,8 @@
 package com.loncar.stemi;
 
 import android.content.Context;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +26,8 @@ public class Menu extends RelativeLayout {
     public static ImageButton ibMovement, ibRotation, ibOrientation, ibHeight, ibCalibration, ibStyles, ibSettings;
     public static ImageView ivBck, ivMenuActive;
     public static Button bMenu;
+    public static MediaPlayer puk;
+    public static MediaPlayer tiu;
 
     public static ImageButton[] buttons;
 
@@ -49,9 +53,16 @@ public class Menu extends RelativeLayout {
 
         buttons = new ImageButton[]{ibMovement, ibRotation, ibOrientation, ibHeight, ibCalibration, ibStyles, ibSettings};
 
+        puk = MediaPlayer.create(context, R.raw.puk);
+        tiu = MediaPlayer.create(context, R.raw.tiu);
+
+
     }
 
     public static void closeMenu() {
+
+        tiu.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        tiu.start();
 
         AnimationSet close = new AnimationSet(false);
 
@@ -90,7 +101,6 @@ public class Menu extends RelativeLayout {
         close.addAnimation(fallDown);
         close.addAnimation(fadeOut);
         ivMenuActive.startAnimation(close);
-//        ivMenuActive.setAnimation(fadeOut);
         ivMenuActive.setVisibility(View.INVISIBLE);
         ivBck.setAnimation(fadeOut);
         ivBck.setVisibility(View.INVISIBLE);
@@ -98,6 +108,10 @@ public class Menu extends RelativeLayout {
 
     public static void openMenu() {
         long delay = 0;
+
+        puk.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        puk.start();
+
         ivMenuActive.setVisibility(View.VISIBLE);
         ivBck.setVisibility(View.VISIBLE);
 
