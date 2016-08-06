@@ -2,6 +2,8 @@ package com.loncar.stemi;
 
 import android.annotation.TargetApi;
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.SyncStatusObserver;
 import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -9,13 +11,17 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,10 +34,11 @@ import java.util.Queue;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
 
-    ImageButton ibStandby, ibMovement, ibRotation, ibOrientation;
+    ImageButton ibStandby, ibMovement, ibRotation, ibOrientation, ibHeight, ibCalibration, ibWalkStyle;
     View vOverlay;
-
     public final String TAG = "MainActivity";
+    Typeface tf;
+    RelativeLayout lay;
 
     public Boolean connected = false;
     public Boolean calibrationMode = false;
@@ -64,6 +71,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibMovement = (ImageButton) findViewById(R.id.ibMovement);
         ibRotation = (ImageButton) findViewById(R.id.ibRotation);
         ibOrientation = (ImageButton) findViewById(R.id.ibOrientation);
+        ibHeight = (ImageButton) findViewById(R.id.ibHeight);
+        ibCalibration = (ImageButton) findViewById(R.id.ibCalibration);
+        ibWalkStyle = (ImageButton) findViewById(R.id.ibWalkingStyle);
+        lay = (RelativeLayout) findViewById(R.id.longToast);
+
+        tf = Typeface.createFromAsset(getAssets(),
+                "fonts/ProximaNova-Regular.otf");
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -84,15 +98,117 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         sendCommandsOverWiFi(ipAddr);
 
+        /**** OnLongClick Listeners ****/
         ibMovement.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                showLongToast("Movement", "Allows linear movements (left, right, back, forward). Tap to enable.");
+                return true;
 
+            }
+        });
+
+        ibRotation.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showLongToast("Rotation", "Allows rotational movements with fixed stemi. Tap to enable.");
+                return true;
+            }
+        });
+
+        ibOrientation.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showLongToast("Orientation", "Combination of movement and rotation. Tap to enable.");
+                return true;
+            }
+        });
+
+        ibHeight.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showLongToast("Height", "Tap to manually adjust the height of STEMI's body.");
+                return true;
+            }
+        });
+
+        ibCalibration.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showLongToast("Calibration", "Tap to manually adjust the position of each joint on each leg.");
+                return true;
+            }
+        });
+
+        ibWalkStyle.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showLongToast("Walk style", "Switch between different walk styes.");
                 return true;
             }
         });
 
 
+        /**** OnTouch Listeners ****/
+        ibMovement.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    hideToast();
+                }
+                return false;
+            }
+        });
+
+        ibRotation.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    hideToast();
+                }
+                return false;
+            }
+        });
+
+        ibOrientation.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    hideToast();
+                }
+                return false;
+            }
+        });
+
+        ibHeight.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    hideToast();
+                }
+                return false;
+            }
+        });
+
+        ibCalibration.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    hideToast();
+                }
+                return false;
+            }
+        });
+
+        ibWalkStyle.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    hideToast();
+                }
+                return false;
+            }
+        });
     }
 
     public void sendCommandsOverWiFi(final String ip) {
@@ -143,7 +259,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (!calibrationMode) {
                         JoystickL joyL = (JoystickL) findViewById(R.id.joyL);
                         JoystickR joyR = (JoystickR) findViewById(R.id.joyR);
-
                         buffer.write("PKT".getBytes());
                         buffer.write(joyL.power);
                         buffer.write(joyL.angle);
@@ -197,6 +312,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
+
 
     @Override
     public void onClick(View v) {
@@ -259,8 +375,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             default:
                 Log.d(TAG, "Default");
         }
-
     }
+
 
     // swipe to show notification bar and soft keys
     @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -324,11 +440,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         int offset = Math.round(30 * getApplicationContext().getResources().getDisplayMetrics().density);
 
-        Typeface tf = Typeface.createFromAsset(getAssets(),
-                "fonts/ProximaNova-Regular.otf");
-        tvEnabled.setTypeface(tf);
-
         tvEnabled.setText(message);
+        tvEnabled.setTypeface(tf);
         Toast toast = new Toast(getApplicationContext());
         toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, offset, 0);
         toast.setDuration(Toast.LENGTH_SHORT);
@@ -337,23 +450,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void showLongToast(String title, String message) {
+        TextView tvTitle = (TextView) findViewById(R.id.tvTitle);
+        TextView tvDesc = (TextView) findViewById(R.id.tvDesc);
 
-
-        LayoutInflater inflater = getLayoutInflater();
-        View rlToastLong = inflater.inflate(R.layout.toast_long,
-                (ViewGroup) findViewById(R.id.rlToastLongRoot));
-
-        TextView tvTitle = (TextView) rlToastLong.findViewById(R.id.tvTitle);
-        TextView tvDesc = (TextView) rlToastLong.findViewById(R.id.tvDesc);
-
-        int offset = Math.round(30 * getApplicationContext().getResources().getDisplayMetrics().density);
+        lay.setVisibility(View.VISIBLE);
 
         tvTitle.setText(title);
         tvDesc.setText(message);
-        Toast toast = new Toast(getApplicationContext());
-        toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, offset, 0);
-        toast.setDuration(Toast.LENGTH_LONG);
-        toast.setView(rlToastLong);
-        toast.show();
+
+        tvTitle.setTypeface(tf);
+        tvDesc.setTypeface(tf);
+
+    }
+
+    private void hideToast() {
+        lay.setVisibility(View.INVISIBLE);
     }
 }

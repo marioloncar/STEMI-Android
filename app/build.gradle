@@ -23,7 +23,7 @@ android {
         applicationId "com.loncar.stemi"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 43
+        versionCode 45
         versionName "1.0"
     }
     buildTypes {
