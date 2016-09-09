@@ -9,9 +9,16 @@
     </style>
 
     <style name="MainActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowBackground">@null</item>
+    </style>
+
+    <style name="SettingsTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowBackground">@drawable/settingsbck</item>
+        <item name="android:textColor">@color/highlightColor</item>
+        <item name="android:textColorSecondary">@color/descColor</item>
+        <item name="homeAsUpIndicator">@drawable/arrow_l</item>
+        <item name="android:actionMenuTextColor">@color/highlightColor</item>
     </style>
 
 </resources>

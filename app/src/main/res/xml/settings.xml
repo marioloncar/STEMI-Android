@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:fontFamily="fonts/ProximaNova-Regular.otf"
+        android:layout="@layout/settings_ip_header"
+        android:title="CUSTOM IP">
+
+        <Preference
+            android:key="ipAddress"
+            android:summary="192.168.4.1"
+            android:title="IP Address">
+            <intent android:action="com.loncar.stemi.IPACTIVITY" />
+        </Preference>
+
+
+        <Preference
+            android:key="ipHint"
+            android:persistent="false"
+            android:selectable="false"
+            android:summary="After connecting your STEMI on your house network, set given IP address here for controlling your STEMI hexapod." />
+    </PreferenceCategory>
+
+</PreferenceScreen>

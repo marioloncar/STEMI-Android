@@ -3,6 +3,8 @@
     package="com.loncar.stemi">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,17 +12,84 @@
         android:supportsRtl="true"
         android:theme="@style/MainActivityTheme">
         <activity
-            android:name="com.loncar.stemi.MainActivity"
-            android:screenOrientation="landscape">
+            android:name=".ConnectingActivity"
+            android:screenOrientation="portrait"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="com.loncar.stemi.MAINACTIVITY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="530f4085ae719e7a9651dc41526d94e7804be9ca" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:label="SETTINGS"
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingsTheme">
+            <intent-filter>
+                <action android:name="com.loncar.stemi.SETTINGSACTIVITY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".IPActivity"
+            android:label="IP ADDRESS"
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingsTheme">
+            <intent-filter>
+                <action android:name="com.loncar.stemi.IPACTIVITY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".HeightActivity"
+            android:label="ADJUST HEIGHT"
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingsTheme">
+            <intent-filter>
+                <action android:name="com.loncar.stemi.HEIGHTACTIVITY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".CalibrationActivity"
+            android:label="ADJUST HEIGHT"
+            android:screenOrientation="landscape"
+            android:theme="@style/SettingsTheme">
+            <intent-filter>
+                <action android:name="com.loncar.stemi.CALIBRATIONACTIVITY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".WalkstyleActivity"
+            android:label="WALKING STYLE"
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingsTheme">
+            <intent-filter>
+                <action android:name="com.loncar.stemi.WALKSTYLEACTIVITY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
