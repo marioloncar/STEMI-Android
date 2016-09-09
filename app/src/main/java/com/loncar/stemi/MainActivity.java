@@ -1,9 +1,8 @@
 package com.loncar.stemi;
 
 import android.annotation.TargetApi;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.SyncStatusObserver;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -11,16 +10,14 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.os.Handler;
-import android.speech.tts.TextToSpeech;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
-import android.widget.Button;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.ImageButton;
-import android.widget.PopupWindow;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,11 +31,14 @@ import java.util.Queue;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
 
-    ImageButton ibStandby, ibMovement, ibRotation, ibOrientation, ibHeight, ibCalibration, ibWalkStyle;
+    ImageButton ibStandby, ibMovement, ibRotation, ibOrientation, ibHeight, ibCalibration, ibWalkingStyle;
     View vOverlay;
     public final String TAG = "MainActivity";
     Typeface tf;
     RelativeLayout lay;
+    ImageView longToastBck;
+
+    SharedPreferences iPAddress;
 
     public Boolean connected = false;
     public Boolean calibrationMode = false;
@@ -73,8 +73,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibOrientation = (ImageButton) findViewById(R.id.ibOrientation);
         ibHeight = (ImageButton) findViewById(R.id.ibHeight);
         ibCalibration = (ImageButton) findViewById(R.id.ibCalibration);
-        ibWalkStyle = (ImageButton) findViewById(R.id.ibWalkingStyle);
+        ibWalkingStyle = (ImageButton) findViewById(R.id.ibWalkingStyle);
         lay = (RelativeLayout) findViewById(R.id.longToast);
+        longToastBck = (ImageView) findViewById(R.id.ivToastLongBck);
 
         tf = Typeface.createFromAsset(getAssets(),
                 "fonts/ProximaNova-Regular.otf");
@@ -88,6 +89,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
         IP = wifiManager.getDhcpInfo().gateway;
 
+
+
+
+//        final SharedPreferences manualIP = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//        String ipAddr = manualIP.getString("address", "");
+
         //connect to IP address
         String ipAddr =
                 String.format("%d.%d.%d.%d",
@@ -95,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         (IP >> 8 & 0xff),
                         (IP >> 16 & 0xff),
                         (IP >> 24 & 0xff));
+
 
         sendCommandsOverWiFi(ipAddr);
 
@@ -140,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        ibWalkStyle.setOnLongClickListener(new View.OnLongClickListener() {
+        ibWalkingStyle.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 showLongToast("Walk style", "Switch between different walk styes.");
@@ -200,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        ibWalkStyle.setOnTouchListener(new View.OnTouchListener() {
+        ibWalkingStyle.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -371,6 +379,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 vOverlay.setVisibility(View.INVISIBLE);
                 showShortToast("ORIENTATION ENABLED");
                 break;
+            case R.id.ibHeight:
+                Intent openHeight = new Intent(getApplicationContext(), HeightActivity.class);
+                startActivity(openHeight);
+                break;
+            case R.id.ibCalibration:
+                Intent openCalibration = new Intent(getApplicationContext(), CalibrationActivity.class);
+                startActivity(openCalibration);
+                break;
+            case R.id.ibWalkingStyle:
+                Intent openWalkstyle = new Intent(getApplicationContext(), WalkstyleActivity.class);
+                startActivity(openWalkstyle);
+                break;
+            case R.id.ibSettings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+
+                break;
 
             default:
                 Log.d(TAG, "Default");
@@ -453,6 +478,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TextView tvTitle = (TextView) findViewById(R.id.tvTitle);
         TextView tvDesc = (TextView) findViewById(R.id.tvDesc);
 
+        Animation show = new AlphaAnimation(0, 1);
+        show.setDuration(150);
+        longToastBck.setAnimation(show);
         lay.setVisibility(View.VISIBLE);
 
         tvTitle.setText(title);
@@ -464,6 +492,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void hideToast() {
+        Animation hide = new AlphaAnimation(1, 0);
+        hide.setDuration(200);
+        longToastBck.setAnimation(hide);
         lay.setVisibility(View.INVISIBLE);
     }
 }

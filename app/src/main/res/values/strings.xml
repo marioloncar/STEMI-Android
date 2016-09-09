@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">STEMI</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="manually_enter_ip">MANUALLY ENTER IP</string>
+    <string name="hint_default_ip">Default STEMI IP address is: \n 192.168.4.1</string>
+    <string name="stemi_connecting">STEMI IS NOW CONNECTING</string>
+    <string name="tap_on_point_you_n_wish_to_calibrate">TAP ON POINT YOU \n WISH TO CALIBRATE</string>
+    <string name="choose_a_walking_style">Choose a walking style</string>
 </resources>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bck_connecting">
+
+    <TextView
+        android:id="@+id/tvWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="WELCOME"
+        android:textColor="@color/highlightColor"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/bConnect"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/tvWelcome"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="110dp"
+        android:background="@drawable/button_connecting"
+        android:text="Connect"
+        android:textColor="@color/highlightColor"
+        android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="250dp"
+        android:layout_height="200dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/bConnect"
+        android:layout_marginTop="57dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logo" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:visibility="invisible"
+        android:layout_alignTop="@+id/bConnect"
+        android:layout_centerHorizontal="true"
+        />
+
+    <Button
+        android:id="@+id/bChangeIP"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/bConnect"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/button_connecting"
+        android:text="Change IP"
+        android:textColor="@color/highlightColor"
+        android:textSize="16sp"
+        android:visibility="invisible" />
+
+</RelativeLayout>
