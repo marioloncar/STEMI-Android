@@ -2,10 +2,25 @@
     <string name="app_name">STEMI</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="manually_enter_ip">MANUALLY ENTER IP</string>
     <string name="hint_default_ip">Default STEMI IP address is: \n 192.168.4.1</string>
     <string name="stemi_connecting">STEMI IS NOW CONNECTING</string>
     <string name="tap_on_point_you_n_wish_to_calibrate">TAP ON POINT YOU \n WISH TO CALIBRATE</string>
-    <string name="choose_a_walking_style">Choose a walking style</string>
+    <string name="choose_a_walking_style">CHOOSE A WALKING STYLE</string>
+    <string name="movement_hint">Allows linear movements (left, right, back, forward). Tap to enable.</string>
+    <string name="rotation_hint">Allows rotational movements with fixed stemi. Tap to enable.</string>
+    <string name="orientation_hint">Combination of movement and rotation. Tap to enable.</string>
+    <string name="height_hint">Tap to manually adjust the height of STEMI\'s body.</string>
+    <string name="calibration_hint">Tap to manually adjust the position of each joint on each leg.</string>
+    <string name="walkstyle_hint">Switch between different walk styes.</string>
+    <string name="tripod_desc">Have three legs standing on the ground supporting the body while the other three swing forward. Fastest Gait.</string>
+    <string name="tripod_delayed_desc">Have three legs standing on the ground supporting the body while the other three swing forward. Lifting and lowering of each leg is slightly delayed to feel more lifelike.</string>
+    <string name="ripple_desc">At every moment there are two legs swinging in the air while other four stand on the ground supporting the body. This is the coolest Gait of all but a bit slower than Tripod Gaits.</string>
+    <string name="wave_desc">Only one leg is swinging lifted in the air while all other stand on the ground supporting the body. This is the slowest Gait but consumes less power and can carry more weight.</string>
+    <string name="reset_to_default_values">RESET TO DEFAULT VALUES</string>
+    <string name="hint_noConnection">Make sure your STEMI Hexapod is charged, turned on and connected to your phone or home network via wifi</string>
+    <string name="unable_to_connect">UNABLE TO CONNECT TO YOUR STEMI HEXAPOD</string>
+    <string name="try_again">TRY AGAIN</string>
+    <string name="pairing">PAIRING...</string>
+
 </resources>

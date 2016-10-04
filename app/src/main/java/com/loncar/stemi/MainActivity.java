@@ -38,23 +38,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     RelativeLayout lay;
     ImageView longToastBck;
 
-    SharedPreferences iPAddress;
-
-    public Boolean connected = false;
+    public Boolean connected;
     public Boolean calibrationMode = false;
     public int sleepingInterval = 200;
-
     private SensorManager sensorManager;
     private Sensor accelerometer;
-
-    private byte onOff = 1;
     private byte accelerometerX = 0;
     private byte accelerometerY = 0;
-    public byte[] slidersArray = {50, 25, 0, 0, 0, 50, 0, 0, 0, 0, 0};
-
+    private byte heightPref = 50;
+    private byte walk = 30;
+    public byte[] slidersArray = {0, 0, 0, 50, 0, 0, 0, 0, 0};
     public Queue<byte[]> calibrationQueue;
+    public int connectionCounter = 0;
 
-    private int IP;
+    SharedPreferences prefs;
 
     public MainActivity() {
         calibrationQueue = new LinkedList<>();
@@ -80,37 +77,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tf = Typeface.createFromAsset(getAssets(),
                 "fonts/ProximaNova-Regular.otf");
 
+        prefs = getSharedPreferences("myPref", MODE_PRIVATE);
+
+
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         ibMovement.setSelected(true);
         ibStandby.setSelected(true);
 
-        WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
-        IP = wifiManager.getDhcpInfo().gateway;
-
-
-
-
-//        final SharedPreferences manualIP = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-//        String ipAddr = manualIP.getString("address", "");
-
-        //connect to IP address
-        String ipAddr =
-                String.format("%d.%d.%d.%d",
-                        (IP & 0xff),
-                        (IP >> 8 & 0xff),
-                        (IP >> 16 & 0xff),
-                        (IP >> 24 & 0xff));
-
-
-        sendCommandsOverWiFi(ipAddr);
 
         /**** OnLongClick Listeners ****/
         ibMovement.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                showLongToast("Movement", "Allows linear movements (left, right, back, forward). Tap to enable.");
+                showLongToast("Movement", getString(R.string.movement_hint));
                 return true;
 
             }
@@ -119,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibRotation.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                showLongToast("Rotation", "Allows rotational movements with fixed stemi. Tap to enable.");
+                showLongToast("Rotation", getString(R.string.rotation_hint));
                 return true;
             }
         });
@@ -127,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibOrientation.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                showLongToast("Orientation", "Combination of movement and rotation. Tap to enable.");
+                showLongToast("Orientation", getString(R.string.orientation_hint));
                 return true;
             }
         });
@@ -135,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibHeight.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                showLongToast("Height", "Tap to manually adjust the height of STEMI's body.");
+                showLongToast("Height", getString(R.string.height_hint));
                 return true;
             }
         });
@@ -143,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibCalibration.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                showLongToast("Calibration", "Tap to manually adjust the position of each joint on each leg.");
+                showLongToast("Calibration", getString(R.string.calibration_hint));
                 return true;
             }
         });
@@ -151,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibWalkingStyle.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                showLongToast("Walk style", "Switch between different walk styes.");
+                showLongToast("Walk style", getString(R.string.walkstyle_hint));
                 return true;
             }
         });
@@ -217,6 +198,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return false;
             }
         });
+
     }
 
     public void sendCommandsOverWiFi(final String ip) {
@@ -227,12 +209,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 try {
                     //connect to IP address, port 80
                     Socket socket = new Socket(ip, 80);
-
                     OutputStream outputStream = socket.getOutputStream();
-
                     CommandSender wifiSender = new CommandSender(outputStream, socket);
                     Thread thread = new Thread(wifiSender);
-
                     thread.start();
                 } catch (IOException e) {
                     Log.d(TAG, "TCP socket error: " + e.getMessage());
@@ -243,15 +222,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         t.start();
     }
 
-    private class CommandSender implements Runnable {
+    public class CommandSender implements Runnable {
 
         OutputStream outputStream;
-        Socket socket; // Closeable -> Socket (for API 17)
+        Socket socket;
+
 
         CommandSender(OutputStream outputStream, Socket socket) {
             this.outputStream = outputStream;
             this.socket = socket;
         }
+
 
         @Override
         public void run() {
@@ -262,7 +243,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 BufferedOutputStream buffer = new BufferedOutputStream(outputStream, 30);
                 while (connected) {
                     Thread.sleep(sleepingInterval);
-
                     //send bytes
                     if (!calibrationMode) {
                         JoystickL joyL = (JoystickL) findViewById(R.id.joyL);
@@ -276,18 +256,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         buffer.write(ibStandby.isSelected() ? 1 : 0);
                         buffer.write(accelerometerX);
                         buffer.write(accelerometerY);
+                        buffer.write(heightPref);
+                        buffer.write(walk);
                         buffer.write(slidersArray);
                         buffer.flush();
-                    } else {
-                        if (!calibrationQueue.isEmpty()) {
-                            buffer.write("LIN".getBytes());
-                            buffer.write(calibrationQueue.remove());
-                            buffer.flush();
+                        if (!socket.getKeepAlive()) {
+                            connectionCounter = 0;
+                        } else {
+                            connectionCounter++;
+                            if (connectionCounter == 10) {
+                                connected = false;
+                            }
                         }
+                        System.out.println("CONNECTION COUNTER -> " + connectionCounter);
                     }
-                }
-                socket.close();
 
+                }
+
+                socket.close();
 
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "Connection with robot is closed.");
@@ -394,7 +380,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.ibSettings:
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
-
                 break;
 
             default:
@@ -420,40 +405,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    // back button
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            connected = false;
-            finish();
-
-        }
-        return true;
+    public void onBackPressed() {
+        super.onBackPressed();
+        connected = false;
+        finish();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
         connected = false;
         sensorManager.unregisterListener(this);
-        finish();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-
         connected = false;
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         connected = true;
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        sendCommandsOverWiFi("192.168.4.1");
+        if (prefs.contains("height")) {
+            heightPref = (byte) prefs.getInt("height", 0);
+        } else {
+            heightPref = 50;
+        }
+
+        walk = (byte) prefs.getInt("walk", 30);
     }
 
     private void showShortToast(String message) {

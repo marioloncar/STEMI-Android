@@ -2,23 +2,39 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:fontFamily="fonts/ProximaNova-Regular.otf"
-        android:layout="@layout/settings_ip_header"
-        android:title="CUSTOM IP">
+        android:layout="@layout/settings_header"
+        android:title="Custom IP">
 
         <Preference
             android:key="ipAddress"
-            android:summary="192.168.4.1"
-            android:title="IP Address">
+            android:title="IP address">
             <intent android:action="com.loncar.stemi.IPACTIVITY" />
         </Preference>
-
 
         <Preference
             android:key="ipHint"
             android:persistent="false"
             android:selectable="false"
-            android:summary="After connecting your STEMI on your house network, set given IP address here for controlling your STEMI hexapod." />
+            android:summary="After connecting your STEMI to Home network you can set custom IP address here" />
     </PreferenceCategory>
-
+    <PreferenceCategory
+        android:layout="@layout/settings_header"
+        android:title="About">
+        <Preference
+            android:key="stemiId"
+            android:summary="No data"
+            android:title="STEMI ID" />
+        <Preference
+            android:key="hardwareVersion"
+            android:summary="No data"
+            android:title="Hardware version" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_header"
+        android:title="Factory reset">
+        <Preference
+            android:key="reset"
+            android:summary="Reset STEMI Hexapod legs to their initial values"
+            android:title="Reset" />
+    </PreferenceCategory>
 </PreferenceScreen>
