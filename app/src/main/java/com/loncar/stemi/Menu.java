@@ -29,6 +29,7 @@ public class Menu extends RelativeLayout {
     public static MediaPlayer puk;
     public static MediaPlayer tiu;
 
+
     public static ImageButton[] buttons;
 
     public Menu(Context context) {
@@ -100,6 +101,7 @@ public class Menu extends RelativeLayout {
         close.addAnimation(jumpUp);
         close.addAnimation(fallDown);
         close.addAnimation(fadeOut);
+
         ivMenuActive.startAnimation(close);
         ivMenuActive.setVisibility(View.INVISIBLE);
         ivBck.setAnimation(fadeOut);

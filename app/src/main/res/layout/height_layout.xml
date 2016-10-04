@@ -1,28 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-
-    <ImageButton
-        android:layout_width="190dp"
-        android:layout_height="180dp"
-        android:id="@+id/imageButton"
-        android:src="@drawable/up"
-        android:background="@null"
-        android:scaleType="fitCenter"
-        android:layout_marginTop="107dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:weightSum="100"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageButton
-        android:layout_width="190dp"
-        android:layout_height="180dp"
-        android:id="@+id/imageButton2"
-        android:src="@drawable/down"
+        android:id="@+id/ibHeightUp"
+        android:layout_width="150dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="28dp"
+        android:layout_weight="50"
         android:background="@null"
         android:scaleType="fitCenter"
-        android:layout_below="@+id/imageButton"
-        android:layout_alignStart="@+id/imageButton"
-        android:layout_marginTop="41dp" />
-</RelativeLayout>
+        android:src="@drawable/up" />
+
+    <RelativeLayout
+        android:layout_width="70dp"
+        android:layout_height="70dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/circle" />
+
+        <TextView
+            android:id="@+id/tvHeightValue"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:src="@drawable/circle"
+            android:text="50"
+            android:textColor="@color/highlightColor"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+    <ImageButton
+        android:id="@+id/ibHeightD"
+        android:layout_width="150dp"
+        android:layout_height="140dp"
+        android:layout_marginBottom="39dp"
+        android:layout_weight="50"
+        android:background="@null"
+        android:scaleType="fitCenter"
+        android:src="@drawable/down" />
+</LinearLayout>

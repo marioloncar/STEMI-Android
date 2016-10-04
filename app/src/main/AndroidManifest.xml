@@ -13,8 +13,7 @@
         android:theme="@style/MainActivityTheme">
         <activity
             android:name=".ConnectingActivity"
-            android:screenOrientation="portrait"
-            android:noHistory="true">
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

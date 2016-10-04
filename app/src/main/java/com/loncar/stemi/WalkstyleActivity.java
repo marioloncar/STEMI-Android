@@ -1,6 +1,8 @@
 package com.loncar.stemi;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,11 +10,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 
 /**
@@ -20,52 +20,98 @@ import org.w3c.dom.Text;
  */
 public class WalkstyleActivity extends AppCompatActivity {
 
-    ListView lvStyles;
     Typeface tf;
-    TextView tvStyleHeader;
+    TextView tvStyleHeader, tvWalkDesc;
+    RadioGroup rgWalk;
+    RadioButton rb1, rb2, rb3, rb4;
+
+    public byte walkValue;
+    public int rbStatus;
+
+    SharedPreferences prefs;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.walkstyle_layout);
 
-        ActionBar actionBar = getSupportActionBar();
-
+        final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
-        actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>WALKING STYLE</font>"));
+        actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Walking style</font>"));
 
         tf = Typeface.createFromAsset(getAssets(),
                 "fonts/ProximaNova-Regular.otf");
 
-        lvStyles = (ListView) findViewById(R.id.lvStyles);
         tvStyleHeader = (TextView) findViewById(R.id.tvStyleHeader);
+        tvWalkDesc = (TextView) findViewById(R.id.tvWalkDesc);
+        rgWalk = (RadioGroup) findViewById(R.id.rgWalk);
+        rb1 = (RadioButton) rgWalk.findViewById(R.id.rb1);
+        rb2 = (RadioButton) rgWalk.findViewById(R.id.rb2);
+        rb3 = (RadioButton) rgWalk.findViewById(R.id.rb3);
+        rb4 = (RadioButton) rgWalk.findViewById(R.id.rb4);
 
-        String[] styleNames = new String[] { "STIL 1",
-                "STIL 2",
-                "STIL 3",
-                "STIL 4"
-        };
+        prefs = getSharedPreferences("myPref", MODE_PRIVATE);
 
+        tvWalkDesc.setText(R.string.tripod_desc);
+        tvWalkDesc.setTypeface(tf);
         tvStyleHeader.setTypeface(tf);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, styleNames);
-        lvStyles.setAdapter(adapter);
+        rbStatus = prefs.getInt("rbSelected", R.id.rb1);
+        if (rbStatus > 0) {
+            RadioButton rbtn = (RadioButton) rgWalk.findViewById(rbStatus);
+            rbtn.setChecked(true);
+        }
+
+        rgWalk.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.rb1:
+                        tvWalkDesc.setText(R.string.tripod_desc);
+                        walkValue = 30;
+                        prefs.edit().putInt("walk", walkValue).apply();
+                        prefs.edit().putInt("rbSelected", R.id.rb1).apply();
+                        break;
+                    case R.id.rb2:
+                        tvWalkDesc.setText(R.string.tripod_delayed_desc);
+                        walkValue = 60;
+                        prefs.edit().putInt("walk", walkValue).apply();
+                        prefs.edit().putInt("rbSelected", R.id.rb2).apply();
+                        break;
+                    case R.id.rb3:
+                        tvWalkDesc.setText(R.string.ripple_desc);
+                        walkValue = 80;
+                        prefs.edit().putInt("walk", walkValue).apply();
+                        prefs.edit().putInt("rbSelected", R.id.rb3).apply();
+                        break;
+                    case R.id.rb4:
+                        tvWalkDesc.setText(R.string.wave_desc);
+                        walkValue = 100;
+                        prefs.edit().putInt("walk", walkValue).apply();
+                        prefs.edit().putInt("rbSelected", R.id.rb4).apply();
+                        break;
+                    default:
+                        tvWalkDesc.setText(R.string.tripod_desc);
+                        walkValue = 30;
+                        prefs.edit().putInt("walk", walkValue).apply();
+                        prefs.edit().putInt("rbSelected", R.id.rb1).apply();
+                        break;
+                }
+            }
+        });
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        Intent goBack = new Intent(this, MainActivity.class);
-        this.finish();
-        startActivity(goBack);
+        finish();
         return super.onSupportNavigateUp();
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent goBack = new Intent(this, MainActivity.class);
-        this.finish();
-        startActivity(goBack);
+        finish();
     }
+
 }
