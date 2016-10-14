@@ -1,15 +1,18 @@
-package com.loncar.stemi;
+package com.stemi.STEMIHexapod;
 
-import android.content.Context;
-import android.content.Intent;
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -40,6 +43,12 @@ public class WalkstyleActivity extends AppCompatActivity {
         actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
         actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Walking style</font>"));
 
+        @SuppressLint("PrivateResource")
+        final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_mtrl_am_alpha, null);
+        assert upArrow != null;
+        upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
+        actionBar.setHomeAsUpIndicator(upArrow);
+
         tf = Typeface.createFromAsset(getAssets(),
                 "fonts/ProximaNova-Regular.otf");
 
@@ -55,7 +64,10 @@ public class WalkstyleActivity extends AppCompatActivity {
 
         tvWalkDesc.setText(R.string.tripod_desc);
         tvWalkDesc.setTypeface(tf);
-        tvStyleHeader.setTypeface(tf);
+        rb1.setTypeface(tf);
+        rb2.setTypeface(tf);
+        rb3.setTypeface(tf);
+        rb4.setTypeface(tf);
 
         rbStatus = prefs.getInt("rbSelected", R.id.rb1);
         if (rbStatus > 0) {
@@ -112,6 +124,18 @@ public class WalkstyleActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            );
+        }
     }
 
 }

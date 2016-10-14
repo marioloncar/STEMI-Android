@@ -7,7 +7,7 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="300dp"
-        android:layout_height="40dp"
+        android:layout_height="30dp"
         android:layout_alignEnd="@+id/textView"
         android:layout_alignStart="@+id/textView"
         android:layout_below="@+id/textView"
@@ -17,11 +17,13 @@
 
         <EditText
             android:id="@+id/et1"
-            android:layout_width="40dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"
+            android:layout_weight="0.25"
             android:background="@android:color/transparent"
             android:ems="10"
+            android:textSize="16sp"
             android:imeOptions="actionNext"
             android:inputType="number"
             android:maxLength="3"
@@ -30,81 +32,90 @@
 
         <EditText
             android:id="@+id/et2"
-            android:layout_width="40dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"
+            android:layout_weight="0.25"
             android:background="@android:color/transparent"
             android:ems="10"
             android:imeOptions="actionNext"
             android:inputType="number"
             android:maxLength="3"
+            android:textSize="16sp"
             android:textAlignment="center"
             android:textColor="@color/highlightColor" />
 
         <EditText
             android:id="@+id/et3"
-            android:layout_width="40dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"
+            android:layout_weight="0.25"
             android:background="@android:color/transparent"
             android:ems="10"
+            android:textSize="16sp"
             android:imeOptions="actionNext"
             android:inputType="number"
             android:maxLength="3"
             android:textAlignment="center"
+
+
             android:textColor="@color/highlightColor" />
 
         <EditText
-        android:id="@+id/et4"
-        android:layout_width="40dp"
-        android:layout_height="match_parent"
-        android:layout_marginEnd="5dp"
-        android:layout_marginStart="5dp"
-        android:background="@android:color/transparent"
-        android:ems="10"
-        android:inputType="number"
-        android:maxLength="3"
-        android:textAlignment="center"
-        android:textColor="@color/highlightColor" />
+            android:id="@+id/et4"
+            android:layout_width="00dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="5dp"
+            android:textSize="16sp"
+            android:layout_marginStart="5dp"
+            android:layout_weight="0.25"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:inputType="number"
+            android:maxLength="3"
+            android:textAlignment="center"
+            android:textColor="@color/highlightColor" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="47dp"
         android:gravity="center"
-        android:textColor="@color/highlightColor"
         android:text="@string/manually_enter_ip"
         android:textAlignment="center"
         android:textAllCaps="true"
-        android:textSize="16sp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:textColor="@color/highlightColor"
+        android:textSize="16sp" />
 
     <Button
         android:id="@+id/bResetIp"
         android:layout_width="180dp"
         android:layout_height="50dp"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
         android:background="@null"
         android:text="@string/reset_to_default_values"
-        android:textColor="@color/highlightColor"
-        android:textSize="12sp"
-        android:layout_marginTop="5dp"
-        android:layout_below="@+id/textView2"
-        android:layout_centerHorizontal="true" />
+        android:textColor="@color/resetColor"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textSize="14sp"
-        android:text="@string/hint_default_ip"
-        android:textColor="@color/descColor"
-        android:layout_marginTop="16dp"
+        android:layout_alignStart="@+id/bResetIp"
         android:layout_below="@+id/linearLayout"
-        android:layout_alignStart="@+id/bResetIp" />
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:alpha="0.6"
+        android:text="@string/hint_default_ip"
+        android:textColor="@color/highlightColor"
+        android:textSize="14sp" />
 
 
 </RelativeLayout>

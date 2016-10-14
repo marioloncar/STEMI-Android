@@ -15,7 +15,7 @@
             android:key="ipHint"
             android:persistent="false"
             android:selectable="false"
-            android:summary="After connecting your STEMI to Home network you can set custom IP address here" />
+            android:summary="After connecting your STEMI to Home network you can set custom IP address here." />
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_header"
@@ -23,10 +23,12 @@
         <Preference
             android:key="stemiId"
             android:summary="No data"
+            android:selectable="false"
             android:title="STEMI ID" />
         <Preference
             android:key="hardwareVersion"
             android:summary="No data"
+            android:selectable="false"
             android:title="Hardware version" />
     </PreferenceCategory>
     <PreferenceCategory

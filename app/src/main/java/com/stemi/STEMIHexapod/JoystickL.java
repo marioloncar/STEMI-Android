@@ -1,4 +1,4 @@
-package com.loncar.stemi;
+package com.stemi.STEMIHexapod;
 
 import android.view.LayoutInflater;
 

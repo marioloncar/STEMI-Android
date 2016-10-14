@@ -1,12 +1,10 @@
-package com.loncar.stemi;
+package com.stemi.STEMIHexapod;
 
 import android.content.Context;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
@@ -15,7 +13,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 /**
@@ -61,28 +58,26 @@ public class Menu extends RelativeLayout {
     }
 
     public static void closeMenu() {
-
-        tiu.setAudioStreamType(AudioManager.STREAM_MUSIC);
         tiu.start();
 
         AnimationSet close = new AnimationSet(false);
 
-        Animation leftMove = new TranslateAnimation(0, -10, 20, 0); //lijevi pomak
+        Animation leftMove = new TranslateAnimation(0, -10, 10, 0); //lijevi pomak
         leftMove.setDuration(50);
 
-        Animation rightMove = new TranslateAnimation(0, 20, 20, 0); //desni pomak
+        Animation rightMove = new TranslateAnimation(0, 20, 10, 0); //desni pomak
         rightMove.setStartOffset(50);
         rightMove.setDuration(50);
 
-        Animation leftMove2 = new TranslateAnimation(0, -20, 20, 0); //lijevi pomak
+        Animation leftMove2 = new TranslateAnimation(0, -20, 10, 0); //lijevi pomak
         leftMove2.setStartOffset(100);
         leftMove2.setDuration(50);
 
-        Animation jumpUp = new TranslateAnimation(0, 10, 20, -60); //skok prema gore
+        Animation jumpUp = new TranslateAnimation(0, 10, 10, -20); //skok prema gore
         jumpUp.setStartOffset(150);
         jumpUp.setDuration(50);
 
-        Animation fallDown = new TranslateAnimation(0, 10, -60, 60); //spustanje prema dolje
+        Animation fallDown = new TranslateAnimation(0, 10, -20, 30); //spustanje prema dolje
         fallDown.setStartOffset(200);
         fallDown.setDuration(200);
 
@@ -111,13 +106,12 @@ public class Menu extends RelativeLayout {
     public static void openMenu() {
         long delay = 0;
 
-        puk.setAudioStreamType(AudioManager.STREAM_MUSIC);
         puk.start();
 
         ivMenuActive.setVisibility(View.VISIBLE);
         ivBck.setVisibility(View.VISIBLE);
 
-        AnimationSet set = new AnimationSet(false);//false means don't share interpolators
+        AnimationSet set = new AnimationSet(false);
         Animation animation = new TranslateAnimation(0, 0, 30, -20);
         animation.setFillAfter(true);
         animation.setDuration(200);

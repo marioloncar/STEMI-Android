@@ -10,10 +10,10 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="0dp"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="50dp"
         android:text="@string/choose_a_walking_style"
         android:textColor="@color/highlightColor"
-        android:textSize="16sp" />
+        android:textSize="14sp" />
 
     <RadioGroup
         android:id="@+id/rgWalk"
@@ -82,5 +82,5 @@
         android:layout_marginTop="15dp"
         android:alpha="0.6"
         android:textColor="@color/highlightColor"
-        android:textSize="15sp" />
+        android:textSize="13sp" />
 </LinearLayout>

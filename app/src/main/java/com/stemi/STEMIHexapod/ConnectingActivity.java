@@ -1,4 +1,4 @@
-package com.loncar.stemi;
+package com.stemi.STEMIHexapod;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -19,6 +18,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+
+import io.fabric.sdk.android.Fabric;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,7 +32,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Objects;
-import java.util.logging.Handler;
 
 
 /**
@@ -42,11 +44,13 @@ public class ConnectingActivity extends AppCompatActivity {
     Typeface tf;
     ImageView ivStemiIcon, ivProgressPath, ivProgress;
     SharedPreferences prefs = null;
+    String savedIp;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics(), new Answers());
         setContentView(R.layout.connecting_layout);
 
         tvConnectingTitle = (TextView) findViewById(R.id.tvConnectingTitle);
@@ -80,7 +84,7 @@ public class ConnectingActivity extends AppCompatActivity {
 
                 RotateAnimation rotateAnimation = new RotateAnimation(0, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                 rotateAnimation.setInterpolator(new LinearInterpolator());
-                rotateAnimation.setDuration(1000);
+                rotateAnimation.setDuration(1300);
                 rotateAnimation.setRepeatCount(Animation.INFINITE);
 
                 tvConnectingHint.setVisibility(View.INVISIBLE);
@@ -93,6 +97,8 @@ public class ConnectingActivity extends AppCompatActivity {
                 ivStemiIcon.startAnimation(animation);
                 bConnect.setBackground(null);
                 bConnect.setEnabled(false);
+                bConnect.setTextSize(20);
+                bConnect.setAlpha(0.6f);
                 bChangeIP.setVisibility(View.INVISIBLE);
 
                 /*** Connect to STEMI Hexapod ***/
@@ -100,20 +106,18 @@ public class ConnectingActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         String jsonString = "";
-                        jsonString = fetchJSON("http://192.168.4.1/stemiData.json");
+                        jsonString = fetchJSON("http://" + savedIp + "/stemiData.json");
                         try {
                             // if jsonString object exists compare with one saved in SharedPrefs
                             if (jsonString != null) {
                                 JSONObject jsonObject = new JSONObject(jsonString);
                                 if (Objects.equals(jsonObject.getString("stemiID"), prefs.getString("stemiId", null))) {
-                                    Log.d("USPOREDBA", "ID su jednaki");
                                     synchronized (this) {
-                                        wait(5000);
+                                        wait(2000);
                                     }
                                     openMainActivity();
                                 } else {
                                     // if IDs are not equal, set default STEMI values
-                                    Log.d("USPOREDBA", "ID nisu jednaki");
                                     String version = jsonObject.getString("version");
                                     String stemiId = jsonObject.getString("stemiID");
 
@@ -122,9 +126,8 @@ public class ConnectingActivity extends AppCompatActivity {
                                     prefs.edit().putInt("walk", 30).apply();
                                     prefs.edit().putInt("rbSelected", R.id.rb1).apply();
                                     prefs.edit().putInt("height", 50).apply();
-
                                     synchronized (this) {
-                                        wait(5000);
+                                        wait(2000);
                                     }
                                     openMainActivity();
                                 }
@@ -137,12 +140,14 @@ public class ConnectingActivity extends AppCompatActivity {
                                     @Override
                                     public void run() {
                                         AnimationSet error = new AnimationSet(false);
-
                                         Animation leftMove = new TranslateAnimation(0, -10, 0, 0);
                                         leftMove.setDuration(50);
                                         Animation rightMove = new TranslateAnimation(0, 20, 0, 0);
                                         rightMove.setStartOffset(50);
                                         rightMove.setDuration(50);
+
+                                        Animation fadeIn = new AlphaAnimation(0f, 1.0f);
+                                        fadeIn.setDuration(500);
 
                                         error.addAnimation(leftMove);
                                         error.addAnimation(rightMove);
@@ -156,7 +161,10 @@ public class ConnectingActivity extends AppCompatActivity {
                                         tvConnectingTitle.setVisibility(View.VISIBLE);
                                         bConnect.setText(R.string.try_again);
                                         bConnect.setEnabled(true);
+                                        bConnect.setTextSize(16);
+                                        bConnect.setAlpha(1f);
                                         bConnect.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.button_connecting, null));
+                                        bConnect.startAnimation(fadeIn);
                                         bChangeIP.setVisibility(View.VISIBLE);
                                         bChangeIP.setTypeface(tf);
                                         tvConnectingTitle.setText(R.string.unable_to_connect);
@@ -171,7 +179,7 @@ public class ConnectingActivity extends AppCompatActivity {
                     }
                 };
                 thread.start();
-                /*** Connect to STEMI Hexapod end ***/
+                /*** Connect to STEMI Hexapod END ***/
 
             }
         });
@@ -201,11 +209,7 @@ public class ConnectingActivity extends AppCompatActivity {
             prefs.edit().putBoolean("firstrun", false).apply();
         } else {
             SharedPreferences prefs = getSharedPreferences("myPref", MODE_PRIVATE);
-            String restoredIp = prefs.getString("ip", null);
-            if (restoredIp != null) {
-                String newIp = prefs.getString("ip", "STEMI IP");
-                System.out.println("IP -> " + newIp);
-            }
+            savedIp = prefs.getString("ip", null);
             prefs.edit().putBoolean("firstrun", false).apply();
 
         }
@@ -223,7 +227,6 @@ public class ConnectingActivity extends AppCompatActivity {
             connection.connect();
 
             InputStream stream = connection.getInputStream();
-
             reader = new BufferedReader(new InputStreamReader(stream));
 
             StringBuilder buffer = new StringBuilder();
@@ -231,14 +234,12 @@ public class ConnectingActivity extends AppCompatActivity {
 
             while ((line = reader.readLine()) != null) {
                 buffer.append(line).append("\n");
-                Log.d("Response: ", "> " + line);
 
             }
 
             return buffer.toString();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -247,11 +248,22 @@ public class ConnectingActivity extends AppCompatActivity {
                 if (reader != null) {
                     reader.close();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ignored) {
             }
         }
         return null;
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            );
+        }
     }
 
 }

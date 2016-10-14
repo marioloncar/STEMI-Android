@@ -1,50 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:weightSum="100"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <ImageButton
-        android:id="@+id/ibHeightUp"
-        android:layout_width="150dp"
-        android:layout_height="140dp"
-        android:layout_marginTop="28dp"
-        android:layout_weight="50"
-        android:background="@null"
-        android:scaleType="fitCenter"
-        android:src="@drawable/up" />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <RelativeLayout
-        android:layout_width="70dp"
-        android:layout_height="70dp">
+        android:layout_width="191dp"
+        android:layout_height="382dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
+
 
         <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:id="@+id/imageView2"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:scaleType="fitCenter"
             android:src="@drawable/circle" />
 
         <TextView
             android:id="@+id/tvHeightValue"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_gravity="center_horizontal"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:alpha="0.6"
             android:gravity="center"
-            android:src="@drawable/circle"
-            android:text="50"
             android:textColor="@color/highlightColor"
-            android:textSize="18sp" />
-    </RelativeLayout>
+            android:textSize="22sp" />
 
-    <ImageButton
-        android:id="@+id/ibHeightD"
-        android:layout_width="150dp"
-        android:layout_height="140dp"
-        android:layout_marginBottom="39dp"
-        android:layout_weight="50"
-        android:background="@null"
-        android:scaleType="fitCenter"
-        android:src="@drawable/down" />
-</LinearLayout>
+        <ImageButton
+            android:id="@+id/ibHeightUp"
+            android:layout_width="191dp"
+            android:layout_height="187dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/up" />
+
+        <ImageButton
+            android:id="@+id/ibHeightD"
+            android:layout_width="191dp"
+            android:layout_height="187dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/down" />
+
+    </RelativeLayout>
+</RelativeLayout>
