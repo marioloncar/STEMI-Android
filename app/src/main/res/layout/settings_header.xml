@@ -5,9 +5,10 @@
 
     <TextView
         android:id="@android:id/title"
-        android:textColor="@color/descColor"
+        android:textColor="@color/highlightColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:alpha="0.5"
         android:textSize="14sp"
         android:text="Custom IP"
         android:layout_marginStart="16dp"

@@ -1,9 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.loncar.stemi">
+    package="com.stemi.STEMIHexapod">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <compatible-screens>
+    <screen android:screenSize="small" android:screenDensity="ldpi" />
+    <screen android:screenSize="small" android:screenDensity="mdpi" />
+    <screen android:screenSize="small" android:screenDensity="hdpi" />
+    <screen android:screenSize="small" android:screenDensity="xhdpi" />
+    <screen android:screenSize="small" android:screenDensity="280" />
+    <screen android:screenSize="small" android:screenDensity="360" />
+    <screen android:screenSize="small" android:screenDensity="420" />
+    <screen android:screenSize="small" android:screenDensity="480" />
+    <screen android:screenSize="small" android:screenDensity="560" />
+
+    <screen android:screenSize="normal" android:screenDensity="ldpi" />
+    <screen android:screenSize="normal" android:screenDensity="mdpi" />
+    <screen android:screenSize="normal" android:screenDensity="hdpi" />
+    <screen android:screenSize="normal" android:screenDensity="xhdpi" />
+    <screen android:screenSize="normal" android:screenDensity="280" />
+    <screen android:screenSize="normal" android:screenDensity="360" />
+    <screen android:screenSize="normal" android:screenDensity="420" />
+    <screen android:screenSize="normal" android:screenDensity="480" />
+    <screen android:screenSize="normal" android:screenDensity="560" />
+
+    <screen android:screenSize="large" android:screenDensity="ldpi" />
+    <screen android:screenSize="large" android:screenDensity="mdpi" />
+    <screen android:screenSize="large" android:screenDensity="hdpi" />
+    <screen android:screenSize="large" android:screenDensity="xhdpi" />
+    <screen android:screenSize="large" android:screenDensity="280" />
+    <screen android:screenSize="large" android:screenDensity="360" />
+    <screen android:screenSize="large" android:screenDensity="420" />
+    <screen android:screenSize="large" android:screenDensity="480" />
+    <screen android:screenSize="large" android:screenDensity="560" />
+    </compatible-screens>
+
 
     <application
         android:allowBackup="true"
@@ -12,7 +45,7 @@
         android:supportsRtl="true"
         android:theme="@style/MainActivityTheme">
         <activity
-            android:name=".ConnectingActivity"
+            android:name="com.stemi.STEMIHexapod.ConnectingActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,7 +54,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name="com.stemi.STEMIHexapod.MainActivity"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="com.loncar.stemi.MAINACTIVITY" />
@@ -35,8 +68,8 @@
             android:value="530f4085ae719e7a9651dc41526d94e7804be9ca" />
 
         <activity
-            android:name=".SettingsActivity"
-            android:label="SETTINGS"
+            android:name="com.stemi.STEMIHexapod.SettingsActivity"
+            android:label="Settings"
             android:screenOrientation="portrait"
             android:theme="@style/SettingsTheme">
             <intent-filter>
@@ -46,8 +79,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".IPActivity"
-            android:label="IP ADDRESS"
+            android:name="com.stemi.STEMIHexapod.IPActivity"
+            android:label="IP address"
             android:screenOrientation="portrait"
             android:theme="@style/SettingsTheme">
             <intent-filter>
@@ -57,8 +90,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HeightActivity"
-            android:label="ADJUST HEIGHT"
+            android:name="com.stemi.STEMIHexapod.HeightActivity"
+            android:label="Adjust height"
             android:screenOrientation="portrait"
             android:theme="@style/SettingsTheme">
             <intent-filter>
@@ -68,8 +101,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CalibrationActivity"
-            android:label="ADJUST HEIGHT"
+            android:name="com.stemi.STEMIHexapod.CalibrationActivity"
+            android:label="Calibration"
             android:screenOrientation="landscape"
             android:theme="@style/SettingsTheme">
             <intent-filter>
@@ -79,8 +112,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".WalkstyleActivity"
-            android:label="WALKING STYLE"
+            android:name="com.stemi.STEMIHexapod.WalkstyleActivity"
+            android:label="Walking style"
             android:screenOrientation="portrait"
             android:theme="@style/SettingsTheme">
             <intent-filter>

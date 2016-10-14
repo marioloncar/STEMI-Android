@@ -1,6 +1,7 @@
-package com.loncar.stemi;
+package com.stemi.STEMIHexapod;
 
 import android.annotation.TargetApi;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -8,8 +9,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,25 +23,29 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Arrays;
+
+import io.fabric.sdk.android.Fabric;
+
+import static com.stemi.STEMIHexapod.Menu.bMenu;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
 
     ImageButton ibStandby, ibMovement, ibRotation, ibOrientation, ibHeight, ibCalibration, ibWalkingStyle;
     View vOverlay;
-    public final String TAG = "MainActivity";
     Typeface tf;
     RelativeLayout lay;
     ImageView longToastBck;
 
     public Boolean connected;
-    public Boolean calibrationMode = false;
-    public int sleepingInterval = 200;
+    public int sleepingInterval = 100;
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private byte accelerometerX = 0;
@@ -48,19 +53,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private byte heightPref = 50;
     private byte walk = 30;
     public byte[] slidersArray = {0, 0, 0, 50, 0, 0, 0, 0, 0};
-    public Queue<byte[]> calibrationQueue;
-    public int connectionCounter = 0;
+    private String savedIp;
+
+    AlertDialog.Builder builder;
 
     SharedPreferences prefs;
-
-    public MainActivity() {
-        calibrationQueue = new LinkedList<>();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
         ibStandby = (ImageButton) findViewById(R.id.ibStandby);
@@ -85,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         ibMovement.setSelected(true);
         ibStandby.setSelected(true);
+
+        builder = new AlertDialog.Builder(this);
 
 
         /**** OnLongClick Listeners ****/
@@ -210,84 +213,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //connect to IP address, port 80
                     Socket socket = new Socket(ip, 80);
                     OutputStream outputStream = socket.getOutputStream();
-                    CommandSender wifiSender = new CommandSender(outputStream, socket);
-                    Thread thread = new Thread(wifiSender);
-                    thread.start();
-                } catch (IOException e) {
-                    Log.d(TAG, "TCP socket error: " + e.getMessage());
-                    //e.printStackTrace();
+
+                    try {
+
+                        BufferedOutputStream buffer = new BufferedOutputStream(outputStream, 30);
+                        while (connected) {
+                            Thread.sleep(sleepingInterval);
+                            buffer.write(bytesArray());
+                            buffer.flush();
+                            System.out.println("BYTES ARRAY -> " + Arrays.toString(bytesArray()));
+
+                        }
+
+                        socket.close();
+
+                    } catch (IOException | InterruptedException e) {
+                        showConnectionDialog();
+                    } finally {
+                        connected = false;
+
+
+                    }
+
+                } catch (IOException ignored) {
                 }
             }
         };
         t.start();
-    }
-
-    public class CommandSender implements Runnable {
-
-        OutputStream outputStream;
-        Socket socket;
-
-
-        CommandSender(OutputStream outputStream, Socket socket) {
-            this.outputStream = outputStream;
-            this.socket = socket;
-        }
-
-
-        @Override
-        public void run() {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Connection with robot established.");
-            }
-            try {
-                BufferedOutputStream buffer = new BufferedOutputStream(outputStream, 30);
-                while (connected) {
-                    Thread.sleep(sleepingInterval);
-                    //send bytes
-                    if (!calibrationMode) {
-                        JoystickL joyL = (JoystickL) findViewById(R.id.joyL);
-                        JoystickR joyR = (JoystickR) findViewById(R.id.joyR);
-                        buffer.write("PKT".getBytes());
-                        buffer.write(joyL.power);
-                        buffer.write(joyL.angle);
-                        buffer.write(joyR.rotation);
-                        buffer.write(ibRotation.isSelected() ? 1 : 0); //static tilt
-                        buffer.write(ibOrientation.isSelected() ? 1 : 0); //moving tilt
-                        buffer.write(ibStandby.isSelected() ? 1 : 0);
-                        buffer.write(accelerometerX);
-                        buffer.write(accelerometerY);
-                        buffer.write(heightPref);
-                        buffer.write(walk);
-                        buffer.write(slidersArray);
-                        buffer.flush();
-                        if (!socket.getKeepAlive()) {
-                            connectionCounter = 0;
-                        } else {
-                            connectionCounter++;
-                            if (connectionCounter == 10) {
-                                connected = false;
-                            }
-                        }
-                        System.out.println("CONNECTION COUNTER -> " + connectionCounter);
-                    }
-
-                }
-
-                socket.close();
-
-                if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "Connection with robot is closed.");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e(TAG, "Socket IOException.");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                Log.e(TAG, "Socket InterruptedException.");
-            } finally {
-                connected = false;
-            }
-        }
     }
 
     @Override
@@ -320,71 +272,82 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.bMenu:
-                if (Menu.bMenu.isSelected()) {
-                    Menu.closeMenu();
-                    Menu.bMenu.setSelected(false);
-                    vOverlay.setVisibility(View.INVISIBLE);
+                if (bMenu.isSelected()) {
+                    closeMenu();
                 } else {
-                    Menu.openMenu();
-                    Menu.bMenu.setSelected(true);
-                    vOverlay.setVisibility(View.VISIBLE);
+                    openMenu();
                 }
                 break;
             case R.id.vOverlay:
-                Menu.closeMenu();
-                Menu.bMenu.setSelected(false);
-                vOverlay.setVisibility(View.INVISIBLE);
+                closeMenu();
                 break;
 
             case R.id.ibMovement:
+                if (!ibMovement.isSelected()){
+                    showShortToast("MOVEMENT ENABLED");
+                }
                 ibMovement.setSelected(true);
                 ibRotation.setSelected(false);
                 ibOrientation.setSelected(false);
-                Menu.closeMenu();
-                Menu.bMenu.setSelected(false);
-                vOverlay.setVisibility(View.INVISIBLE);
-                showShortToast("MOVEMENT ENABLED");
+                closeMenu();
                 break;
 
             case R.id.ibRotation:
+                if(!ibRotation.isSelected()){
+                    showShortToast("ROTATION ENABLED");
+                }
                 ibRotation.setSelected(true);
                 ibMovement.setSelected(false);
                 ibOrientation.setSelected(false);
-                Menu.closeMenu();
-                Menu.bMenu.setSelected(false);
-                vOverlay.setVisibility(View.INVISIBLE);
-                showShortToast("ROTATION ENABLED");
+                closeMenu();
                 break;
 
             case R.id.ibOrientation:
+                if (!ibOrientation.isSelected()){
+                    showShortToast("ORIENTATION ENABLED");
+                }
                 ibOrientation.setSelected(true);
                 ibMovement.setSelected(false);
                 ibRotation.setSelected(false);
-                Menu.closeMenu();
-                Menu.bMenu.setSelected(false);
-                vOverlay.setVisibility(View.INVISIBLE);
-                showShortToast("ORIENTATION ENABLED");
+                closeMenu();
                 break;
             case R.id.ibHeight:
-                Intent openHeight = new Intent(getApplicationContext(), HeightActivity.class);
-                startActivity(openHeight);
+                closeMenu();
+                Intent intent = new Intent(MainActivity.this, HeightActivity.class);
+                startActivity(intent);
+
                 break;
             case R.id.ibCalibration:
-                Intent openCalibration = new Intent(getApplicationContext(), CalibrationActivity.class);
-                startActivity(openCalibration);
+                closeMenu();
+                Intent intent1 = new Intent(MainActivity.this, CalibrationActivity.class);
+                startActivity(intent1);
+
                 break;
             case R.id.ibWalkingStyle:
-                Intent openWalkstyle = new Intent(getApplicationContext(), WalkstyleActivity.class);
-                startActivity(openWalkstyle);
+                closeMenu();
+                Intent intent2 = new Intent(MainActivity.this, WalkstyleActivity.class);
+                startActivity(intent2);
+
                 break;
             case R.id.ibSettings:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                break;
+                closeMenu();
+                Intent intent3 = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent3);
 
-            default:
-                Log.d(TAG, "Default");
+                break;
         }
+    }
+
+    private void openMenu() {
+        Menu.openMenu();
+        bMenu.setSelected(true);
+        vOverlay.setVisibility(View.VISIBLE);
+    }
+
+    private void closeMenu() {
+        Menu.closeMenu();
+        bMenu.setSelected(false);
+        vOverlay.setVisibility(View.INVISIBLE);
     }
 
 
@@ -430,14 +393,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
         connected = true;
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
-        sendCommandsOverWiFi("192.168.4.1");
-        if (prefs.contains("height")) {
-            heightPref = (byte) prefs.getInt("height", 0);
-        } else {
-            heightPref = 50;
-        }
-
+        savedIp = prefs.getString("ip", null);
+        heightPref = (byte) prefs.getInt("height", 0);
         walk = (byte) prefs.getInt("walk", 30);
+        sendCommandsOverWiFi(savedIp);
     }
 
     private void showShortToast(String message) {
@@ -463,8 +422,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TextView tvDesc = (TextView) findViewById(R.id.tvDesc);
 
         Animation show = new AlphaAnimation(0, 1);
-        show.setDuration(150);
-        longToastBck.setAnimation(show);
+        show.setDuration(200);
+        longToastBck.startAnimation(show);
         lay.setVisibility(View.VISIBLE);
 
         tvTitle.setText(title);
@@ -478,7 +437,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void hideToast() {
         Animation hide = new AlphaAnimation(1, 0);
         hide.setDuration(200);
-        longToastBck.setAnimation(hide);
+        longToastBck.startAnimation(hide);
         lay.setVisibility(View.INVISIBLE);
+    }
+
+    private byte[] bytesArray() {
+
+        JoystickL joyL = (JoystickL) findViewById(R.id.joyL);
+        JoystickR joyR = (JoystickR) findViewById(R.id.joyR);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream() {
+        };
+        try {
+            outputStream.write("PKT".getBytes());
+            outputStream.write(joyL.power);
+            outputStream.write(joyL.angle);
+            outputStream.write(joyR.rotation);
+            outputStream.write(ibRotation.isSelected() ? 1 : 0);
+            outputStream.write(ibOrientation.isSelected() ? 1 : 0);
+            outputStream.write(ibStandby.isSelected() ? 1 : 0);
+            outputStream.write(accelerometerX);
+            outputStream.write(accelerometerY);
+            outputStream.write(heightPref);
+            outputStream.write(walk);
+            outputStream.write(slidersArray);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return outputStream.toByteArray();
+    }
+
+    private void showConnectionDialog() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                builder.setCancelable(false);
+                builder.setTitle("Connection lost");
+                builder.setMessage("Please check connection with your STEMI and try again.");
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent i = new Intent(MainActivity.this, ConnectingActivity.class);
+                        startActivity(i);
+                        finish();
+                    }
+                });
+                builder.show();
+            }
+        });
+
     }
 }

@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/ivStemiIcon"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="56dp"
+        android:layout_height="48dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:scaleType="fitCenter"
@@ -17,8 +17,8 @@
 
     <ImageView
         android:id="@+id/ivProgressPath"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:visibility="invisible"
@@ -26,8 +26,8 @@
 
     <ImageView
         android:id="@+id/ivProgress"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:src="@drawable/joy_path_l_l"
@@ -36,11 +36,12 @@
 
     <Button
         android:id="@+id/bChangeIP"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="41dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/bConnect"
-        android:layout_marginBottom="26dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginStart="50dp"
         android:background="@drawable/button_connecting"
         android:text="Change IP"
         android:textColor="@color/highlightColor"
@@ -49,41 +50,33 @@
 
     <Button
         android:id="@+id/bConnect"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="41dp"
         android:layout_above="@+id/bChangeIP"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="21dp"
+        android:layout_marginBottom="13dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginStart="50dp"
         android:background="@drawable/button_connecting"
         android:text="Connect"
         android:textColor="@color/highlightColor"
         android:textSize="16sp" />
 
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="250dp"
-        android:layout_height="200dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/bConnect"
-        android:layout_marginTop="10dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/logo" />
-
     <TextView
         android:id="@+id/tvConnectingTitle"
-        android:layout_width="280dp"
+        android:layout_width="260dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/ivStemiIcon"
         android:layout_centerHorizontal="true"
         android:gravity="center"
         android:text="GET STARTED"
         android:textColor="@color/highlightColor"
-        android:textSize="16sp" />
+        android:textSize="17sp" />
 
     <TextView
         android:id="@+id/tvConnectingHint"
-        android:layout_width="280dp"
+        android:layout_width="260dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/ivStemiIcon"
         android:layout_centerHorizontal="true"
@@ -91,6 +84,16 @@
         android:gravity="center"
         android:text="If you have a STEMI Hexapod, simply connect it now."
         android:textColor="@color/highlightColor"
-        android:textSize="14sp" />
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="214dp"
+        android:layout_height="133dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="34dp"
+        android:layout_centerHorizontal="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logo" />
 
 </RelativeLayout>
