@@ -23,15 +23,11 @@ import android.widget.TextView;
  */
 public class WalkstyleActivity extends AppCompatActivity {
 
-    Typeface tf;
-    TextView tvStyleHeader, tvWalkDesc;
-    RadioGroup rgWalk;
-    RadioButton rb1, rb2, rb3, rb4;
+    private TextView tvWalkDesc;
 
-    public byte walkValue;
-    public int rbStatus;
+    private byte walkValue;
 
-    SharedPreferences prefs;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,16 +45,15 @@ public class WalkstyleActivity extends AppCompatActivity {
         upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
         actionBar.setHomeAsUpIndicator(upArrow);
 
-        tf = Typeface.createFromAsset(getAssets(),
+        Typeface tf = Typeface.createFromAsset(getAssets(),
                 "fonts/ProximaNova-Regular.otf");
 
-        tvStyleHeader = (TextView) findViewById(R.id.tvStyleHeader);
         tvWalkDesc = (TextView) findViewById(R.id.tvWalkDesc);
-        rgWalk = (RadioGroup) findViewById(R.id.rgWalk);
-        rb1 = (RadioButton) rgWalk.findViewById(R.id.rb1);
-        rb2 = (RadioButton) rgWalk.findViewById(R.id.rb2);
-        rb3 = (RadioButton) rgWalk.findViewById(R.id.rb3);
-        rb4 = (RadioButton) rgWalk.findViewById(R.id.rb4);
+        RadioGroup rgWalk = (RadioGroup) findViewById(R.id.rgWalk);
+        RadioButton rb1 = (RadioButton) rgWalk.findViewById(R.id.rb1);
+        RadioButton rb2 = (RadioButton) rgWalk.findViewById(R.id.rb2);
+        RadioButton rb3 = (RadioButton) rgWalk.findViewById(R.id.rb3);
+        RadioButton rb4 = (RadioButton) rgWalk.findViewById(R.id.rb4);
 
         prefs = getSharedPreferences("myPref", MODE_PRIVATE);
 
@@ -69,7 +64,7 @@ public class WalkstyleActivity extends AppCompatActivity {
         rb3.setTypeface(tf);
         rb4.setTypeface(tf);
 
-        rbStatus = prefs.getInt("rbSelected", R.id.rb1);
+        int rbStatus = prefs.getInt("rbSelected", R.id.rb1);
         if (rbStatus > 0) {
             RadioButton rbtn = (RadioButton) rgWalk.findViewById(rbStatus);
             rbtn.setChecked(true);
@@ -131,8 +126,7 @@ public class WalkstyleActivity extends AppCompatActivity {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
             getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
         }

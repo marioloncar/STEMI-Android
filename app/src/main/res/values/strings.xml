@@ -4,8 +4,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="manually_enter_ip">MANUALLY ENTER IP</string>
     <string name="hint_default_ip">Default STEMI IP address is: \n 192.168.4.1</string>
-    <string name="stemi_connecting">STEMI IS NOW CONNECTING</string>
-    <string name="tap_on_point_you_n_wish_to_calibrate">TAP ON POINT YOU \n WISH TO CALIBRATE</string>
     <string name="choose_a_walking_style">Choose a walking style</string>
     <string name="movement_hint">Allows linear movements (left, right, back, forward). Tap to enable.</string>
     <string name="rotation_hint">Allows rotational movements with fixed stemi. Tap to enable.</string>
@@ -23,5 +21,14 @@
     <string name="try_again">TRY AGAIN</string>
     <string name="pairing">PAIRING…</string>
     <string name="select_motor_n_you_wish_to_n_calibrate">Select motor \n you wish to \n calibrate</string>
+    <string name="if_you_have_a_stemi_hexapod_simply_connect_it_now">If you have a STEMI Hexapod, simply connect it now.</string>
+    <string name="get_started">GET STARTED</string>
+    <string name="connect">Connect</string>
+    <string name="change_ip">Change IP</string>
+    <string name="custom_ip">Custom IP</string>
+    <string name="tripod_gait">Tripod Gait</string>
+    <string name="ripple_gait">Ripple Gait</string>
+    <string name="tripod_delayed_gait">Tripod Delayed Gait</string>
+    <string name="wave_gait">Wave Gait</string>
 
 </resources>

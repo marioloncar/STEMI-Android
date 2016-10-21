@@ -21,7 +21,6 @@ import android.widget.TextView;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 
-import io.fabric.sdk.android.Fabric;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,18 +32,20 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Objects;
 
+import io.fabric.sdk.android.Fabric;
+
 
 /**
  * Created by Mario on 24/08/16.
  */
 public class ConnectingActivity extends AppCompatActivity {
 
-    TextView tvConnectingTitle, tvConnectingHint;
-    Button bConnect, bChangeIP;
-    Typeface tf;
-    ImageView ivStemiIcon, ivProgressPath, ivProgress;
-    SharedPreferences prefs = null;
-    String savedIp;
+    private TextView tvConnectingTitle, tvConnectingHint;
+    private Button bConnect, bChangeIP;
+    private Typeface tf;
+    private ImageView ivStemiIcon, ivProgressPath, ivProgress;
+    private SharedPreferences prefs = null;
+    private String savedIp;
 
 
     @Override

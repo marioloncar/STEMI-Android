@@ -16,7 +16,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,28 +46,26 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         void onDiscardedData(Boolean finished);
     }
 
-    ImageButton ibMotor0, ibMotor1, ibMotor2, ibMotor3, ibMotor4, ibMotor5, ibMotor6, ibMotor7,
+    private ImageButton ibMotor0, ibMotor1, ibMotor2, ibMotor3, ibMotor4, ibMotor5, ibMotor6, ibMotor7,
             ibMotor8, ibMotor9, ibMotor10, ibMotor11, ibMotor12, ibMotor13, ibMotor14, ibMotor15, ibMotor16, ibMotor17, ibCalibUp, ibCalibD;
-    ImageButton[] motors;
-    AlertDialog.Builder builder;
-    ImageView ivCircle;
-    TextView tvCalibValue, tvSelect;
-    private int sleepingInterval = 100;
+    private ImageButton[] motors;
+    private AlertDialog.Builder builder;
+    private ImageView ivCircle;
+    private TextView tvCalibValue, tvSelect;
+    private final static int SLEEPING_INTERVAL = 100;
     private Boolean connected;
 
-    SharedPreferences prefs;
-    Typeface tf;
     private MediaPlayer movingSound, movingSoundShort;
 
     // bytes of the LIN (linearization) packets
     private byte[] calibrationArray = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 0};
     private byte[] newCalibrationArray = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 0};
     private int index;
-    private Handler repeatUpdateHandler = new Handler();
+    private final Handler repeatUpdateHandler = new Handler();
     private boolean mAutoIncrement = false;
     private boolean mAutoDecrement = false;
-    int REPEAT_DELAY = 50;
-    public String savedIp;
+    private static final int REPEAT_DELAY = 50;
+    private String savedIp;
     private int writeData;
 
     @Override
@@ -116,10 +113,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
 
         builder = new AlertDialog.Builder(this);
 
-        tf = Typeface.createFromAsset(getAssets(),
+        Typeface tf = Typeface.createFromAsset(getAssets(),
                 "fonts/ProximaNova-Regular.otf");
 
-        prefs = getSharedPreferences("myPref", MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("myPref", MODE_PRIVATE);
         savedIp = prefs.getString("ip", null);
         writeData = 0;
 
@@ -547,7 +544,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-    public void sendCommandsOverWiFi(final String ip) {
+    private void sendCommandsOverWiFi(final String ip) {
         connected = true;
 
         Thread t = new Thread() {
@@ -559,20 +556,20 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                     try {
                         BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
                         while (connected) {
-                            Thread.sleep(sleepingInterval);
+                            Thread.sleep(SLEEPING_INTERVAL);
                             buffOutStream.write(bytesArray());
                             buffOutStream.flush();
                             System.out.println("BYTES ARRAY -> " + Arrays.toString(bytesArray()));
                         }
                         socket.close();
 
-                    } catch (IOException | InterruptedException e) {
+                    } catch (IOException | InterruptedException ignored) {
                     } finally {
                         connected = false;
                     }
 
 
-                } catch (IOException e) {
+                } catch (IOException ignored) {
 
                 }
             }
@@ -580,7 +577,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         t.start();
     }
 
-    public void saveDataOverWiFi(final String ip, final SavedCalibrationInterface callback) {
+    private void saveDataOverWiFi(final String ip, final SavedCalibrationInterface callback) {
         connected = false;
         try {
             Thread.sleep(1000);
@@ -598,19 +595,19 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                     try {
                         writeData = 1;
                         BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
-                        Thread.sleep(sleepingInterval);
+                        Thread.sleep(SLEEPING_INTERVAL);
                         buffOutStream.write(bytesArray());
                         buffOutStream.flush();
                         socket.close();
 
                         callback.onSavedData(true);
 
-                    } catch (IOException | InterruptedException e) {
+                    } catch (IOException | InterruptedException ignored) {
                     } finally {
                         connected = false;
                     }
 
-                } catch (IOException e) {
+                } catch (IOException ignored) {
                 }
             }
         };
@@ -638,12 +635,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 count = conn.getInputStream().read(data);
 
             }
-        } catch (IOException e) {
-            Log.d("TAG", "Getting calibration: " + e.getMessage());
+        } catch (IOException ignored) {
         }
         return baos.toByteArray();
     }
-//
+
 
     private byte[] bytesArray() {
 
@@ -653,14 +649,13 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             outputStream.write("LIN".getBytes());
             outputStream.write(newCalibrationArray);
             outputStream.write(writeData);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
 
         return outputStream.toByteArray();
     }
 
-    class RepeatUpdater implements Runnable {
+    private class RepeatUpdater implements Runnable {
         public void run() {
             if (mAutoIncrement) {
                 increment();
@@ -672,7 +667,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    public void decrement() {
+    private void decrement() {
         if (!(newCalibrationArray[index] <= 0)) {
             newCalibrationArray[index]--;
             String sCalib = String.valueOf(newCalibrationArray[index]);
@@ -683,7 +678,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    public void increment() {
+    private void increment() {
         if (!(newCalibrationArray[index] >= 100)) {
             newCalibrationArray[index]++;
             String sCalib = String.valueOf(newCalibrationArray[index]);
@@ -714,8 +709,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             }
             try {
                 Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (InterruptedException ignored) {
             }
         }
         callback.onDiscardedData(true);

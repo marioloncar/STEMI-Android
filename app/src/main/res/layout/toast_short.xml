@@ -3,26 +3,26 @@
     android:id="@+id/rlToastShortRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <ImageView
         android:id="@+id/ivToastShortBck"
         android:layout_width="200dp"
         android:layout_height="80dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/mode_enabled"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/mode_enabled" />
 
     <TextView
         android:id="@+id/tvEnabled"
         android:layout_width="200dp"
         android:layout_height="80dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:gravity="center"
         android:textAlignment="center"
-        android:textColor="@color/highlightColor"
-        android:textSize="14sp"
         android:textAllCaps="true"
-        android:text="MOVEMENT ENABLED"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:textColor="@color/highlightColor"
+        android:textSize="14sp" />
 
 </RelativeLayout>
