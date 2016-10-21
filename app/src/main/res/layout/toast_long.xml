@@ -28,19 +28,19 @@
     <ImageView
         android:layout_width="50dp"
         android:layout_height="10dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/line"
         android:layout_below="@+id/tvTitle"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/line" />
 
     <TextView
         android:id="@+id/tvDesc"
         android:layout_width="220dp"
         android:layout_height="50dp"
+        android:layout_alignBottom="@+id/ivToastLongBck"
+        android:layout_alignStart="@+id/ivToastLongBck"
         android:textAlignment="center"
         android:textAllCaps="true"
         android:textColor="@color/hintColor"
-        android:textSize="12sp"
-        android:layout_alignBottom="@+id/ivToastLongBck"
-        android:layout_alignStart="@+id/ivToastLongBck" />
+        android:textSize="12sp" />
 </RelativeLayout>

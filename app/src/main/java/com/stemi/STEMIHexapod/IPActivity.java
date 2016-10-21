@@ -16,7 +16,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
-import android.view.*;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,15 +28,10 @@ import android.widget.TextView;
  */
 public class IPActivity extends AppCompatActivity {
 
-    TextView textView, textView2;
-    Button bResetIp;
-    EditText et1, et2, et3, et4;
-    String ip1, ip2, ip3, ip4, customIp, savedIp;
-    int field1, field2, field3, field4;
-    Typeface tf;
-    MenuItem menuItem;
+    private EditText et1, et2, et3, et4;
+    private MenuItem menuItem;
 
-    SharedPreferences prefs;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,12 +55,12 @@ public class IPActivity extends AppCompatActivity {
         et2 = (EditText) findViewById(R.id.et2);
         et3 = (EditText) findViewById(R.id.et3);
         et4 = (EditText) findViewById(R.id.et4);
-        textView = (TextView) findViewById(R.id.textView);
-        textView2 = (TextView) findViewById(R.id.textView2);
-        bResetIp = (Button) findViewById(R.id.bResetIp);
+        TextView textView = (TextView) findViewById(R.id.textView);
+        TextView textView2 = (TextView) findViewById(R.id.textView2);
+        Button bResetIp = (Button) findViewById(R.id.bResetIp);
 
 
-        tf = Typeface.createFromAsset(getAssets(),
+        Typeface tf = Typeface.createFromAsset(getAssets(),
                 "fonts/ProximaNova-Regular.otf");
 
         textView.setTypeface(tf);
@@ -75,7 +71,7 @@ public class IPActivity extends AppCompatActivity {
 
         //Postavljanje polja na vrijednosti spremljenog IP-a
         prefs = getSharedPreferences("myPref", MODE_PRIVATE);
-        savedIp = prefs.getString("ip", null);
+        String savedIp = prefs.getString("ip", null);
 
         et1.setTypeface(tf);
         et2.setTypeface(tf);
@@ -205,6 +201,8 @@ public class IPActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        hideSoftKeyboard();
+        finish();
     }
 
     @Override
@@ -221,21 +219,21 @@ public class IPActivity extends AppCompatActivity {
 
         if (id == R.id.save_ip) {
 
-            ip1 = et1.getText().toString();
-            ip2 = et2.getText().toString();
-            ip3 = et3.getText().toString();
-            ip4 = et4.getText().toString();
+            String ip1 = et1.getText().toString();
+            String ip2 = et2.getText().toString();
+            String ip3 = et3.getText().toString();
+            String ip4 = et4.getText().toString();
 
             if ((ip1.trim().length() == 0) || (ip2.trim().length() == 0) || (ip3.trim().length() == 0) || (ip4.trim().length() == 0)) {
                 showIPAlert();
             } else {
-                field1 = Integer.parseInt(ip1);
-                field2 = Integer.parseInt(ip2);
-                field3 = Integer.parseInt(ip3);
-                field4 = Integer.parseInt(ip4);
+                int field1 = Integer.parseInt(ip1);
+                int field2 = Integer.parseInt(ip2);
+                int field3 = Integer.parseInt(ip3);
+                int field4 = Integer.parseInt(ip4);
 
                 if ((field1 >= 0 && field1 <= 255) && (field2 >= 0 && field2 <= 255) && (field3 >= 0 && field3 <= 255) && (field4 >= 0 && field4 <= 255)) {
-                    customIp = ip1 + "." + ip2 + "." + ip3 + "." + ip4;
+                    String customIp = ip1 + "." + ip2 + "." + ip3 + "." + ip4;
                     hideSoftKeyboard();
                     prefs.edit().putString("ip", customIp).apply();
                     finish();
@@ -251,7 +249,7 @@ public class IPActivity extends AppCompatActivity {
 
     }
 
-    public void hideSoftKeyboard() {
+    private void hideSoftKeyboard() {
         if (getCurrentFocus() != null) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
@@ -280,8 +278,7 @@ public class IPActivity extends AppCompatActivity {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
             getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
         }

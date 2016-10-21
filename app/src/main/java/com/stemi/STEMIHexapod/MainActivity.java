@@ -1,6 +1,5 @@
 package com.stemi.STEMIHexapod;
 
-import android.annotation.TargetApi;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,12 +8,14 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Build;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.*;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageButton;
@@ -23,8 +24,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
-
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,20 +31,17 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Arrays;
 
-import io.fabric.sdk.android.Fabric;
-
 import static com.stemi.STEMIHexapod.Menu.bMenu;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
 
-    ImageButton ibStandby, ibMovement, ibRotation, ibOrientation, ibHeight, ibCalibration, ibWalkingStyle;
-    View vOverlay;
-    Typeface tf;
-    RelativeLayout lay;
-    ImageView longToastBck;
-
-    public Boolean connected;
-    public int sleepingInterval = 100;
+    private ImageButton ibStandby, ibMovement, ibRotation, ibOrientation;
+    private View vOverlay;
+    private Typeface tf;
+    private RelativeLayout lay;
+    private ImageView longToastBck;
+    private Boolean connected;
+    private final static int SLEEPING_INTERVAL = 100;
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private byte accelerometerX = 0;
@@ -53,25 +49,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private byte heightPref = 50;
     private byte walk = 30;
     public byte[] slidersArray = {0, 0, 0, 50, 0, 0, 0, 0, 0};
-    private String savedIp;
 
-    AlertDialog.Builder builder;
+    private AlertDialog.Builder builder;
 
-    SharedPreferences prefs;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         ibStandby = (ImageButton) findViewById(R.id.ibStandby);
         vOverlay = findViewById(R.id.vOverlay);
         ibMovement = (ImageButton) findViewById(R.id.ibMovement);
         ibRotation = (ImageButton) findViewById(R.id.ibRotation);
         ibOrientation = (ImageButton) findViewById(R.id.ibOrientation);
-        ibHeight = (ImageButton) findViewById(R.id.ibHeight);
-        ibCalibration = (ImageButton) findViewById(R.id.ibCalibration);
-        ibWalkingStyle = (ImageButton) findViewById(R.id.ibWalkingStyle);
+        ImageButton ibHeight = (ImageButton) findViewById(R.id.ibHeight);
+        ImageButton ibCalibration = (ImageButton) findViewById(R.id.ibCalibration);
+        ImageButton ibWalkingStyle = (ImageButton) findViewById(R.id.ibWalkingStyle);
         lay = (RelativeLayout) findViewById(R.id.longToast);
         longToastBck = (ImageView) findViewById(R.id.ivToastLongBck);
 
@@ -215,16 +211,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     OutputStream outputStream = socket.getOutputStream();
 
                     try {
-
                         BufferedOutputStream buffer = new BufferedOutputStream(outputStream, 30);
                         while (connected) {
-                            Thread.sleep(sleepingInterval);
+                            Thread.sleep(SLEEPING_INTERVAL);
                             buffer.write(bytesArray());
                             buffer.flush();
-                            System.out.println("BYTES ARRAY -> " + Arrays.toString(bytesArray()));
-
                         }
-
                         socket.close();
 
                     } catch (IOException | InterruptedException e) {
@@ -283,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.ibMovement:
-                if (!ibMovement.isSelected()){
+                if (!ibMovement.isSelected()) {
                     showShortToast("MOVEMENT ENABLED");
                 }
                 ibMovement.setSelected(true);
@@ -293,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.ibRotation:
-                if(!ibRotation.isSelected()){
+                if (!ibRotation.isSelected()) {
                     showShortToast("ROTATION ENABLED");
                 }
                 ibRotation.setSelected(true);
@@ -303,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.ibOrientation:
-                if (!ibOrientation.isSelected()){
+                if (!ibOrientation.isSelected()) {
                     showShortToast("ORIENTATION ENABLED");
                 }
                 ibOrientation.setSelected(true);
@@ -351,19 +343,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    // swipe to show notification bar and soft keys
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
             getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            );
         }
     }
 
@@ -393,10 +381,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
         connected = true;
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
-        savedIp = prefs.getString("ip", null);
+        String savedIp = prefs.getString("ip", null);
         heightPref = (byte) prefs.getInt("height", 0);
         walk = (byte) prefs.getInt("walk", 30);
         sendCommandsOverWiFi(savedIp);
+
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 
     private void showShortToast(String message) {

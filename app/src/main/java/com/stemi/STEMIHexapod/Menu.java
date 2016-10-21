@@ -23,11 +23,11 @@ public class Menu extends RelativeLayout {
     public static ImageButton ibMovement, ibRotation, ibOrientation, ibHeight, ibCalibration, ibStyles, ibSettings;
     public static ImageView ivBck, ivMenuActive;
     public static Button bMenu;
-    public static MediaPlayer puk;
-    public static MediaPlayer tiu;
+    private static MediaPlayer puk;
+    private static MediaPlayer tiu;
 
 
-    public static ImageButton[] buttons;
+    private static ImageButton[] buttons;
 
     public Menu(Context context) {
         super(context);

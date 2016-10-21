@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.v4.content.ContextCompat;
@@ -16,7 +17,6 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -29,12 +29,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
-import java.util.Arrays;
 
 
 public class SettingsActivity extends AppCompatActivity {
-
-    SharedPreferences prefs = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +56,6 @@ public class SettingsActivity extends AppCompatActivity {
         fragmentTransaction.add(android.R.id.content, settingsFragment, "SETTINGS");
         fragmentTransaction.commit();
 
-        prefs = getSharedPreferences("myPref", MODE_PRIVATE);
-
-
     }
 
     interface DiscardCalibInterface {
@@ -84,7 +78,7 @@ public class SettingsActivity extends AppCompatActivity {
         byte[] calibrationArray;
         byte[] newCalibrationArray;
         boolean connected;
-        int sleepingInterval = 100;
+        final static int SLEEPING_INTERVAL = 100;
         int writeData;
 
         @Override
@@ -255,7 +249,7 @@ public class SettingsActivity extends AppCompatActivity {
                         try {
                             writeData = 1;
                             BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
-                            Thread.sleep(sleepingInterval);
+                            Thread.sleep(SLEEPING_INTERVAL);
                             buffOutStream.write(bytesArray());
                             buffOutStream.flush();
                             socket.close();
@@ -296,7 +290,7 @@ public class SettingsActivity extends AppCompatActivity {
                         try {
                             BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
                             while (connected) {
-                                Thread.sleep(sleepingInterval);
+                                Thread.sleep(SLEEPING_INTERVAL);
                                 buffOutStream.write(bytesArray());
                                 buffOutStream.flush();
                             }
@@ -326,7 +320,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                         try {
                             BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
-                            Thread.sleep(sleepingInterval);
+                            Thread.sleep(SLEEPING_INTERVAL);
                             buffOutStream.write(bytesArrayReturn());
                             buffOutStream.flush();
                             socket.close();
@@ -424,17 +418,11 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
             getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
         }

@@ -30,23 +30,19 @@ import java.net.Socket;
  */
 public class HeightActivity extends AppCompatActivity {
 
-    ImageButton ibHeightUp, ibHeightD;
-    TextView tvHeightValue;
+    private TextView tvHeightValue;
     private MediaPlayer movingSound, movingSoundShort;
 
-    SharedPreferences prefs;
+    private SharedPreferences prefs;
 
-    private Handler repeatUpdateHandler = new Handler();
+    private final Handler repeatUpdateHandler = new Handler();
     private boolean mAutoIncrement = false;
     private boolean mAutoDecrement = false;
-    int REPEAT_DELAY = 50;
+    private final static int REPEAT_DELAY = 50;
     private byte height = 50;
     private Boolean connected;
-    public int sleepingInterval = 100;
-    private byte walk = 30;
-    public byte[] slidersArray = {0, 0, 0, 50, 0, 0, 0, 0, 0};
-    public String savedIp;
-    Typeface tf;
+    private final static int SLEEPING_INTERVAL = 100;
+    private byte[] slidersArray = {0, 0, 0, 50, 0, 0, 0, 0, 0};
 
 
     @Override
@@ -68,11 +64,11 @@ public class HeightActivity extends AppCompatActivity {
         movingSound = MediaPlayer.create(this, R.raw.moving_sound);
         movingSoundShort = MediaPlayer.create(this, R.raw.moving_sound_short);
 
-        tf = Typeface.createFromAsset(getAssets(),
+        Typeface tf = Typeface.createFromAsset(getAssets(),
                 "fonts/ProximaNova-Regular.otf");
 
-        ibHeightUp = (ImageButton) findViewById(R.id.ibHeightUp);
-        ibHeightD = (ImageButton) findViewById(R.id.ibHeightD);
+        ImageButton ibHeightUp = (ImageButton) findViewById(R.id.ibHeightUp);
+        ImageButton ibHeightD = (ImageButton) findViewById(R.id.ibHeightD);
         tvHeightValue = (TextView) findViewById(R.id.tvHeightValue);
         String s = String.valueOf(height);
         tvHeightValue.setText(s);
@@ -83,7 +79,7 @@ public class HeightActivity extends AppCompatActivity {
 
         tvHeightValue.setTypeface(tf);
 
-        savedIp = prefs.getString("ip", null);
+        String savedIp = prefs.getString("ip", null);
 
         /*** Increase height listeners ***/
         ibHeightUp.setOnLongClickListener(new View.OnLongClickListener() {
@@ -114,10 +110,9 @@ public class HeightActivity extends AppCompatActivity {
             public void onClick(View v) {
                 increment();
 
-                if (height == 100){
+                if (height == 100) {
                     movingSoundShort.pause();
-                }
-                else{
+                } else {
                     movingSoundShort.start();
                 }
             }
@@ -155,10 +150,9 @@ public class HeightActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 decrement();
-                if (height == 0){
+                if (height == 0) {
                     movingSoundShort.pause();
-                }
-                else{
+                } else {
                     movingSoundShort.start();
                 }
 
@@ -171,7 +165,7 @@ public class HeightActivity extends AppCompatActivity {
     }
 
 
-    public void sendCommandsOverWiFi(final String ip) {
+    private void sendCommandsOverWiFi(final String ip) {
         connected = true;
 
         Thread t = new Thread() {
@@ -183,7 +177,7 @@ public class HeightActivity extends AppCompatActivity {
                     try {
                         BufferedOutputStream buffer = new BufferedOutputStream(outputStream, 30);
                         while (connected) {
-                            Thread.sleep(sleepingInterval);
+                            Thread.sleep(SLEEPING_INTERVAL);
                             buffer.write(bytesArray());
                             buffer.flush();
 
@@ -215,7 +209,7 @@ public class HeightActivity extends AppCompatActivity {
         finish();
     }
 
-    class RepeatUpdater implements Runnable {
+    private class RepeatUpdater implements Runnable {
         public void run() {
             if (mAutoIncrement) {
                 increment();
@@ -227,7 +221,7 @@ public class HeightActivity extends AppCompatActivity {
         }
     }
 
-    public void decrement() {
+    private void decrement() {
         if (!(height <= 0)) {
             height--;
             String sHeight = String.valueOf(height);
@@ -239,7 +233,7 @@ public class HeightActivity extends AppCompatActivity {
         }
     }
 
-    public void increment() {
+    private void increment() {
         if (!(height >= 100)) {
             height++;
             String sHeight = String.valueOf(height);
@@ -283,6 +277,7 @@ public class HeightActivity extends AppCompatActivity {
             outputStream.write(0); // accelerometerX
             outputStream.write(0); // accelerometerY
             outputStream.write(height);
+            byte walk = 30;
             outputStream.write(walk);
             outputStream.write(slidersArray);
         } catch (IOException e) {
@@ -297,8 +292,7 @@ public class HeightActivity extends AppCompatActivity {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
             getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
         }

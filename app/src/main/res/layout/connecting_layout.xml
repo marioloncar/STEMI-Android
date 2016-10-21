@@ -43,7 +43,7 @@
         android:layout_marginEnd="50dp"
         android:layout_marginStart="50dp"
         android:background="@drawable/button_connecting"
-        android:text="Change IP"
+        android:text="@string/change_ip"
         android:textColor="@color/highlightColor"
         android:textSize="16sp"
         android:visibility="invisible" />
@@ -58,7 +58,7 @@
         android:layout_marginEnd="50dp"
         android:layout_marginStart="50dp"
         android:background="@drawable/button_connecting"
-        android:text="Connect"
+        android:text="@string/connect"
         android:textColor="@color/highlightColor"
         android:textSize="16sp" />
 
@@ -70,7 +70,7 @@
         android:layout_above="@+id/ivStemiIcon"
         android:layout_centerHorizontal="true"
         android:gravity="center"
-        android:text="GET STARTED"
+        android:text="@string/get_started"
         android:textColor="@color/highlightColor"
         android:textSize="17sp" />
 
@@ -82,7 +82,7 @@
         android:layout_centerHorizontal="true"
         android:alpha="0.6"
         android:gravity="center"
-        android:text="If you have a STEMI Hexapod, simply connect it now."
+        android:text="@string/if_you_have_a_stemi_hexapod_simply_connect_it_now"
         android:textColor="@color/highlightColor"
         android:textSize="15sp" />
 
@@ -91,8 +91,8 @@
         android:layout_width="214dp"
         android:layout_height="133dp"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="34dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="34dp"
         android:scaleType="fitCenter"
         android:src="@drawable/logo" />
 

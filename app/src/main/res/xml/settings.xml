@@ -22,13 +22,13 @@
         android:title="About">
         <Preference
             android:key="stemiId"
-            android:summary="No data"
             android:selectable="false"
+            android:summary="No data"
             android:title="STEMI ID" />
         <Preference
             android:key="hardwareVersion"
-            android:summary="No data"
             android:selectable="false"
+            android:summary="No data"
             android:title="Hardware version" />
     </PreferenceCategory>
     <PreferenceCategory

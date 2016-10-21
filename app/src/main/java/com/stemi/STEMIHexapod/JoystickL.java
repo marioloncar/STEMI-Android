@@ -1,14 +1,10 @@
 package com.stemi.STEMIHexapod;
 
-import android.view.LayoutInflater;
-
-
 import android.content.Context;
-
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
-
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -18,8 +14,6 @@ import android.widget.LinearLayout;
  */
 
 public class JoystickL extends LinearLayout {
-
-    private final double radian = 57.2957795;
 
     protected float positionX = 0; // Touch x position
     protected float positionY = 0; // Touch y position
@@ -33,9 +27,9 @@ public class JoystickL extends LinearLayout {
     public byte angle = 0;
 
 
-    int d;
+    private int d;
 
-    ImageView path_JoyLeftUp, path_JoyLeftDown, path_JoyLeftLeft, path_JoyLeftRight, joystickView, joystickPlus, joystickPath;
+    private ImageView path_JoyLeftUp, path_JoyLeftDown, path_JoyLeftLeft, path_JoyLeftRight, joystickView, joystickPlus, joystickPath;
     protected float topAlpha, bottomAlpha, leftAlpha, rightAlpha;
 
 
@@ -212,6 +206,7 @@ public class JoystickL extends LinearLayout {
     }
 
     protected double getAngle() {
+        double radian = 57.2957795;
         if (positionX > centerX) {
             if (positionY < centerY) {
                 return lastAngle = (Math.atan((positionY - centerY)

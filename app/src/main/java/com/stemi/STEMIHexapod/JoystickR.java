@@ -13,8 +13,6 @@ import android.widget.LinearLayout;
  */
 public class JoystickR extends LinearLayout {
 
-    private final double radian = 57.2957795;
-
     protected float positionX = 0; // Touch x position
     protected float positionY = 0; // Touch y position
     protected float centerX = 0; // Center view x position
@@ -25,9 +23,7 @@ public class JoystickR extends LinearLayout {
 
     public byte rotation = 0;
 
-    int d;
-
-    ImageView path_JoyRightLeft, path_JoyRightRight, joystickView, joystickPlus, joystickPath;
+    private ImageView path_JoyRightLeft, path_JoyRightRight, joystickView, joystickPlus, joystickPath;
     protected float leftAlpha, rightAlpha;
 
     @Override
@@ -74,9 +70,9 @@ public class JoystickR extends LinearLayout {
         positionX = getWidth() / 2;
         positionY = getHeight() / 2;
 
-        d = Math.max(xNew, yNew);
+        int d = Math.max(xNew, yNew);
 
-            joystickRadius = (int) (d / 2 * 0.75);
+        joystickRadius = (int) (d / 2 * 0.75);
 
     }
 
@@ -148,6 +144,7 @@ public class JoystickR extends LinearLayout {
     }
 
     protected double getAngle() {
+        double radian = 57.2957795;
         if (positionX > centerX) {
             if (positionY < centerY) {
                 return lastAngle = (Math.atan((positionY - centerY)
