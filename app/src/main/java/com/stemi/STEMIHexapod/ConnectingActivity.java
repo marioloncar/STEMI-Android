@@ -51,7 +51,7 @@ public class ConnectingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics(), new Answers());
+//        Fabric.with(this, new Crashlytics(), new Answers());
         setContentView(R.layout.connecting_layout);
 
         tvConnectingTitle = (TextView) findViewById(R.id.tvConnectingTitle);

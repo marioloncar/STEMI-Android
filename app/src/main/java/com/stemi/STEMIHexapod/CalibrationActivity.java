@@ -224,7 +224,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()  {
         showBackDialog();
     }
 
