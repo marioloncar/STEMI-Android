@@ -1,42 +1,97 @@
 package mario.com.stemihexapod;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.Socket;
+import java.net.URL;
+import java.util.Objects;
 
 /**
  * @author Mario
  */
 
 public class PacketSender {
-    public interface PacketSenderDelegate{
-        void connectionLost();
-        void connectionActive();
-    }
-
     public Hexapod hexapod;
     public int sendingInterval = 100;
-    public OutputStream outputStream;
-    public Boolean openCommunication = true;
     public Boolean connected = false;
-    public int counter = 0;
 
-    public void init(Hexapod hexapod){
+    public PacketSender(Hexapod hexapod) {
         this.hexapod = hexapod;
     }
 
-    public void init(Hexapod hexapod, int sendingInterval){
+    public PacketSender(Hexapod hexapod, int sendingInterval) {
         this.hexapod = hexapod;
         this.sendingInterval = sendingInterval;
     }
 
-    public void startSendingData(){
+    public void startSendingData() {
+        try {
+            URL url = new URL("http://" + this.hexapod.ipAddress + "/stemiData.json");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(3000);
+            connection.setUseCaches(false);
+            connection.connect();
 
+            InputStream stream = connection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+
+            StringBuilder buffer = new StringBuilder();
+            String line = "";
+
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line).append("\n");
+            }
+
+            String bufferNew = buffer.toString();
+            if (bufferNew != null) {
+                JSONObject jsonObject = new JSONObject(bufferNew);
+                if (Objects.equals(jsonObject.getBoolean("isValid"), true)) {
+                    this.sendData();
+                } else {
+                    this.stopSendingData();
+                }
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+            this.stopSendingData();
+        }
     }
 
-    public void stopSendingData(){
-        this.openCommunication = false;
+    public void sendData() {
+        try {
+            Socket socket = new Socket(this.hexapod.ipAddress, this.hexapod.port);
+            OutputStream outputStream = socket.getOutputStream();
+            BufferedOutputStream buffer = new BufferedOutputStream(outputStream, 30);
+
+            while (this.connected) {
+                try {
+                    Thread.sleep(sendingInterval);
+                    buffer.write(this.hexapod.currentPacket.toByteArray());
+                    buffer.flush();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            socket.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            this.stopSendingData();
+        }
     }
-    private void dropConnection(){
+
+    public void stopSendingData() {
         this.connected = false;
-        this.stopSendingData();
     }
+
 }
+

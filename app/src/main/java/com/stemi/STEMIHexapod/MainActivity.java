@@ -31,6 +31,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Arrays;
 
+import mario.com.stemihexapod.Hexapod;
+
 import static com.stemi.STEMIHexapod.Menu.bMenu;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
@@ -58,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         ibStandby = (ImageButton) findViewById(R.id.ibStandby);
         vOverlay = findViewById(R.id.vOverlay);

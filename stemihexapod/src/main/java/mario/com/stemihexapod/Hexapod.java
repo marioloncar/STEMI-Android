@@ -14,7 +14,7 @@ public class Hexapod {
     /**
      * Initializes default connection with IP address: 192.168.4.1 and port: 80
      */
-    public void init() {
+    public Hexapod() {
         this.ipAddress = "192.168.4.1";
         this.port = 80;
         this.currentPacket = new Packet();
@@ -27,7 +27,7 @@ public class Hexapod {
      * @param port Takes given port (default: 80)
      */
 
-    public void init(String ip, int port) {
+    public Hexapod(String ip, int port) {
         this.ipAddress = ip;
         this.port = port;
         this.currentPacket = new Packet();
@@ -36,11 +36,11 @@ public class Hexapod {
     /**
      * Sets new IP address. By default this is set to 192.168.4.1
      *
-     * @param newIP Takes given IP address
+     * @param ipAddress Takes given IP address
      */
 
-    public void set(String newIP) {
-        this.ipAddress = newIP;
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
     /**
@@ -48,7 +48,7 @@ public class Hexapod {
      */
 
     public void connect() {
-        this.sendPacket = new PacketSender();
+        this.sendPacket = new PacketSender(this);
         sendPacket.startSendingData();
     }
 

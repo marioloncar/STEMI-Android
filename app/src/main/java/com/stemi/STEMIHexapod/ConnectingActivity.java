@@ -33,6 +33,8 @@ import java.net.URL;
 import java.util.Objects;
 
 import io.fabric.sdk.android.Fabric;
+import mario.com.stemihexapod.Hexapod;
+import mario.com.stemihexapod.PacketSender;
 
 
 /**
@@ -46,7 +48,6 @@ public class ConnectingActivity extends AppCompatActivity {
     private ImageView ivStemiIcon, ivProgressPath, ivProgress;
     private SharedPreferences prefs = null;
     private String savedIp;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +72,7 @@ public class ConnectingActivity extends AppCompatActivity {
         bConnect.setTypeface(tf);
 
         prefs = getSharedPreferences("myPref", MODE_PRIVATE);
+
 
         bConnect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -232,10 +234,8 @@ public class ConnectingActivity extends AppCompatActivity {
 
             StringBuilder buffer = new StringBuilder();
             String line = "";
-
             while ((line = reader.readLine()) != null) {
                 buffer.append(line).append("\n");
-
             }
 
             return buffer.toString();
