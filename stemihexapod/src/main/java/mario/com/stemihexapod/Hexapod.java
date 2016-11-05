@@ -4,6 +4,7 @@ package mario.com.stemihexapod;
  * @author Mario
  */
 
+
 public class Hexapod {
     public Packet currentPacket;
     public PacketSender sendPacket;
@@ -11,9 +12,17 @@ public class Hexapod {
     public int port;
     public byte[] slidersArray = {50, 25, 0, 0, 0, 50, 0, 0, 0, 0, 0};
 
+    public enum WalkingStyle {
+        TripodGait,
+        TripodGaitAngled,
+        TripodGaitStar,
+        WaveGait
+    }
+
     /**
      * Initializes default connection with IP address: 192.168.4.1 and port: 80
      */
+
     public Hexapod() {
         this.ipAddress = "192.168.4.1";
         this.port = 80;
@@ -162,8 +171,8 @@ public class Hexapod {
      * For angle 0 - 180 you can use 0-90 (original divided by 2)
      * For angle 180 - 360 you can use 166-255 (this can be represented like value from -180 to 0. Logic is same: 255 + (original devided by 2))
      *
-     * @param power: Takes values for movement speed (Values must be: 0-100)
-     * @param angle: Takes values for angle of moving (Values can be: 0-255, look at the description!)
+     * @param power Takes values for movement speed (Values must be: 0-100)
+     * @param angle Takes values for angle of moving (Values can be: 0-255, look at the description!)
      */
 
     public void setJoystickParams(int power, int angle) {
@@ -180,7 +189,7 @@ public class Hexapod {
      * For rotate to right you can use values 0 - 100
      * For rotate to left you can use 255-156 (this can be represented like value from 0 to -100 as 255 - position)
      *
-     * @param rotation: Takes values for rotation speed (Values must be: 0-255, look at the description!)
+     * @param rotation Takes values for rotation speed (Values must be: 0-255, look at the description!)
      */
 
     public void setJoystickParams(int rotation) {
@@ -196,7 +205,7 @@ public class Hexapod {
      * For tilt forward you can use values 0 - 216 (this can be represented like value from 0 to -100 as 255 - position)
      * For tilt backward you can use 0 - 100.
      *
-     * @param x: Takes values for X tilting (Values must be: 0-255, look at the description!)
+     * @param x Takes values for X tilting (Values must be: 0-255, look at the description!)
      */
 
     public void setAccelerometerX(int x) {
@@ -212,7 +221,7 @@ public class Hexapod {
      * For tilt left you can use values 0 - 216 (this can be represented like value from 0 to -100 as 255 - position.)
      * For tilt right you can use 0 - 100.
      *
-     * @param y: Takes values for Y tilting (Values must be: 0-255, look at the description!)
+     * @param y Takes values for Y tilting (Values must be: 0-255, look at the description!)
      */
 
     public void setAccelerometerY(int y) {
@@ -289,6 +298,43 @@ public class Hexapod {
 
     public void turnOff() {
         currentPacket.onOff = 0;
+    }
+
+    /**
+     * Set Hexapod height.
+     *
+     * @param height This value can be from 0 to 100.
+     */
+
+    public void setHeight(int height) {
+        currentPacket.height = height;
+    }
+
+    /**
+     * Set Hexapod walking style.
+     *
+     * @param style This value can be TripodGait, TripodGaitAngled, TripodGaitStar or WaveGait.
+     */
+
+    public void setWalkingStyle(WalkingStyle style) {
+        int walkingStyleValue;
+        switch (style) {
+            case TripodGait:
+                walkingStyleValue = 30;
+                break;
+            case TripodGaitAngled:
+                walkingStyleValue = 60;
+                break;
+            case TripodGaitStar:
+                walkingStyleValue = 80;
+                break;
+            case WaveGait:
+                walkingStyleValue = 100;
+                break;
+            default:
+                walkingStyleValue = 30;
+        }
+        currentPacket.walkingStyle = walkingStyleValue;
     }
 }
 

@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.concurrent.ThreadFactory;
 
 import mario.com.stemihexapod.Hexapod;
 
@@ -55,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private AlertDialog.Builder builder;
 
     private SharedPreferences prefs;
+
+    private Hexapod hexapod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         builder = new AlertDialog.Builder(this);
 
+        hexapod = new Hexapod();
 
         /**** OnLongClick Listeners ****/
         ibMovement.setOnLongClickListener(new View.OnLongClickListener() {
@@ -385,12 +389,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String savedIp = prefs.getString("ip", null);
         heightPref = (byte) prefs.getInt("height", 0);
         walk = (byte) prefs.getInt("walk", 30);
-        sendCommandsOverWiFi(savedIp);
+        hexapod.setIpAddress(savedIp);
+//        sendCommandsOverWiFi(savedIp);
+        startConnection();
 
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+
+    private void startConnection() {
+        Thread thread = new Thread(){
+            @Override
+            public void run(){
+                hexapod.connect();
+            }
+        };
+        thread.start();
     }
 
     private void showShortToast(String message) {

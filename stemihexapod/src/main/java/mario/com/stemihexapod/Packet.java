@@ -16,7 +16,9 @@ public class Packet {
     public byte onOff = 1;
     public int accelerometerX = 0;
     public int accelerometerY = 0;
-    public byte[] slidersArray = {50, 25, 0, 0, 0, 50, 0, 0, 0, 0, 0};
+    public int height = 50;
+    public int walkingStyle = 0;
+    public byte[] slidersArray = {0, 0, 0, 50, 0, 0, 0};
 
     public ByteArrayOutputStream outputStream;
 
@@ -34,6 +36,8 @@ public class Packet {
             this.outputStream.write(onOff);
             this.outputStream.write(accelerometerX);
             this.outputStream.write(accelerometerY);
+            this.outputStream.write(height);
+            this.outputStream.write(walkingStyle);
             this.outputStream.write(slidersArray);
         } catch (IOException e) {
             e.printStackTrace();
