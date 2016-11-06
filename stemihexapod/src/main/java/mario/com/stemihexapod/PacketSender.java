@@ -18,7 +18,7 @@ import java.util.Objects;
  * @author Mario
  */
 
-public class PacketSender {
+class PacketSender {
     public Hexapod hexapod;
     public int sendingInterval = 100;
     public Boolean connected = false;

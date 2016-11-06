@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.concurrent.ThreadFactory;
 
 import mario.com.stemihexapod.Hexapod;
+import mario.com.stemihexapod.PacketSender;
 
 import static com.stemi.STEMIHexapod.Menu.bMenu;
 

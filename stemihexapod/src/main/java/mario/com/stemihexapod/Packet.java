@@ -7,7 +7,7 @@ import java.io.IOException;
  * Created by Mario on 23/10/2016.
  */
 
-public class Packet {
+class Packet {
     public int power = 0;
     public int angle = 0;
     public int rotation = 0;
