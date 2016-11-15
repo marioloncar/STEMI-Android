@@ -5,12 +5,32 @@ package mario.com.stemihexapod;
  */
 
 
-public class Hexapod {
+public class Hexapod implements PacketSenderInterface {
     public Packet currentPacket;
     public PacketSender sendPacket;
     public String ipAddress;
     public int port;
+    public CalibrationPacket calibrationPacket;
     public byte[] slidersArray = {50, 25, 0, 0, 0, 50, 0, 0, 0, 0, 0};
+    public HexapodInterface hexapodInterface = new HexapodInterface() {
+        @Override
+        public void connectionStatus(boolean isConnected) {
+
+        }
+    };
+
+    @Override
+    public void connectionLost() {
+        hexapodInterface.connectionStatus(false);
+        System.out.println("IZGUBLJENA KONEKCIJA");
+    }
+
+    @Override
+    public void connectionActive() {
+        hexapodInterface.connectionStatus(true);
+        System.out.println("KONEKCIJA AKTIVNA");
+    }
+
 
     public enum WalkingStyle {
         TripodGait,
@@ -58,6 +78,7 @@ public class Hexapod {
 
     public void connect() {
         this.sendPacket = new PacketSender(this);
+        sendPacket.packetSenderInterface = this;
         sendPacket.startSendingData();
     }
 

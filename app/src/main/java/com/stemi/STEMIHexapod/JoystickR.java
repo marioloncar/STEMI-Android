@@ -8,6 +8,8 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import mario.com.stemihexapod.Hexapod;
+
 /**
  * Created by Mario on 24/03/16.
  */
@@ -39,6 +41,7 @@ public class JoystickR extends LinearLayout {
     public JoystickR(Context context) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.joystick_r, this, true);
+
     }
 
     public JoystickR(Context context, AttributeSet attrs) {
@@ -136,7 +139,7 @@ public class JoystickR extends LinearLayout {
                 break;
         }
 
-        rotation = (byte) (int) (Math.sin(Math.toRadians(getAngle())) * getPower());
+        rotation = (byte) (Math.sin(Math.toRadians(getAngle())) * getPower());
 
         this.invalidate();
 

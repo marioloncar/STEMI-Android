@@ -559,7 +559,6 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                             Thread.sleep(SLEEPING_INTERVAL);
                             buffOutStream.write(bytesArray());
                             buffOutStream.flush();
-                            System.out.println("BYTES ARRAY -> " + Arrays.toString(bytesArray()));
                         }
                         socket.close();
 

@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -22,6 +23,7 @@ class PacketSender {
     public Hexapod hexapod;
     public int sendingInterval = 100;
     public Boolean connected = false;
+    public PacketSenderInterface packetSenderInterface;
 
     public PacketSender(Hexapod hexapod) {
         this.hexapod = hexapod;
@@ -55,6 +57,7 @@ class PacketSender {
                 JSONObject jsonObject = new JSONObject(bufferNew);
                 if (Objects.equals(jsonObject.getBoolean("isValid"), true)) {
                     this.sendData();
+//                    this.packetSenderInterface.connectionActive();
                 } else {
                     this.stopSendingData();
                 }
@@ -66,6 +69,8 @@ class PacketSender {
     }
 
     public void sendData() {
+        this.connected = true;
+
         try {
             Socket socket = new Socket(this.hexapod.ipAddress, this.hexapod.port);
             OutputStream outputStream = socket.getOutputStream();
@@ -76,6 +81,8 @@ class PacketSender {
                     Thread.sleep(sendingInterval);
                     buffer.write(this.hexapod.currentPacket.toByteArray());
                     buffer.flush();
+                    System.out.println("BUFFER -> " + Arrays.toString(this.hexapod.currentPacket.toByteArray()));
+                    this.packetSenderInterface.connectionActive();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -91,6 +98,7 @@ class PacketSender {
 
     public void stopSendingData() {
         this.connected = false;
+        this.packetSenderInterface.connectionLost();
     }
 
 }

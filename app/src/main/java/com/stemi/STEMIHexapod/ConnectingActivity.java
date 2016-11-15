@@ -33,9 +33,6 @@ import java.net.URL;
 import java.util.Objects;
 
 import io.fabric.sdk.android.Fabric;
-import mario.com.stemihexapod.Hexapod;
-import mario.com.stemihexapod.PacketSender;
-
 
 /**
  * Created by Mario on 24/08/16.

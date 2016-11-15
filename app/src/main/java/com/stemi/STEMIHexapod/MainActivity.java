@@ -29,15 +29,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.concurrent.ThreadFactory;
 
 import mario.com.stemihexapod.Hexapod;
-import mario.com.stemihexapod.PacketSender;
+import mario.com.stemihexapod.HexapodInterface;
 
 import static com.stemi.STEMIHexapod.Menu.bMenu;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener, HexapodInterface {
 
     private ImageButton ibStandby, ibMovement, ibRotation, ibOrientation;
     private View vOverlay;
@@ -251,6 +249,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             else if (event.values[1] > 4) accelerometerY = 40;
             else accelerometerY = (byte) (int) (event.values[1] * 10);
         }
+        this.hexapod.setAccelerometerX(this.accelerometerX);
+        this.hexapod.setAccelerometerY(this.accelerometerY);
     }
 
     @Override
@@ -264,8 +264,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.ibStandby:
                 if (ibStandby.isSelected()) {
                     ibStandby.setSelected(false);
+                    hexapod.turnOff();
                 } else {
                     ibStandby.setSelected(true);
+                    hexapod.turnOn();
                 }
                 break;
 
@@ -287,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ibMovement.setSelected(true);
                 ibRotation.setSelected(false);
                 ibOrientation.setSelected(false);
+                hexapod.setMovementMode();
                 closeMenu();
                 break;
 
@@ -297,6 +300,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ibRotation.setSelected(true);
                 ibMovement.setSelected(false);
                 ibOrientation.setSelected(false);
+                hexapod.setRotationMode();
                 closeMenu();
                 break;
 
@@ -307,6 +311,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ibOrientation.setSelected(true);
                 ibMovement.setSelected(false);
                 ibRotation.setSelected(false);
+                hexapod.setOrientationMode();
                 closeMenu();
                 break;
             case R.id.ibHeight:
@@ -365,21 +370,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        connected = false;
+//        connected = false;
+        stopConnection();
         finish();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        connected = false;
+//        connected = false;
+        hexapod.setMovementMode();
+        stopConnection();
         sensorManager.unregisterListener(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        connected = false;
+//        connected = false;
+        stopConnection();
     }
 
     @Override
@@ -391,6 +400,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         heightPref = (byte) prefs.getInt("height", 0);
         walk = (byte) prefs.getInt("walk", 30);
         hexapod.setIpAddress(savedIp);
+        hexapod.setHeight(heightPref);
+
 //        sendCommandsOverWiFi(savedIp);
         startConnection();
 
@@ -408,6 +419,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         };
         thread.start();
+    }
+    private void stopConnection(){
+        hexapod.disconnect();
     }
 
     private void showShortToast(String message) {
@@ -496,5 +510,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+    }
+
+    @Override
+    public void connectionStatus(boolean isConnected) {
+        if (!isConnected){
+            showConnectionDialog();
+            System.out.println("KONEKTAN -> " + isConnected);
+        }
     }
 }
