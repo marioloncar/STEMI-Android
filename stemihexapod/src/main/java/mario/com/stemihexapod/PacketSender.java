@@ -24,6 +24,7 @@ class PacketSender {
     public int sendingInterval = 100;
     public Boolean connected = false;
     public PacketSenderInterface packetSenderInterface;
+    public boolean openCommunication = true;
 
     public PacketSender(Hexapod hexapod) {
         this.hexapod = hexapod;
@@ -59,32 +60,33 @@ class PacketSender {
                     this.sendData();
 //                    this.packetSenderInterface.connectionActive();
                 } else {
-                    this.stopSendingData();
+                    this.dropConnection();
                 }
             }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
-            this.stopSendingData();
+            this.dropConnection();
         }
     }
 
     public void sendData() {
-        this.connected = true;
 
         try {
             Socket socket = new Socket(this.hexapod.ipAddress, this.hexapod.port);
             OutputStream outputStream = socket.getOutputStream();
             BufferedOutputStream buffer = new BufferedOutputStream(outputStream, 30);
 
-            while (this.connected) {
+            while (this.openCommunication) {
                 try {
                     Thread.sleep(sendingInterval);
                     buffer.write(this.hexapod.currentPacket.toByteArray());
                     buffer.flush();
                     System.out.println("BUFFER -> " + Arrays.toString(this.hexapod.currentPacket.toByteArray()));
                     this.packetSenderInterface.connectionActive();
+                    this.connected = true;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    this.dropConnection();
                 }
 
             }
@@ -92,13 +94,18 @@ class PacketSender {
 
         } catch (IOException e) {
             e.printStackTrace();
-            this.stopSendingData();
+            this.dropConnection();
         }
     }
 
     public void stopSendingData() {
+        this.openCommunication = false;
+    }
+
+    private void dropConnection(){
         this.connected = false;
         this.packetSenderInterface.connectionLost();
+        this.stopSendingData();
     }
 
 }

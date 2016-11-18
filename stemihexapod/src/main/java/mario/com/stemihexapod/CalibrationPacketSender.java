@@ -14,10 +14,12 @@ import java.net.URL;
  */
 
 class CalibrationPacketSender {
+
     public Hexapod hexapod;
     public int sendingInterval = 100;
     public Boolean connected = false;
     public byte[] calibrationArray = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 0};
+    public boolean openCommunication = true;
 
     public CalibrationPacketSender(Hexapod hexapod) {
         this.hexapod = hexapod;
@@ -47,31 +49,44 @@ class CalibrationPacketSender {
     }
 
     public void sendData() {
-        this.connected = true;
-
         try {
             Socket socket = new Socket(this.hexapod.ipAddress, this.hexapod.port);
             OutputStream outputStream = socket.getOutputStream();
             BufferedOutputStream buffer = new BufferedOutputStream(outputStream, 30);
 
-            while (this.connected) {
+            while (this.openCommunication) {
                 Thread.sleep(sendingInterval);
                 buffer.write(this.hexapod.calibrationPacket.toByteArray());
                 buffer.flush();
+                this.connected = true;
             }
             socket.close();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-            this.stopSendingData();
+            this.dropConnection();
         }
 
     }
 
     public void sendOnePacket() {
+        try {
+            Socket socket = new Socket(this.hexapod.ipAddress, this.hexapod.port);
+            OutputStream outputStream = socket.getOutputStream();
+            BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
+            buffOutStream.write(this.hexapod.calibrationPacket.toByteArray());
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
     public void stopSendingData() {
+        this.openCommunication = false;
+    }
+
+    public void dropConnection() {
         this.connected = false;
+        this.stopSendingData();
     }
 }

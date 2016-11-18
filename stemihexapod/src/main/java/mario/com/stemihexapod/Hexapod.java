@@ -11,7 +11,10 @@ public class Hexapod implements PacketSenderInterface {
     public String ipAddress;
     public int port;
     public CalibrationPacket calibrationPacket;
+    public CalibrationPacketSender calibrationPacketSender;
     public byte[] slidersArray = {50, 25, 0, 0, 0, 50, 0, 0, 0, 0, 0};
+    public boolean calibrationModeEnabled = false;
+    public byte[] initialCalibrationData = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
     public HexapodInterface hexapodInterface = new HexapodInterface() {
         @Override
         public void connectionStatus(boolean isConnected) {
@@ -50,6 +53,22 @@ public class Hexapod implements PacketSenderInterface {
     }
 
     /**
+     * Initializes default connection with IP address: 192.168.4.1 and port: 80. Includes calibration mode.
+     *
+     * @param withCalibrationMode Takes true or false if calibration mode should be enabled.
+     */
+
+    public Hexapod(boolean withCalibrationMode) {
+        this.calibrationModeEnabled = withCalibrationMode;
+        this.ipAddress = "192.168.4.1";
+        this.port = 80;
+        if (calibrationModeEnabled)
+            this.calibrationPacket = new CalibrationPacket();
+        else
+            this.currentPacket = new Packet();
+    }
+
+    /**
      * Initializes connection with custom IP address and port.
      *
      * @param ip   Takes given IP Address (default: 192.168.4.1)
@@ -65,11 +84,11 @@ public class Hexapod implements PacketSenderInterface {
     /**
      * Sets new IP address. By default this is set to 192.168.4.1
      *
-     * @param ipAddress Takes given IP address
+     * @param newIpAddress Takes given IP address
      */
 
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
+    public void setIpAddress(String newIpAddress) {
+        this.ipAddress = newIpAddress;
     }
 
     /**
@@ -77,17 +96,29 @@ public class Hexapod implements PacketSenderInterface {
      */
 
     public void connect() {
-        this.sendPacket = new PacketSender(this);
-        sendPacket.packetSenderInterface = this;
-        sendPacket.startSendingData();
+        if (calibrationModeEnabled) {
+            calibrationPacketSender = new CalibrationPacketSender(this);
+            calibrationPacketSender.enterCalibrationMode(); //check if you entered calibration mode!!!
+            this.initialCalibrationData = this.calibrationPacket.legsValues;
+        } else {
+            sendPacket = new PacketSender(this);
+            sendPacket.packetSenderInterface = this;
+            sendPacket.startSendingData();
+        }
     }
 
     /**
      * Stop sending data to Hexapod and closes connection.
      */
 
+
     public void disconnect() {
-        sendPacket.stopSendingData();
+        if (calibrationModeEnabled) {
+            calibrationPacketSender.stopSendingData();
+        } else {
+            sendPacket.stopSendingData();
+        }
+
     }
 
     /**
@@ -356,6 +387,64 @@ public class Hexapod implements PacketSenderInterface {
                 walkingStyleValue = 30;
         }
         currentPacket.walkingStyle = walkingStyleValue;
+    }
+
+    /**
+     * Sets value of Hexapod leg at given index.
+     *
+     * @param value Value of Hexapod motor.
+     * @param index Index of Hexapod motor.
+     */
+
+    public void setValue(byte value, int index) {
+        if (value >= 0 && value <= 100)
+            calibrationPacket.legsValues[index] = value;
+        else
+            throw new IndexOutOfBoundsException("Value out of bounds");
+    }
+
+    /**
+     * Increase legs value at given index.
+     *
+     * @param index Takes leg index.
+     */
+
+    public void increaseValueAtIndex(int index) {
+        if (calibrationPacket.legsValues[index] < 100)
+            calibrationPacket.legsValues[index]++;
+    }
+
+    /**
+     * Decrease legs value at given index.
+     *
+     * @param index Takes leg index.
+     */
+
+    public void decreaseValueAtIndex(int index) {
+        if (calibrationPacket.legsValues[index] > 0)
+            calibrationPacket.legsValues[index]--;
+    }
+
+    /**
+     * Writes new calibration values to Hexapod
+     *
+     * @throws InterruptedException
+     */
+
+    public void writeDataToHexapod() throws InterruptedException {
+        calibrationPacketSender.stopSendingData();
+        Thread.sleep(500);
+        calibrationPacket.writeToHexapod = CalibrationPacket.WriteData.Yes.ordinal();
+        calibrationPacketSender.sendOnePacket();
+        calibrationPacket.writeToHexapod = CalibrationPacket.WriteData.No.ordinal();
+        Thread.sleep(1000);
+    }
+
+    /**
+     * @return initial array of calibration values stored on Hexapod.
+     */
+    public byte[] fetchDataFromHexapod() {
+        return initialCalibrationData;
     }
 }
 

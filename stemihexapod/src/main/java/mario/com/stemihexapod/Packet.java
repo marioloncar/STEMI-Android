@@ -23,11 +23,12 @@ class Packet {
     public ByteArrayOutputStream outputStream;
 
     public byte[] toByteArray() {
+        byte[] pkt = "PKT".getBytes();
         this.outputStream = new ByteArrayOutputStream() {
         };
 
         try {
-            this.outputStream.write("PKT".getBytes());
+            this.outputStream.write(pkt);
             this.outputStream.write(power);
             this.outputStream.write(angle);
             this.outputStream.write(rotation);
