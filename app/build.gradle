@@ -25,7 +25,7 @@ android {
         applicationId "com.stemi.STEMIHexapod"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 94
+        versionCode 96
         versionName "1.0"
     }
     buildTypes {

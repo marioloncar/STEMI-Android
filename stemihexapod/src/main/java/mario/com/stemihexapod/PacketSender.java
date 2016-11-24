@@ -23,7 +23,7 @@ class PacketSender {
     public Hexapod hexapod;
     public int sendingInterval = 100;
     public Boolean connected = false;
-    public PacketSenderInterface packetSenderInterface;
+    public PacketSenderStatus packetSenderStatus;
     public boolean openCommunication = true;
 
     public PacketSender(Hexapod hexapod) {
@@ -82,7 +82,7 @@ class PacketSender {
                     buffer.write(this.hexapod.currentPacket.toByteArray());
                     buffer.flush();
                     System.out.println("BUFFER -> " + Arrays.toString(this.hexapod.currentPacket.toByteArray()));
-                    this.packetSenderInterface.connectionActive();
+                    this.packetSenderStatus.connectionActive();
                     this.connected = true;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -104,7 +104,7 @@ class PacketSender {
 
     private void dropConnection(){
         this.connected = false;
-        this.packetSenderInterface.connectionLost();
+        this.packetSenderStatus.connectionLost();
         this.stopSendingData();
     }
 

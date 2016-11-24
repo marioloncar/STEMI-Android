@@ -17,17 +17,17 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import mario.com.stemihexapod.WalkingStyle;
+
 
 /**
  * Created by Mario on 29/08/16.
  */
-public class WalkstyleActivity extends AppCompatActivity {
+public class WalkingstyleActivity extends AppCompatActivity {
 
     private TextView tvWalkDesc;
-
-    private byte walkValue;
-
     private SharedPreferences prefs;
+    public WalkingStyle walkingStyle;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,38 +76,34 @@ public class WalkstyleActivity extends AppCompatActivity {
                 switch (checkedId) {
                     case R.id.rb1:
                         tvWalkDesc.setText(R.string.tripod_desc);
-                        walkValue = 30;
-                        prefs.edit().putInt("walk", walkValue).apply();
+                        prefs.edit().putString("walk", walkingStyle.TripodGait.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb1).apply();
                         break;
                     case R.id.rb2:
                         tvWalkDesc.setText(R.string.tripod_delayed_desc);
-                        walkValue = 60;
-                        prefs.edit().putInt("walk", walkValue).apply();
+                        prefs.edit().putString("walk", walkingStyle.TripodGaitAngled.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb2).apply();
                         break;
                     case R.id.rb3:
                         tvWalkDesc.setText(R.string.ripple_desc);
-                        walkValue = 80;
-                        prefs.edit().putInt("walk", walkValue).apply();
+                        prefs.edit().putString("walk", walkingStyle.TripodGaitStar.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb3).apply();
                         break;
                     case R.id.rb4:
                         tvWalkDesc.setText(R.string.wave_desc);
-                        walkValue = 100;
-                        prefs.edit().putInt("walk", walkValue).apply();
+                        prefs.edit().putString("walk", walkingStyle.WaveGait.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb4).apply();
                         break;
                     default:
                         tvWalkDesc.setText(R.string.tripod_desc);
-                        walkValue = 30;
-                        prefs.edit().putInt("walk", walkValue).apply();
+                        prefs.edit().putString("walk", walkingStyle.TripodGait.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb1).apply();
                         break;
                 }
             }
         });
     }
+
 
     @Override
     public boolean onSupportNavigateUp() {

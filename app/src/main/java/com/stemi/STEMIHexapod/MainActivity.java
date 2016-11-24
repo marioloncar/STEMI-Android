@@ -24,33 +24,23 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Socket;
-
 import mario.com.stemihexapod.Hexapod;
-import mario.com.stemihexapod.HexapodInterface;
+import mario.com.stemihexapod.HexapodStatus;
+import mario.com.stemihexapod.WalkingStyle;
 
 import static com.stemi.STEMIHexapod.Menu.bMenu;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener, HexapodInterface {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener, HexapodStatus, JoystickMovement {
 
     private ImageButton ibStandby, ibMovement, ibRotation, ibOrientation;
     private View vOverlay;
     private Typeface tf;
     private RelativeLayout lay;
     private ImageView longToastBck;
-    private Boolean connected;
-    private final static int SLEEPING_INTERVAL = 100;
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private byte accelerometerX = 0;
     private byte accelerometerY = 0;
-    private byte heightPref = 50;
-    private byte walk = 30;
-    public byte[] slidersArray = {0, 0, 0, 50, 0, 0, 0, 0, 0};
 
     private AlertDialog.Builder builder;
 
@@ -79,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         prefs = getSharedPreferences("myPref", MODE_PRIVATE);
 
-
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
@@ -89,6 +78,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder = new AlertDialog.Builder(this);
 
         hexapod = new Hexapod();
+        hexapod.hexapodStatus = this;
+
+        // initialize interface methods
+        JoystickL.leftJoystick = this;
+        JoystickR.rightJoystick = this;
+
 
         /**** OnLongClick Listeners ****/
         ibMovement.setOnLongClickListener(new View.OnLongClickListener() {
@@ -204,40 +199,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void sendCommandsOverWiFi(final String ip) {
-        connected = true;
-
-        Thread t = new Thread() {
-            public void run() {
-                try {
-                    //connect to IP address, port 80
-                    Socket socket = new Socket(ip, 80);
-                    OutputStream outputStream = socket.getOutputStream();
-
-                    try {
-                        BufferedOutputStream buffer = new BufferedOutputStream(outputStream, 30);
-                        while (connected) {
-                            Thread.sleep(SLEEPING_INTERVAL);
-                            buffer.write(bytesArray());
-                            buffer.flush();
-                        }
-                        socket.close();
-
-                    } catch (IOException | InterruptedException e) {
-                        showConnectionDialog();
-                    } finally {
-                        connected = false;
-
-
-                    }
-
-                } catch (IOException ignored) {
-                }
-            }
-        };
-        t.start();
-    }
-
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -258,6 +219,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    // onClick listeners for buttons on screen
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -328,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.ibWalkingStyle:
                 closeMenu();
-                Intent intent2 = new Intent(MainActivity.this, WalkstyleActivity.class);
+                Intent intent2 = new Intent(MainActivity.this, WalkingstyleActivity.class);
                 startActivity(intent2);
 
                 break;
@@ -370,7 +332,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-//        connected = false;
         stopConnection();
         finish();
     }
@@ -378,7 +339,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onPause() {
         super.onPause();
-//        connected = false;
         hexapod.setMovementMode();
         stopConnection();
         sensorManager.unregisterListener(this);
@@ -387,24 +347,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onStop() {
         super.onStop();
-//        connected = false;
         stopConnection();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        connected = true;
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
         String savedIp = prefs.getString("ip", null);
-        heightPref = (byte) prefs.getInt("height", 0);
-        walk = (byte) prefs.getInt("walk", 30);
+        byte heightPref = (byte) prefs.getInt("height", 0);
+        String walkingStyle = prefs.getString("walk", WalkingStyle.TripodGait.toString());
         hexapod.setIpAddress(savedIp);
         hexapod.setHeight(heightPref);
-
-//        sendCommandsOverWiFi(savedIp);
+        hexapod.setWalkingStyle(WalkingStyle.valueOf(walkingStyle));
         startConnection();
 
+        // hide soft keys and status bar
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -412,15 +370,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void startConnection() {
-        Thread thread = new Thread(){
+        Thread thread = new Thread() {
             @Override
-            public void run(){
+            public void run() {
                 hexapod.connect();
             }
         };
         thread.start();
     }
-    private void stopConnection(){
+
+    private void stopConnection() {
         hexapod.disconnect();
     }
 
@@ -466,32 +425,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lay.setVisibility(View.INVISIBLE);
     }
 
-    private byte[] bytesArray() {
-
-        JoystickL joyL = (JoystickL) findViewById(R.id.joyL);
-        JoystickR joyR = (JoystickR) findViewById(R.id.joyR);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream() {
-        };
-        try {
-            outputStream.write("PKT".getBytes());
-            outputStream.write(joyL.power);
-            outputStream.write(joyL.angle);
-            outputStream.write(joyR.rotation);
-            outputStream.write(ibRotation.isSelected() ? 1 : 0);
-            outputStream.write(ibOrientation.isSelected() ? 1 : 0);
-            outputStream.write(ibStandby.isSelected() ? 1 : 0);
-            outputStream.write(accelerometerX);
-            outputStream.write(accelerometerY);
-            outputStream.write(heightPref);
-            outputStream.write(walk);
-            outputStream.write(slidersArray);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return outputStream.toByteArray();
-    }
-
     private void showConnectionDialog() {
         runOnUiThread(new Runnable() {
             @Override
@@ -514,9 +447,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void connectionStatus(boolean isConnected) {
-        if (!isConnected){
+        if (!isConnected) {
             showConnectionDialog();
-            System.out.println("KONEKTAN -> " + isConnected);
         }
+    }
+
+    @Override
+    public void leftJoystickMoved(int power, int angle) {
+        hexapod.setJoystickParameters(power, angle);
+    }
+
+    @Override
+    public void rightJoystickMoved(int rotation) {
+        hexapod.setJoystickParameters(rotation);
     }
 }

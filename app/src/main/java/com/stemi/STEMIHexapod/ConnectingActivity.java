@@ -33,6 +33,7 @@ import java.net.URL;
 import java.util.Objects;
 
 import io.fabric.sdk.android.Fabric;
+import mario.com.stemihexapod.WalkingStyle;
 
 /**
  * Created by Mario on 24/08/16.
@@ -63,52 +64,23 @@ public class ConnectingActivity extends AppCompatActivity {
         tf = Typeface.createFromAsset(getAssets(),
                 "fonts/ProximaNova-Regular.otf");
 
-
         tvConnectingTitle.setTypeface(tf);
         tvConnectingHint.setTypeface(tf);
         bConnect.setTypeface(tf);
 
         prefs = getSharedPreferences("myPref", MODE_PRIVATE);
 
-
         bConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bConnect.setText(R.string.pairing);
-
-                Animation animation = new AlphaAnimation(0.5f, 1.0f);
-                animation.setDuration(700);
-                animation.setStartOffset(20);
-                animation.setRepeatMode(Animation.REVERSE);
-                animation.setRepeatCount(Animation.INFINITE);
-
-                RotateAnimation rotateAnimation = new RotateAnimation(0, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-                rotateAnimation.setInterpolator(new LinearInterpolator());
-                rotateAnimation.setDuration(1300);
-                rotateAnimation.setRepeatCount(Animation.INFINITE);
-
-                tvConnectingHint.setVisibility(View.INVISIBLE);
-                tvConnectingTitle.setVisibility(View.INVISIBLE);
-                ivStemiIcon.setVisibility(View.VISIBLE);
-                ivProgress.setVisibility(View.VISIBLE);
-                ivProgressPath.setVisibility(View.VISIBLE);
-
-                ivProgress.startAnimation(rotateAnimation);
-                ivStemiIcon.startAnimation(animation);
-                bConnect.setBackground(null);
-                bConnect.setEnabled(false);
-                bConnect.setTextSize(20);
-                bConnect.setAlpha(0.6f);
-                bChangeIP.setVisibility(View.INVISIBLE);
-
-                /*** Connect to STEMI Hexapod ***/
+                animateUI();
                 Thread thread = new Thread() {
                     @Override
                     public void run() {
-                        String jsonString = "";
-                        jsonString = fetchJSON("http://" + savedIp + "/stemiData.json");
                         try {
-                            // if jsonString object exists compare with one saved in SharedPrefs
+                            String jsonString = "";
+                            jsonString = fetchJSON("http://" + savedIp + "/stemiData.json");
+                            // if jsonString object exists compare with one saved in SharedPreferences
                             if (jsonString != null) {
                                 JSONObject jsonObject = new JSONObject(jsonString);
                                 if (Objects.equals(jsonObject.getString("stemiID"), prefs.getString("stemiId", null))) {
@@ -118,18 +90,7 @@ public class ConnectingActivity extends AppCompatActivity {
                                     openMainActivity();
                                 } else {
                                     // if IDs are not equal, set default STEMI values
-                                    String version = jsonObject.getString("version");
-                                    String stemiId = jsonObject.getString("stemiID");
-
-                                    prefs.edit().putString("version", version).apply();
-                                    prefs.edit().putString("stemiId", stemiId).apply();
-                                    prefs.edit().putInt("walk", 30).apply();
-                                    prefs.edit().putInt("rbSelected", R.id.rb1).apply();
-                                    prefs.edit().putInt("height", 50).apply();
-                                    synchronized (this) {
-                                        wait(2000);
-                                    }
-                                    openMainActivity();
+                                    initializeDefaultValues(jsonObject);
                                 }
                             } else {
                                 // if connection is not established show different UI
@@ -139,37 +100,7 @@ public class ConnectingActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        AnimationSet error = new AnimationSet(false);
-                                        Animation leftMove = new TranslateAnimation(0, -10, 0, 0);
-                                        leftMove.setDuration(50);
-                                        Animation rightMove = new TranslateAnimation(0, 20, 0, 0);
-                                        rightMove.setStartOffset(50);
-                                        rightMove.setDuration(50);
-
-                                        Animation fadeIn = new AlphaAnimation(0f, 1.0f);
-                                        fadeIn.setDuration(500);
-
-                                        error.addAnimation(leftMove);
-                                        error.addAnimation(rightMove);
-
-                                        ivProgress.clearAnimation();
-                                        ivStemiIcon.clearAnimation();
-                                        ivProgressPath.setVisibility(View.INVISIBLE);
-                                        ivProgress.setVisibility(View.INVISIBLE);
-                                        ivStemiIcon.setVisibility(View.INVISIBLE);
-                                        tvConnectingHint.setVisibility(View.VISIBLE);
-                                        tvConnectingTitle.setVisibility(View.VISIBLE);
-                                        bConnect.setText(R.string.try_again);
-                                        bConnect.setEnabled(true);
-                                        bConnect.setTextSize(16);
-                                        bConnect.setAlpha(1f);
-                                        bConnect.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.button_connecting, null));
-                                        bConnect.startAnimation(fadeIn);
-                                        bChangeIP.setVisibility(View.VISIBLE);
-                                        bChangeIP.setTypeface(tf);
-                                        tvConnectingTitle.setText(R.string.unable_to_connect);
-                                        tvConnectingTitle.startAnimation(error);
-                                        tvConnectingHint.setText(R.string.hint_noConnection);
+                                        changeUI();
                                     }
                                 });
                             }
@@ -177,10 +108,24 @@ public class ConnectingActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
+
+                    private void initializeDefaultValues(JSONObject jsonObject) throws JSONException, InterruptedException {
+                        String version = jsonObject.getString("version");
+                        String stemiId = jsonObject.getString("stemiID");
+
+                        prefs.edit().putString("version", version).apply();
+                        prefs.edit().putString("stemiId", stemiId).apply();
+                        prefs.edit().putString("walk", WalkingStyle.TripodGait.toString()).apply();
+                        prefs.edit().putInt("rbSelected", R.id.rb1).apply();
+                        prefs.edit().putInt("height", 50).apply();
+                        synchronized (this) {
+                            wait(2000);
+                        }
+                        openMainActivity();
+                    }
+
                 };
                 thread.start();
-                /*** Connect to STEMI Hexapod END ***/
-
             }
         });
 
@@ -193,11 +138,73 @@ public class ConnectingActivity extends AppCompatActivity {
         });
     }
 
+    private void animateUI() {
+        bConnect.setText(R.string.pairing);
+
+        Animation animation = new AlphaAnimation(0.5f, 1.0f);
+        animation.setDuration(700);
+        animation.setStartOffset(20);
+        animation.setRepeatMode(Animation.REVERSE);
+        animation.setRepeatCount(Animation.INFINITE);
+
+        RotateAnimation rotateAnimation = new RotateAnimation(0, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotateAnimation.setInterpolator(new LinearInterpolator());
+        rotateAnimation.setDuration(1300);
+        rotateAnimation.setRepeatCount(Animation.INFINITE);
+
+        tvConnectingHint.setVisibility(View.INVISIBLE);
+        tvConnectingTitle.setVisibility(View.INVISIBLE);
+        ivStemiIcon.setVisibility(View.VISIBLE);
+        ivProgress.setVisibility(View.VISIBLE);
+        ivProgressPath.setVisibility(View.VISIBLE);
+
+        ivProgress.startAnimation(rotateAnimation);
+        ivStemiIcon.startAnimation(animation);
+        bConnect.setBackground(null);
+        bConnect.setEnabled(false);
+        bConnect.setTextSize(20);
+        bConnect.setAlpha(0.6f);
+        bChangeIP.setVisibility(View.INVISIBLE);
+    }
+
+    private void changeUI() {
+        AnimationSet error = new AnimationSet(false);
+        Animation leftMove = new TranslateAnimation(0, -10, 0, 0);
+        leftMove.setDuration(50);
+        Animation rightMove = new TranslateAnimation(0, 20, 0, 0);
+        rightMove.setStartOffset(50);
+        rightMove.setDuration(50);
+
+        Animation fadeIn = new AlphaAnimation(0f, 1.0f);
+        fadeIn.setDuration(500);
+
+        error.addAnimation(leftMove);
+        error.addAnimation(rightMove);
+
+        ivProgress.clearAnimation();
+        ivStemiIcon.clearAnimation();
+        ivProgressPath.setVisibility(View.INVISIBLE);
+        ivProgress.setVisibility(View.INVISIBLE);
+        ivStemiIcon.setVisibility(View.INVISIBLE);
+        tvConnectingHint.setVisibility(View.VISIBLE);
+        tvConnectingTitle.setVisibility(View.VISIBLE);
+        bConnect.setText(R.string.try_again);
+        bConnect.setEnabled(true);
+        bConnect.setTextSize(16);
+        bConnect.setAlpha(1f);
+        bConnect.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.button_connecting, null));
+        bConnect.startAnimation(fadeIn);
+        bChangeIP.setVisibility(View.VISIBLE);
+        bChangeIP.setTypeface(tf);
+        tvConnectingTitle.setText(R.string.unable_to_connect);
+        tvConnectingTitle.startAnimation(error);
+        tvConnectingHint.setText(R.string.hint_noConnection);
+    }
+
     private void openMainActivity() {
         finish();
         Intent i = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(i);
-
     }
 
 

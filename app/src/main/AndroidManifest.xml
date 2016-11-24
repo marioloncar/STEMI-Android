@@ -112,7 +112,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.stemi.STEMIHexapod.WalkstyleActivity"
+            android:name="com.stemi.STEMIHexapod.WalkingstyleActivity"
             android:label="Walking style"
             android:screenOrientation="portrait"
             android:theme="@style/SettingsTheme">

@@ -8,12 +8,10 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import mario.com.stemihexapod.Hexapod;
-
 /**
  * Created by Mario on 24/03/16.
  */
-public class JoystickR extends LinearLayout {
+public class JoystickR extends LinearLayout  {
 
     protected float positionX = 0; // Touch x position
     protected float positionY = 0; // Touch y position
@@ -24,6 +22,7 @@ public class JoystickR extends LinearLayout {
     private double lastAngle = 0;
 
     public byte rotation = 0;
+    public static JoystickMovement rightJoystick;
 
     private ImageView path_JoyRightLeft, path_JoyRightRight, joystickView, joystickPlus, joystickPath;
     protected float leftAlpha, rightAlpha;
@@ -61,6 +60,18 @@ public class JoystickR extends LinearLayout {
         joystickView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         joystickView.setImageResource(R.drawable.joystick);
         this.addView(joystickView);
+
+        rightJoystick = new JoystickMovement() {
+            @Override
+            public void leftJoystickMoved(int power, int angle) {
+
+            }
+
+            @Override
+            public void rightJoystickMoved(int rotation) {
+
+            }
+        };
 
     }
 
@@ -140,6 +151,8 @@ public class JoystickR extends LinearLayout {
         }
 
         rotation = (byte) (Math.sin(Math.toRadians(getAngle())) * getPower());
+
+        rightJoystick.rightJoystickMoved(rotation);
 
         this.invalidate();
 

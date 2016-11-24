@@ -5,7 +5,7 @@ package mario.com.stemihexapod;
  */
 
 
-public class Hexapod implements PacketSenderInterface {
+public class Hexapod implements PacketSenderStatus {
     public Packet currentPacket;
     public PacketSender sendPacket;
     public String ipAddress;
@@ -15,7 +15,7 @@ public class Hexapod implements PacketSenderInterface {
     public byte[] slidersArray = {50, 25, 0, 0, 0, 50, 0, 0, 0, 0, 0};
     public boolean calibrationModeEnabled = false;
     public byte[] initialCalibrationData = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
-    public HexapodInterface hexapodInterface = new HexapodInterface() {
+    public HexapodStatus hexapodStatus = new HexapodStatus() {
         @Override
         public void connectionStatus(boolean isConnected) {
 
@@ -24,23 +24,16 @@ public class Hexapod implements PacketSenderInterface {
 
     @Override
     public void connectionLost() {
-        hexapodInterface.connectionStatus(false);
+        hexapodStatus.connectionStatus(false);
         System.out.println("IZGUBLJENA KONEKCIJA");
     }
 
     @Override
     public void connectionActive() {
-        hexapodInterface.connectionStatus(true);
+        hexapodStatus.connectionStatus(true);
         System.out.println("KONEKCIJA AKTIVNA");
     }
 
-
-    public enum WalkingStyle {
-        TripodGait,
-        TripodGaitAngled,
-        TripodGaitStar,
-        WaveGait
-    }
 
     /**
      * Initializes default connection with IP address: 192.168.4.1 and port: 80
@@ -102,7 +95,7 @@ public class Hexapod implements PacketSenderInterface {
             this.initialCalibrationData = this.calibrationPacket.legsValues;
         } else {
             sendPacket = new PacketSender(this);
-            sendPacket.packetSenderInterface = this;
+            sendPacket.packetSenderStatus = this;
             sendPacket.startSendingData();
         }
     }
@@ -227,7 +220,7 @@ public class Hexapod implements PacketSenderInterface {
      * @param angle Takes values for angle of moving (Values can be: 0-255, look at the description!)
      */
 
-    public void setJoystickParams(int power, int angle) {
+    public void setJoystickParameters(int power, int angle) {
         currentPacket.power = power;
         currentPacket.angle = angle;
     }
@@ -244,7 +237,7 @@ public class Hexapod implements PacketSenderInterface {
      * @param rotation Takes values for rotation speed (Values must be: 0-255, look at the description!)
      */
 
-    public void setJoystickParams(int rotation) {
+    public void setJoystickParameters(int rotation) {
         currentPacket.rotation = rotation;
     }
 
@@ -294,7 +287,7 @@ public class Hexapod implements PacketSenderInterface {
      * Resets all Hexapod moving and tilt values to 0.
      */
 
-    public void resetMovingParams() {
+    public void resetMovingParameters() {
         currentPacket.power = 0;
         currentPacket.angle = 0;
         currentPacket.rotation = 0;
@@ -365,22 +358,22 @@ public class Hexapod implements PacketSenderInterface {
     /**
      * Set Hexapod walking style.
      *
-     * @param style This value can be TripodGait, TripodGaitAngled, TripodGaitStar or WaveGait.
+     * @param walkingStyle This value can be TripodGait, TripodGaitAngled, TripodGaitStar or WaveGait.
      */
 
-    public void setWalkingStyle(WalkingStyle style) {
+    public void setWalkingStyle(WalkingStyle walkingStyle) {
         int walkingStyleValue;
-        switch (style) {
-            case TripodGait:
+        switch (walkingStyle.ordinal()) {
+            case 0:
                 walkingStyleValue = 30;
                 break;
-            case TripodGaitAngled:
+            case 1:
                 walkingStyleValue = 60;
                 break;
-            case TripodGaitStar:
+            case 2:
                 walkingStyleValue = 80;
                 break;
-            case WaveGait:
+            case 3:
                 walkingStyleValue = 100;
                 break;
             default:

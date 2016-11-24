@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import mario.com.stemihexapod.Hexapod;
+
 /**
  * Created by Mario on 29/08/16.
  */
@@ -32,17 +34,13 @@ public class HeightActivity extends AppCompatActivity {
 
     private TextView tvHeightValue;
     private MediaPlayer movingSound, movingSoundShort;
-
     private SharedPreferences prefs;
-
     private final Handler repeatUpdateHandler = new Handler();
     private boolean mAutoIncrement = false;
     private boolean mAutoDecrement = false;
     private final static int REPEAT_DELAY = 50;
     private byte height = 50;
-    private Boolean connected;
-    private final static int SLEEPING_INTERVAL = 100;
-    private byte[] slidersArray = {0, 0, 0, 50, 0, 0, 0, 0, 0};
+    private Hexapod hexapod;
 
 
     @Override
@@ -81,6 +79,11 @@ public class HeightActivity extends AppCompatActivity {
 
         String savedIp = prefs.getString("ip", null);
 
+        hexapod = new Hexapod();
+        hexapod.setIpAddress(savedIp);
+        hexapod.setHeight(height);
+        startConnection();
+
         /*** Increase height listeners ***/
         ibHeightUp.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -117,8 +120,6 @@ public class HeightActivity extends AppCompatActivity {
                 }
             }
         });
-
-        /*** Increase height listeners END ***/
 
 
         /*** Decrease height listeners ***/
@@ -158,43 +159,67 @@ public class HeightActivity extends AppCompatActivity {
 
             }
         });
-        /*** Decrease height listeners END ***/
 
-        sendCommandsOverWiFi(savedIp);
-
+//        sendCommandsOverWiFi(savedIp);
     }
 
 
-    private void sendCommandsOverWiFi(final String ip) {
-        connected = true;
-
-        Thread t = new Thread() {
-            public void run() {
-                try {
-                    Socket socket = new Socket(ip, 80);
-                    OutputStream outputStream = socket.getOutputStream();
-
-                    try {
-                        BufferedOutputStream buffer = new BufferedOutputStream(outputStream, 30);
-                        while (connected) {
-                            Thread.sleep(SLEEPING_INTERVAL);
-                            buffer.write(bytesArray());
-                            buffer.flush();
-
-                        }
-
-                        socket.close();
-                    } catch (IOException | InterruptedException e) {
-                        e.printStackTrace();
-                    } finally {
-                        connected = false;
-                    }
-
-                } catch (IOException ignored) {
-                }
+    // Handler for long click on increase/decrease value buttons
+    private class RepeatUpdater implements Runnable {
+        public void run() {
+            if (mAutoIncrement) {
+                increment();
+                repeatUpdateHandler.postDelayed(new RepeatUpdater(), REPEAT_DELAY);
+            } else if (mAutoDecrement) {
+                decrement();
+                repeatUpdateHandler.postDelayed(new RepeatUpdater(), REPEAT_DELAY);
             }
-        };
-        t.start();
+        }
+    }
+
+    // Method for decrementing height value
+    private void decrement() {
+        if (!(height <= 0)) {
+            height--;
+            String sHeight = String.valueOf(height);
+            tvHeightValue.setText(sHeight);
+            prefs.edit().putInt("height", height).apply();
+            hexapod.setHeight(height);
+        } else {
+            stopSound();
+        }
+    }
+
+    // Method for incrementing height value
+    private void increment() {
+        if (!(height >= 100)) {
+            height++;
+            String sHeight = String.valueOf(height);
+            tvHeightValue.setText(sHeight);
+            prefs.edit().putInt("height", height).apply();
+            hexapod.setHeight(height);
+        } else {
+            stopSound();
+        }
+    }
+
+    private void stopSound() {
+        movingSound.pause();
+        movingSoundShort.pause();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        connected = false;
+        hexapod.disconnect();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+//        connected = false;
+        hexapod.disconnect();
     }
 
     @Override
@@ -209,83 +234,6 @@ public class HeightActivity extends AppCompatActivity {
         finish();
     }
 
-    private class RepeatUpdater implements Runnable {
-        public void run() {
-            if (mAutoIncrement) {
-                increment();
-                repeatUpdateHandler.postDelayed(new RepeatUpdater(), REPEAT_DELAY);
-            } else if (mAutoDecrement) {
-                decrement();
-                repeatUpdateHandler.postDelayed(new RepeatUpdater(), REPEAT_DELAY);
-            }
-        }
-    }
-
-    private void decrement() {
-        if (!(height <= 0)) {
-            height--;
-            String sHeight = String.valueOf(height);
-            tvHeightValue.setText(sHeight);
-            prefs.edit().putInt("height", height).apply();
-        } else {
-            movingSound.pause();
-            movingSoundShort.pause();
-        }
-    }
-
-    private void increment() {
-        if (!(height >= 100)) {
-            height++;
-            String sHeight = String.valueOf(height);
-            tvHeightValue.setText(sHeight);
-            prefs.edit().putInt("height", height).apply();
-        } else {
-            movingSound.pause();
-            movingSoundShort.pause();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        connected = true;
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        connected = false;
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        connected = false;
-    }
-
-    private byte[] bytesArray() {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream() {
-        };
-        try {
-            outputStream.write("PKT".getBytes());
-            outputStream.write(0); // power
-            outputStream.write(0); // angle
-            outputStream.write(0); // rotation
-            outputStream.write(0); // rotation mode
-            outputStream.write(0); // orientation mode
-            outputStream.write(1); // standby mode
-            outputStream.write(0); // accelerometerX
-            outputStream.write(0); // accelerometerY
-            outputStream.write(height);
-            byte walk = 30;
-            outputStream.write(walk);
-            outputStream.write(slidersArray);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return outputStream.toByteArray();
-    }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -296,5 +244,15 @@ public class HeightActivity extends AppCompatActivity {
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
         }
+    }
+
+    private void startConnection() {
+        Thread thread = new Thread(){
+            @Override
+            public void run(){
+                hexapod.connect();
+            }
+        };
+        thread.start();
     }
 }

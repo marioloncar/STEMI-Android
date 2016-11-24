@@ -8,8 +8,6 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import mario.com.stemihexapod.Hexapod;
-
 
 /**
  * Created by Mario on 24/03/16.
@@ -22,12 +20,12 @@ public class JoystickL extends LinearLayout {
     protected float positionY = 0; // Touch y position
     protected float centerX = 0; // Center view x position
     protected float centerY = 0; // Center view y position
-
     protected float joystickRadius;
     private double lastAngle = 0;
 
     public byte power = 0;
     public byte angle = 0;
+    public static JoystickMovement leftJoystick;
 
     private int d;
 
@@ -56,7 +54,6 @@ public class JoystickL extends LinearLayout {
     public JoystickL(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.joystick_l, this, true);
-
         path_JoyLeftDown = (ImageView) findViewById(R.id.ivJoystickLeft_Down);
         path_JoyLeftUp = (ImageView) findViewById(R.id.ivJoystickLeft_Up);
         path_JoyLeftLeft = (ImageView) findViewById(R.id.ivJoystickLeft_Left);
@@ -72,6 +69,18 @@ public class JoystickL extends LinearLayout {
         joystickView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         joystickView.setImageResource(R.drawable.joystick);
         this.addView(joystickView);
+
+        leftJoystick = new JoystickMovement() {
+            @Override
+            public void leftJoystickMoved(int power, int angle) {
+
+            }
+
+            @Override
+            public void rightJoystickMoved(int rotation) {
+
+            }
+        };
 
     }
 
@@ -203,6 +212,8 @@ public class JoystickL extends LinearLayout {
 
         power = (byte) getPower();
         angle = (byte) (getAngle() / 2);
+
+        leftJoystick.leftJoystickMoved(power, angle);
 
         this.invalidate();
 

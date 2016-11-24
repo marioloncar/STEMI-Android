@@ -104,7 +104,7 @@ public class IPActivity extends AppCompatActivity {
             }
         });
 
-        // izmjena fokusa na poljima
+        // Change focus on fields
         et1.addTextChangedListener(new TextWatcher() {
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
