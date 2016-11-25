@@ -188,14 +188,17 @@ public class ConnectingActivity extends AppCompatActivity {
         ivStemiIcon.setVisibility(View.INVISIBLE);
         tvConnectingHint.setVisibility(View.VISIBLE);
         tvConnectingTitle.setVisibility(View.VISIBLE);
+
         bConnect.setText(R.string.try_again);
         bConnect.setEnabled(true);
         bConnect.setTextSize(16);
         bConnect.setAlpha(1f);
         bConnect.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.button_connecting, null));
         bConnect.startAnimation(fadeIn);
+
         bChangeIP.setVisibility(View.VISIBLE);
         bChangeIP.setTypeface(tf);
+
         tvConnectingTitle.setText(R.string.unable_to_connect);
         tvConnectingTitle.startAnimation(error);
         tvConnectingHint.setText(R.string.hint_noConnection);

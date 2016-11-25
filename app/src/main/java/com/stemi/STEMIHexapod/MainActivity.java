@@ -41,11 +41,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Sensor accelerometer;
     private byte accelerometerX = 0;
     private byte accelerometerY = 0;
-
     private AlertDialog.Builder builder;
-
     private SharedPreferences prefs;
-
     private Hexapod hexapod;
 
     @Override
@@ -80,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         hexapod = new Hexapod();
         hexapod.hexapodStatus = this;
 
-        // initialize interface methods
+        // interface methods
         JoystickL.leftJoystick = this;
         JoystickR.rightJoystick = this;
 
@@ -140,9 +137,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibMovement.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getAction() == MotionEvent.ACTION_UP)
                     hideToast();
-                }
                 return false;
             }
         });
@@ -150,9 +146,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibRotation.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getAction() == MotionEvent.ACTION_UP)
                     hideToast();
-                }
                 return false;
             }
         });
@@ -160,9 +155,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibOrientation.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getAction() == MotionEvent.ACTION_UP)
                     hideToast();
-                }
                 return false;
             }
         });
@@ -170,9 +164,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibHeight.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getAction() == MotionEvent.ACTION_UP)
                     hideToast();
-                }
                 return false;
             }
         });
@@ -180,9 +173,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibCalibration.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getAction() == MotionEvent.ACTION_UP)
                     hideToast();
-                }
                 return false;
             }
         });
@@ -190,9 +182,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibWalkingStyle.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getAction() == MotionEvent.ACTION_UP)
                     hideToast();
-                }
                 return false;
             }
         });
@@ -234,20 +225,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.bMenu:
-                if (bMenu.isSelected()) {
+                if (bMenu.isSelected())
                     closeMenu();
-                } else {
+                else
                     openMenu();
-                }
                 break;
+
             case R.id.vOverlay:
                 closeMenu();
                 break;
 
             case R.id.ibMovement:
-                if (!ibMovement.isSelected()) {
+                if (!ibMovement.isSelected())
                     showShortToast("MOVEMENT ENABLED");
-                }
                 ibMovement.setSelected(true);
                 ibRotation.setSelected(false);
                 ibOrientation.setSelected(false);
@@ -256,9 +246,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.ibRotation:
-                if (!ibRotation.isSelected()) {
+                if (!ibRotation.isSelected())
                     showShortToast("ROTATION ENABLED");
-                }
                 ibRotation.setSelected(true);
                 ibMovement.setSelected(false);
                 ibOrientation.setSelected(false);
@@ -267,38 +256,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.ibOrientation:
-                if (!ibOrientation.isSelected()) {
+                if (!ibOrientation.isSelected())
                     showShortToast("ORIENTATION ENABLED");
-                }
                 ibOrientation.setSelected(true);
                 ibMovement.setSelected(false);
                 ibRotation.setSelected(false);
                 hexapod.setOrientationMode();
                 closeMenu();
                 break;
+
             case R.id.ibHeight:
                 closeMenu();
                 Intent intent = new Intent(MainActivity.this, HeightActivity.class);
                 startActivity(intent);
-
                 break;
+
             case R.id.ibCalibration:
                 closeMenu();
                 Intent intent1 = new Intent(MainActivity.this, CalibrationActivity.class);
                 startActivity(intent1);
-
                 break;
+
             case R.id.ibWalkingStyle:
                 closeMenu();
                 Intent intent2 = new Intent(MainActivity.this, WalkingstyleActivity.class);
                 startActivity(intent2);
-
                 break;
+
             case R.id.ibSettings:
                 closeMenu();
                 Intent intent3 = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(intent3);
-
                 break;
         }
     }
@@ -319,13 +307,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
+        if (hasFocus)
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
-        }
     }
 
 
@@ -354,12 +341,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+
         String savedIp = prefs.getString("ip", null);
         byte heightPref = (byte) prefs.getInt("height", 0);
         String walkingStyle = prefs.getString("walk", WalkingStyle.TripodGait.toString());
+
         hexapod.setIpAddress(savedIp);
         hexapod.setHeight(heightPref);
         hexapod.setWalkingStyle(WalkingStyle.valueOf(walkingStyle));
+
         startConnection();
 
         // hide soft keys and status bar
@@ -447,9 +437,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void connectionStatus(boolean isConnected) {
-        if (!isConnected) {
+        if (!isConnected)
             showConnectionDialog();
-        }
     }
 
     @Override

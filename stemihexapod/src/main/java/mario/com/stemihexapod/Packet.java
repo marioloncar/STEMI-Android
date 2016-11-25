@@ -8,38 +8,36 @@ import java.io.IOException;
  */
 
 class Packet {
-    public int power = 0;
-    public int angle = 0;
-    public int rotation = 0;
-    public byte staticTilt = 0;
-    public byte movingTilt = 0;
-    public byte onOff = 1;
-    public int accelerometerX = 0;
-    public int accelerometerY = 0;
-    public int height = 50;
-    public int walkingStyle = 0;
-    public byte[] slidersArray = {0, 0, 0, 50, 0, 0, 0};
+    int power = 0;
+    int angle = 0;
+    int rotation = 0;
+    byte staticTilt = 0;
+    byte movingTilt = 0;
+    byte onOff = 1;
+    int accelerometerX = 0;
+    int accelerometerY = 0;
+    int height = 50;
+    int walkingStyle = 0;
+    private byte[] slidersArray = {0, 0, 0, 50, 0, 0, 0};
 
-    public ByteArrayOutputStream outputStream;
-
-    public byte[] toByteArray() {
+    byte[] toByteArray() {
         byte[] pkt = "PKT".getBytes();
-        this.outputStream = new ByteArrayOutputStream() {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream() {
         };
 
         try {
-            this.outputStream.write(pkt);
-            this.outputStream.write(power);
-            this.outputStream.write(angle);
-            this.outputStream.write(rotation);
-            this.outputStream.write(staticTilt);
-            this.outputStream.write(movingTilt);
-            this.outputStream.write(onOff);
-            this.outputStream.write(accelerometerX);
-            this.outputStream.write(accelerometerY);
-            this.outputStream.write(height);
-            this.outputStream.write(walkingStyle);
-            this.outputStream.write(slidersArray);
+            outputStream.write(pkt);
+            outputStream.write(power);
+            outputStream.write(angle);
+            outputStream.write(rotation);
+            outputStream.write(staticTilt);
+            outputStream.write(movingTilt);
+            outputStream.write(onOff);
+            outputStream.write(accelerometerX);
+            outputStream.write(accelerometerY);
+            outputStream.write(height);
+            outputStream.write(walkingStyle);
+            outputStream.write(slidersArray);
         } catch (IOException e) {
             e.printStackTrace();
         }

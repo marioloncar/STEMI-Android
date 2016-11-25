@@ -15,18 +15,17 @@ import java.net.URL;
 
 class CalibrationPacketSender {
 
-    public Hexapod hexapod;
-    public int sendingInterval = 100;
-    public Boolean connected = false;
-    public byte[] calibrationArray = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 0};
-    public boolean openCommunication = true;
+    private Hexapod hexapod;
+    private Boolean connected = false;
+    private byte[] calibrationArray = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 0};
+    private boolean openCommunication = true;
 
-    public CalibrationPacketSender(Hexapod hexapod) {
+    CalibrationPacketSender(Hexapod hexapod) {
         this.hexapod = hexapod;
     }
 
 
-    public void enterCalibrationMode() {
+    void enterCalibrationMode() {
         ByteArrayOutputStream baos = null;
         try {
             URL url = new URL("http://" + this.hexapod.ipAddress + "/linearization.bin");
@@ -48,13 +47,14 @@ class CalibrationPacketSender {
         this.sendData();
     }
 
-    public void sendData() {
+    private void sendData() {
         try {
             Socket socket = new Socket(this.hexapod.ipAddress, this.hexapod.port);
             OutputStream outputStream = socket.getOutputStream();
             BufferedOutputStream buffer = new BufferedOutputStream(outputStream, 30);
 
             while (this.openCommunication) {
+                int sendingInterval = 100;
                 Thread.sleep(sendingInterval);
                 buffer.write(this.hexapod.calibrationPacket.toByteArray());
                 buffer.flush();
@@ -68,7 +68,7 @@ class CalibrationPacketSender {
 
     }
 
-    public void sendOnePacket() {
+    void sendOnePacket() {
         try {
             Socket socket = new Socket(this.hexapod.ipAddress, this.hexapod.port);
             OutputStream outputStream = socket.getOutputStream();
@@ -81,11 +81,11 @@ class CalibrationPacketSender {
 
     }
 
-    public void stopSendingData() {
+    void stopSendingData() {
         this.openCommunication = false;
     }
 
-    public void dropConnection() {
+    private void dropConnection() {
         this.connected = false;
         this.stopSendingData();
     }

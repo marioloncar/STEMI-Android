@@ -68,6 +68,7 @@ public class HeightActivity extends AppCompatActivity {
         ImageButton ibHeightUp = (ImageButton) findViewById(R.id.ibHeightUp);
         ImageButton ibHeightD = (ImageButton) findViewById(R.id.ibHeightD);
         tvHeightValue = (TextView) findViewById(R.id.tvHeightValue);
+
         String s = String.valueOf(height);
         tvHeightValue.setText(s);
 
@@ -112,12 +113,10 @@ public class HeightActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 increment();
-
-                if (height == 100) {
+                if (height == 100)
                     movingSoundShort.pause();
-                } else {
+                else
                     movingSoundShort.start();
-                }
             }
         });
 
@@ -185,9 +184,8 @@ public class HeightActivity extends AppCompatActivity {
             tvHeightValue.setText(sHeight);
             prefs.edit().putInt("height", height).apply();
             hexapod.setHeight(height);
-        } else {
+        } else
             stopSound();
-        }
     }
 
     // Method for incrementing height value
@@ -198,9 +196,8 @@ public class HeightActivity extends AppCompatActivity {
             tvHeightValue.setText(sHeight);
             prefs.edit().putInt("height", height).apply();
             hexapod.setHeight(height);
-        } else {
+        } else
             stopSound();
-        }
     }
 
     private void stopSound() {
@@ -247,9 +244,9 @@ public class HeightActivity extends AppCompatActivity {
     }
 
     private void startConnection() {
-        Thread thread = new Thread(){
+        Thread thread = new Thread() {
             @Override
-            public void run(){
+            public void run() {
                 hexapod.connect();
             }
         };

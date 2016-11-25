@@ -343,12 +343,12 @@ public class SettingsActivity extends AppCompatActivity {
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.connect();
 
-                if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                if (conn.getResponseCode() != HttpURLConnection.HTTP_OK)
                     return new byte[0];
-                }
 
                 baos = new ByteArrayOutputStream();
                 DataOutputStream dos = new DataOutputStream(baos);
+
                 byte[] data = new byte[4096];
                 int count = conn.getInputStream().read(data);
                 while (count != -1) {
@@ -420,11 +420,10 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
+        if (hasFocus)
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
-        }
     }
 }

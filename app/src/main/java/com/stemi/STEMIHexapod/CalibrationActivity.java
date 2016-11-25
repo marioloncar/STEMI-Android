@@ -118,10 +118,12 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
 
         SharedPreferences prefs = getSharedPreferences("myPref", MODE_PRIVATE);
         savedIp = prefs.getString("ip", null);
+
         writeData = 0;
 
         tvSelect.setTypeface(tf);
         tvCalibValue.setTypeface(tf);
+
         movingSound = MediaPlayer.create(this, R.raw.moving_sound);
         movingSoundShort = MediaPlayer.create(this, R.raw.moving_sound_short);
 

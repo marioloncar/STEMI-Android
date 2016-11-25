@@ -6,19 +6,18 @@ package mario.com.stemihexapod;
 
 
 public class Hexapod implements PacketSenderStatus {
-    public Packet currentPacket;
-    public PacketSender sendPacket;
-    public String ipAddress;
-    public int port;
-    public CalibrationPacket calibrationPacket;
-    public CalibrationPacketSender calibrationPacketSender;
-    public byte[] slidersArray = {50, 25, 0, 0, 0, 50, 0, 0, 0, 0, 0};
-    public boolean calibrationModeEnabled = false;
-    public byte[] initialCalibrationData = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
+    Packet currentPacket;
+    PacketSender sendPacket;
+    String ipAddress;
+    int port;
+    CalibrationPacket calibrationPacket;
+    private CalibrationPacketSender calibrationPacketSender;
+    private byte[] slidersArray = {50, 25, 0, 0, 0, 50, 0, 0, 0, 0, 0};
+    private boolean calibrationModeEnabled = false;
+    private byte[] initialCalibrationData = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
     public HexapodStatus hexapodStatus = new HexapodStatus() {
         @Override
         public void connectionStatus(boolean isConnected) {
-
         }
     };
 
@@ -436,6 +435,7 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * @return initial array of calibration values stored on Hexapod.
      */
+
     public byte[] fetchDataFromHexapod() {
         return initialCalibrationData;
     }

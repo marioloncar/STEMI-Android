@@ -21,21 +21,21 @@ import java.util.Objects;
 
 class PacketSender {
     public Hexapod hexapod;
-    public int sendingInterval = 100;
-    public Boolean connected = false;
-    public PacketSenderStatus packetSenderStatus;
-    public boolean openCommunication = true;
+    private int sendingInterval = 100;
+    private Boolean connected = false;
+    PacketSenderStatus packetSenderStatus;
+    private boolean openCommunication = true;
 
-    public PacketSender(Hexapod hexapod) {
+    PacketSender(Hexapod hexapod) {
         this.hexapod = hexapod;
     }
 
-    public PacketSender(Hexapod hexapod, int sendingInterval) {
+    PacketSender(Hexapod hexapod, int sendingInterval) {
         this.hexapod = hexapod;
         this.sendingInterval = sendingInterval;
     }
 
-    public void startSendingData() {
+    void startSendingData() {
         try {
             URL url = new URL("http://" + this.hexapod.ipAddress + "/stemiData.json");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -58,7 +58,6 @@ class PacketSender {
                 JSONObject jsonObject = new JSONObject(bufferNew);
                 if (Objects.equals(jsonObject.getBoolean("isValid"), true)) {
                     this.sendData();
-//                    this.packetSenderInterface.connectionActive();
                 } else {
                     this.dropConnection();
                 }
@@ -69,7 +68,7 @@ class PacketSender {
         }
     }
 
-    public void sendData() {
+    private void sendData() {
 
         try {
             Socket socket = new Socket(this.hexapod.ipAddress, this.hexapod.port);
@@ -98,7 +97,7 @@ class PacketSender {
         }
     }
 
-    public void stopSendingData() {
+    void stopSendingData() {
         this.openCommunication = false;
     }
 

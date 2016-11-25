@@ -9,18 +9,17 @@ import java.io.IOException;
 
 class CalibrationPacket {
 
-    public enum WriteData {
+    enum WriteData {
         No,
         Yes
     }
 
-    public int writeToHexapod = WriteData.No.ordinal();
-    public byte[] legsValues = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
-    public ByteArrayOutputStream outputStream;
+    int writeToHexapod = WriteData.No.ordinal();
+    byte[] legsValues = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
 
-    public byte[] toByteArray() {
+    byte[] toByteArray() {
         byte[] pkt = "LIN".getBytes();
-        this.outputStream = new ByteArrayOutputStream() {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream() {
         };
         try {
             outputStream.write(pkt);

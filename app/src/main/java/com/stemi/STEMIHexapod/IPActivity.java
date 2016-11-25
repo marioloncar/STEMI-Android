@@ -84,6 +84,7 @@ public class IPActivity extends AppCompatActivity {
             String part2 = parts[1];
             String part3 = parts[2];
             String part4 = parts[3];
+
             et1.setText(part1);
             et2.setText(part2);
             et3.setText(part3);
@@ -106,14 +107,12 @@ public class IPActivity extends AppCompatActivity {
 
         // Change focus on fields
         et1.addTextChangedListener(new TextWatcher() {
-
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // TODO Auto-generated method stub
                 menuItem.setEnabled(true);
                 if (et1.getText().toString().length() == 3)     //size as per your requirement
-                {
                     et2.requestFocus();
-                }
+
             }
 
             public void beforeTextChanged(CharSequence s, int start,
@@ -129,14 +128,12 @@ public class IPActivity extends AppCompatActivity {
         });
 
         et2.addTextChangedListener(new TextWatcher() {
-
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // TODO Auto-generated method stub
                 menuItem.setEnabled(true);
                 if (et2.getText().toString().length() == 3)     //size as per your requirement
-                {
                     et3.requestFocus();
-                }
+
             }
 
             public void beforeTextChanged(CharSequence s, int start,
@@ -151,14 +148,12 @@ public class IPActivity extends AppCompatActivity {
 
         });
         et3.addTextChangedListener(new TextWatcher() {
-
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // TODO Auto-generated method stub
                 menuItem.setEnabled(true);
                 if (et3.getText().toString().length() == 3)     //size as per your requirement
-                {
                     et4.requestFocus();
-                }
+
             }
 
             public void beforeTextChanged(CharSequence s, int start,
@@ -224,9 +219,9 @@ public class IPActivity extends AppCompatActivity {
             String ip3 = et3.getText().toString();
             String ip4 = et4.getText().toString();
 
-            if ((ip1.trim().length() == 0) || (ip2.trim().length() == 0) || (ip3.trim().length() == 0) || (ip4.trim().length() == 0)) {
+            if ((ip1.trim().length() == 0) || (ip2.trim().length() == 0) || (ip3.trim().length() == 0) || (ip4.trim().length() == 0))
                 showIPAlert();
-            } else {
+            else {
                 int field1 = Integer.parseInt(ip1);
                 int field2 = Integer.parseInt(ip2);
                 int field3 = Integer.parseInt(ip3);
@@ -237,9 +232,8 @@ public class IPActivity extends AppCompatActivity {
                     hideSoftKeyboard();
                     prefs.edit().putString("ip", customIp).apply();
                     finish();
-                } else {
+                } else
                     showIPAlert();
-                }
             }
 
             return true;
