@@ -37,7 +37,6 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Initializes default connection with IP address: 192.168.4.1 and port: 80
      */
-
     public Hexapod() {
         this.ipAddress = "192.168.4.1";
         this.port = 80;
@@ -49,7 +48,6 @@ public class Hexapod implements PacketSenderStatus {
      *
      * @param withCalibrationMode Takes true or false if calibration mode should be enabled.
      */
-
     public Hexapod(boolean withCalibrationMode) {
         this.calibrationModeEnabled = withCalibrationMode;
         this.ipAddress = "192.168.4.1";
@@ -66,7 +64,6 @@ public class Hexapod implements PacketSenderStatus {
      * @param ip   Takes given IP Address (default: 192.168.4.1)
      * @param port Takes given port (default: 80)
      */
-
     public Hexapod(String ip, int port) {
         this.ipAddress = ip;
         this.port = port;
@@ -78,7 +75,6 @@ public class Hexapod implements PacketSenderStatus {
      *
      * @param newIpAddress Takes given IP address
      */
-
     public void setIpAddress(String newIpAddress) {
         this.ipAddress = newIpAddress;
     }
@@ -86,12 +82,18 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Establish connection with Hexapod. After connection is established, it sends new packet every 100 ms.
      */
-
     public void connect() {
         if (calibrationModeEnabled) {
             calibrationPacketSender = new CalibrationPacketSender(this);
-            calibrationPacketSender.enterCalibrationMode(); //check if you entered calibration mode!!!
-            this.initialCalibrationData = this.calibrationPacket.legsValues;
+            calibrationPacketSender.enterCalibrationMode(new EnterCalibrationCallback() {
+                @Override
+                public void enteredCalibration(boolean entered) {
+                    if (entered){
+                        initialCalibrationData = calibrationPacket.legsValues;
+                    }
+                }
+            });
+
         } else {
             sendPacket = new PacketSender(this);
             sendPacket.packetSenderStatus = this;
@@ -100,10 +102,36 @@ public class Hexapod implements PacketSenderStatus {
     }
 
     /**
+     * Establish connection with Hexapod with completion callback. After connection is established, it sends new packet every 100 ms.
+     *
+     * @param connectingCompleteCallback Takes true or false whether connection is established or not.
+     */
+    public void connectWithCompletion(final ConnectingCompleteCallback connectingCompleteCallback) {
+        if (calibrationModeEnabled) {
+            calibrationPacketSender = new CalibrationPacketSender(this);
+            calibrationPacketSender.enterCalibrationMode(new EnterCalibrationCallback() {
+                @Override
+                public void enteredCalibration(boolean entered) {
+                    if (entered){
+                        initialCalibrationData = calibrationPacket.legsValues;
+                        connectingCompleteCallback.connectingComplete(true);
+                    }
+                }
+            });
+
+        } else {
+            sendPacket = new PacketSender(this);
+            sendPacket.packetSenderStatus = this;
+            sendPacket.startSendingData();
+            connectingCompleteCallback.connectingComplete(true);
+        }
+    }
+
+
+
+    /**
      * Stop sending data to Hexapod and closes connection.
      */
-
-
     public void disconnect() {
         if (calibrationModeEnabled) {
             calibrationPacketSender.stopSendingData();
@@ -116,7 +144,6 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Moves Hexapod forward with max power.
      */
-
     public void goForward() {
         stopMoving();
         currentPacket.power = 100;
@@ -125,7 +152,6 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Moves Hexapod backwards with max power.
      */
-
     public void goBackward() {
         stopMoving();
         currentPacket.power = 100;
@@ -135,7 +161,6 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Moves Hexapod left with max power.
      */
-
     public void goLeft() {
         stopMoving();
         currentPacket.power = 100;
@@ -145,7 +170,6 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Moves Hexapod right with max power.
      */
-
     public void goRight() {
         stopMoving();
         currentPacket.power = 100;
@@ -155,7 +179,6 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Rotate Hexapod left with max power.
      */
-
     public void turnLeft() {
         stopMoving();
         currentPacket.rotation = 156;
@@ -164,7 +187,6 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Rotate Hexapod right with max power.
      */
-
     public void turnRight() {
         stopMoving();
         currentPacket.rotation = 100;
@@ -173,7 +195,6 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Turns orientation mode on and tilt Hexapod forward.
      */
-
     public void tiltForward() {
         setOrientationMode();
         currentPacket.accelerometerX = 226;
@@ -182,7 +203,6 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Turns orientation mode on and tilt Hexapod backwards.
      */
-
     public void tiltBackward() {
         setOrientationMode();
         currentPacket.accelerometerX = 30;
@@ -191,7 +211,6 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Turns orientation mode on and tilt Hexapod left.
      */
-
     public void tiltLeft() {
         setOrientationMode();
         currentPacket.accelerometerY = 226;
@@ -200,7 +219,6 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Turns orientation mode on and tilt Hexapod right.
      */
-
     public void tiltRight() {
         setOrientationMode();
         currentPacket.accelerometerY = 30;
@@ -218,7 +236,6 @@ public class Hexapod implements PacketSenderStatus {
      * @param power Takes values for movement speed (Values must be: 0-100)
      * @param angle Takes values for angle of moving (Values can be: 0-255, look at the description!)
      */
-
     public void setJoystickParameters(int power, int angle) {
         currentPacket.power = power;
         currentPacket.angle = angle;
@@ -235,7 +252,6 @@ public class Hexapod implements PacketSenderStatus {
      *
      * @param rotation Takes values for rotation speed (Values must be: 0-255, look at the description!)
      */
-
     public void setJoystickParameters(int rotation) {
         currentPacket.rotation = rotation;
     }
@@ -251,7 +267,6 @@ public class Hexapod implements PacketSenderStatus {
      *
      * @param x Takes values for X tilting (Values must be: 0-255, look at the description!)
      */
-
     public void setAccelerometerX(int x) {
         currentPacket.accelerometerX = x;
     }
@@ -267,7 +282,6 @@ public class Hexapod implements PacketSenderStatus {
      *
      * @param y Takes values for Y tilting (Values must be: 0-255, look at the description!)
      */
-
     public void setAccelerometerY(int y) {
         currentPacket.accelerometerY = y;
     }
@@ -275,7 +289,6 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Stops Hexapod by setting power, angle and rotation to 0.
      */
-
     public void stopMoving() {
         currentPacket.power = 0;
         currentPacket.angle = 0;
@@ -285,7 +298,6 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Resets all Hexapod moving and tilt values to 0.
      */
-
     public void resetMovingParameters() {
         currentPacket.power = 0;
         currentPacket.angle = 0;
@@ -301,7 +313,6 @@ public class Hexapod implements PacketSenderStatus {
      * In this mode, Hexapod can move forward, backwards, left and right, and it can rotate itself to left and right.
      * Accelerometer is off.
      */
-
     public void setMovementMode() {
         currentPacket.staticTilt = 0;
         currentPacket.movingTilt = 0;
@@ -311,7 +322,6 @@ public class Hexapod implements PacketSenderStatus {
      * In this mode, Hexapod can tilt backward, forward, left and right, and rotate left and right by accelerometer and joystick in place without moving.
      * Accelerometer is on.
      */
-
     public void setRotationMode() {
         currentPacket.staticTilt = 1;
         currentPacket.movingTilt = 0;
@@ -322,7 +332,6 @@ public class Hexapod implements PacketSenderStatus {
      * Furthermore the Hexapod can tilt forward, backward, left and right by accelerometer.
      * Accelerometer is on.
      */
-
     public void setOrientationMode() {
         currentPacket.staticTilt = 0;
         currentPacket.movingTilt = 1;
@@ -331,7 +340,6 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Puts Hexapod in standby.
      */
-
     public void turnOn() {
         currentPacket.onOff = 1;
     }
@@ -339,7 +347,6 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Puts Hexapod out from standby.
      */
-
     public void turnOff() {
         currentPacket.onOff = 0;
     }
@@ -349,7 +356,6 @@ public class Hexapod implements PacketSenderStatus {
      *
      * @param height This value can be from 0 to 100.
      */
-
     public void setHeight(int height) {
         currentPacket.height = height;
     }
@@ -359,7 +365,6 @@ public class Hexapod implements PacketSenderStatus {
      *
      * @param walkingStyle This value can be TripodGait, TripodGaitAngled, TripodGaitStar or WaveGait.
      */
-
     public void setWalkingStyle(WalkingStyle walkingStyle) {
         int walkingStyleValue;
         switch (walkingStyle.ordinal()) {
@@ -387,7 +392,6 @@ public class Hexapod implements PacketSenderStatus {
      * @param value Value of Hexapod motor.
      * @param index Index of Hexapod motor.
      */
-
     public void setValue(byte value, int index) {
         if (value >= 0 && value <= 100)
             calibrationPacket.legsValues[index] = value;
@@ -400,7 +404,6 @@ public class Hexapod implements PacketSenderStatus {
      *
      * @param index Takes leg index.
      */
-
     public void increaseValueAtIndex(int index) {
         if (calibrationPacket.legsValues[index] < 100)
             calibrationPacket.legsValues[index]++;
@@ -411,7 +414,6 @@ public class Hexapod implements PacketSenderStatus {
      *
      * @param index Takes leg index.
      */
-
     public void decreaseValueAtIndex(int index) {
         if (calibrationPacket.legsValues[index] > 0)
             calibrationPacket.legsValues[index]--;
@@ -420,22 +422,22 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Writes new calibration values to Hexapod
      *
+     * @param savedCalibrationCallback Takes true of false whether data is saved or not.
      * @throws InterruptedException
      */
-
-    public void writeDataToHexapod() throws InterruptedException {
+    public void writeDataToHexapod(SavedCalibrationCallback savedCalibrationCallback) throws InterruptedException {
         calibrationPacketSender.stopSendingData();
         Thread.sleep(500);
         calibrationPacket.writeToHexapod = CalibrationPacket.WriteData.Yes.ordinal();
         calibrationPacketSender.sendOnePacket();
         calibrationPacket.writeToHexapod = CalibrationPacket.WriteData.No.ordinal();
         Thread.sleep(1000);
+        savedCalibrationCallback.savedData(true);
     }
 
     /**
      * @return initial array of calibration values stored on Hexapod.
      */
-
     public byte[] fetchDataFromHexapod() {
         return initialCalibrationData;
     }

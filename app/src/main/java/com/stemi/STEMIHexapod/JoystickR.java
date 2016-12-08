@@ -2,6 +2,7 @@ package com.stemi.STEMIHexapod;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -11,7 +12,7 @@ import android.widget.LinearLayout;
 /**
  * Created by Mario on 24/03/16.
  */
-public class JoystickR extends LinearLayout  {
+public class JoystickR extends LinearLayout {
 
     protected float positionX = 0; // Touch x position
     protected float positionY = 0; // Touch y position
@@ -37,14 +38,9 @@ public class JoystickR extends LinearLayout  {
         centerY = getHeight() / 2;
     }
 
-    public JoystickR(Context context) {
+
+    public JoystickR(Context context, @Nullable AttributeSet attrs) {
         super(context);
-        LayoutInflater.from(context).inflate(R.layout.joystick_r, this, true);
-
-    }
-
-    public JoystickR(Context context, AttributeSet attrs) {
-        super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.joystick_r, this, true);
 
         path_JoyRightLeft = (ImageView) findViewById(R.id.ivJoystickRight_Left);
@@ -76,7 +72,6 @@ public class JoystickR extends LinearLayout  {
     }
 
 
-    @Override
     protected void onSizeChanged(int xNew, int yNew, int xOld, int yOld) {
         super.onSizeChanged(xNew, yNew, xOld, yOld);
         // before measure, get the center of view
@@ -199,5 +194,7 @@ public class JoystickR extends LinearLayout  {
     protected double getPower() {
         return (100 * Math.sqrt(Math.pow(positionX - centerX, 2)) / joystickRadius);
     }
+
+
 
 }

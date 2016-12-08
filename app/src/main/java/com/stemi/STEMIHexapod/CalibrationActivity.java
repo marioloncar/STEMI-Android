@@ -23,50 +23,36 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.Socket;
-import java.net.URL;
-import java.util.Arrays;
+import mario.com.stemihexapod.ConnectingCompleteCallback;
+import mario.com.stemihexapod.Hexapod;
+import mario.com.stemihexapod.SavedCalibrationCallback;
 
 /**
  * Created by Mario on 29/08/16.
  */
 public class CalibrationActivity extends AppCompatActivity implements View.OnClickListener {
 
-    interface SavedCalibrationInterface {
-        void onSavedData(Boolean saved);
-    }
-
-    interface DiscardCalibInterface {
-        void onDiscardedData(Boolean finished);
+    interface DiscardCalibrationCallback {
+        void valuesDiscarded(Boolean finished);
     }
 
     private ImageButton ibMotor0, ibMotor1, ibMotor2, ibMotor3, ibMotor4, ibMotor5, ibMotor6, ibMotor7,
-            ibMotor8, ibMotor9, ibMotor10, ibMotor11, ibMotor12, ibMotor13, ibMotor14, ibMotor15, ibMotor16, ibMotor17, ibCalibUp, ibCalibD;
+            ibMotor8, ibMotor9, ibMotor10, ibMotor11, ibMotor12, ibMotor13, ibMotor14, ibMotor15, ibMotor16,
+            ibMotor17, ibCalibUp, ibCalibD;
     private ImageButton[] motors;
     private AlertDialog.Builder builder;
     private ImageView ivCircle;
     private TextView tvCalibValue, tvSelect;
-    private final static int SLEEPING_INTERVAL = 100;
-    private Boolean connected;
-
     private MediaPlayer movingSound, movingSoundShort;
-
-    // bytes of the LIN (linearization) packets
-    private byte[] calibrationArray = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 0};
-    private byte[] newCalibrationArray = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 0};
+    private byte[] calibrationValues = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
+    private byte[] changedCalibrationValues = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
     private int index;
     private final Handler repeatUpdateHandler = new Handler();
     private boolean mAutoIncrement = false;
     private boolean mAutoDecrement = false;
     private static final int REPEAT_DELAY = 50;
     private String savedIp;
-    private int writeData;
+    private Hexapod hexapod;
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -109,7 +95,8 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         ibCalibD = (ImageButton) findViewById(R.id.ibCalibDown);
 
         motors = new ImageButton[]{ibMotor0, ibMotor1, ibMotor2, ibMotor3, ibMotor4, ibMotor5, ibMotor6,
-                ibMotor7, ibMotor8, ibMotor9, ibMotor10, ibMotor11, ibMotor12, ibMotor13, ibMotor14, ibMotor15, ibMotor16, ibMotor17};
+                ibMotor7, ibMotor8, ibMotor9, ibMotor10, ibMotor11, ibMotor12, ibMotor13, ibMotor14, ibMotor15,
+                ibMotor16, ibMotor17};
 
         builder = new AlertDialog.Builder(this);
 
@@ -118,8 +105,6 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
 
         SharedPreferences prefs = getSharedPreferences("myPref", MODE_PRIVATE);
         savedIp = prefs.getString("ip", null);
-
-        writeData = 0;
 
         tvSelect.setTypeface(tf);
         tvCalibValue.setTypeface(tf);
@@ -130,28 +115,39 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         ibCalibD.setEnabled(false);
         ibCalibUp.setEnabled(false);
 
+        hexapod = new Hexapod(true);
+        hexapod.setIpAddress(savedIp);
+
         Thread thread = new Thread() {
             @Override
             public void run() {
-                calibrationArray = fetchBin(savedIp);
-                newCalibrationArray = calibrationArray.clone();
-                if (calibrationArray != null) {
-                    sendCommandsOverWiFi(savedIp);
-                }
+                hexapod.connectWithCompletion(new ConnectingCompleteCallback() {
+                    @Override
+                    public void connectingComplete(boolean connected) {
+                        if (connected) {
+                            try {
+                                calibrationValues = hexapod.fetchDataFromHexapod();
+                                changedCalibrationValues = calibrationValues.clone();
+                            } catch (Exception e) {
+                                System.out.println(e);
+                            }
+                        }
+                    }
+                });
             }
         };
 
         thread.start();
+
         /*** Calibration up listeners ***/
         ibCalibUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 increment();
-                if (newCalibrationArray[index] == 100) {
+                if (changedCalibrationValues[index] == 100)
                     movingSoundShort.pause();
-                } else {
+                else
                     movingSoundShort.start();
-                }
             }
         });
 
@@ -177,19 +173,17 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
-        /*** Calibration up listeners END***/
-
 
         /*** Calibration down listeners ***/
         ibCalibD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 decrement();
-                if (newCalibrationArray[index] == 0) {
+                if (changedCalibrationValues[index] == 0)
                     movingSoundShort.pause();
-                } else {
+                else
                     movingSoundShort.start();
-                }
+
             }
         });
 
@@ -216,7 +210,6 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
-        /*** Calibration down listeners END ***/
     }
 
     @Override
@@ -226,7 +219,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    public void onBackPressed()  {
+    public void onBackPressed() {
         showBackDialog();
     }
 
@@ -236,13 +229,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         builder.setMessage("Are you sure you want to reset STEMI Hexapod legs to their initial positions?");
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                discardValuesToInitial(new DiscardCalibInterface() {
+                discardValuesToInitial(new DiscardCalibrationCallback() {
                     @Override
-                    public void onDiscardedData(Boolean finished) {
+                    public void valuesDiscarded(Boolean finished) {
                         if (finished) {
-                            connected = false;
                             finish();
-
                         }
                     }
                 });
@@ -266,15 +257,26 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.save_ip) {
-            saveDataOverWiFi(savedIp, new SavedCalibrationInterface() {
+        if (id == R.id.save) {
+            Thread thread = new Thread() {
                 @Override
-                public void onSavedData(Boolean saved) {
-                    if (saved) {
-                        finish();
+                public void run() {
+                    try {
+                        hexapod.writeDataToHexapod(new SavedCalibrationCallback() {
+                            @Override
+                            public void savedData(Boolean saved) {
+                                if (saved) {
+                                    finish();
+                                }
+                            }
+                        });
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
-            });
+            };
+            thread.start();
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -290,12 +292,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 0;
                 ibMotor0.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor0) {
+                    if (motors[i] != ibMotor0)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                String string = String.valueOf(newCalibrationArray[index]);
+                String string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor1:
@@ -304,12 +305,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 1;
                 ibMotor1.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor1) {
+                    if (motors[i] != ibMotor1)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor2:
@@ -318,12 +318,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 2;
                 ibMotor2.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor2) {
+                    if (motors[i] != ibMotor2)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor3:
@@ -332,12 +331,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 3;
                 ibMotor3.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor3) {
+                    if (motors[i] != ibMotor3)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor4:
@@ -346,12 +344,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 4;
                 ibMotor4.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor4) {
+                    if (motors[i] != ibMotor4)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor5:
@@ -360,12 +357,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 5;
                 ibMotor5.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor5) {
+                    if (motors[i] != ibMotor5)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor6:
@@ -374,12 +370,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 6;
                 ibMotor6.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor6) {
+                    if (motors[i] != ibMotor6)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor7:
@@ -388,12 +383,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 7;
                 ibMotor7.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor7) {
+                    if (motors[i] != ibMotor7)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor8:
@@ -402,12 +396,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 8;
                 ibMotor8.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor8) {
+                    if (motors[i] != ibMotor8)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor9:
@@ -416,12 +409,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 9;
                 ibMotor9.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor9) {
+                    if (motors[i] != ibMotor9)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor10:
@@ -430,12 +422,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 10;
                 ibMotor10.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor10) {
+                    if (motors[i] != ibMotor10)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor11:
@@ -444,12 +435,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 11;
                 ibMotor11.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor11) {
+                    if (motors[i] != ibMotor11)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor12:
@@ -458,12 +448,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 12;
                 ibMotor12.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor12) {
+                    if (motors[i] != ibMotor12)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor13:
@@ -472,12 +461,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 13;
                 ibMotor13.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor13) {
+                    if (motors[i] != ibMotor13)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor14:
@@ -486,12 +474,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 14;
                 ibMotor14.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor14) {
+                    if (motors[i] != ibMotor14)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor15:
@@ -500,12 +487,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 15;
                 ibMotor15.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor15) {
+                    if (motors[i] != ibMotor15)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor16:
@@ -514,12 +500,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 16;
                 ibMotor16.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor16) {
+                    if (motors[i] != ibMotor16)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor17:
@@ -528,12 +513,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 index = 17;
                 ibMotor17.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor17) {
+                    if (motors[i] != ibMotor17)
                         motors[i].setAlpha(0f);
-                    }
                 }
                 setVisibility();
-                string = String.valueOf(newCalibrationArray[index]);
+                string = String.valueOf(changedCalibrationValues[index]);
                 tvCalibValue.setText(string);
                 break;
         }
@@ -546,114 +530,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-    private void sendCommandsOverWiFi(final String ip) {
-        connected = true;
-
-        Thread t = new Thread() {
-            public void run() {
-                try {
-                    Socket socket = new Socket(ip, 80);
-                    OutputStream outputStream = socket.getOutputStream();
-
-                    try {
-                        BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
-                        while (connected) {
-                            Thread.sleep(SLEEPING_INTERVAL);
-                            buffOutStream.write(bytesArray());
-                            buffOutStream.flush();
-                        }
-                        socket.close();
-
-                    } catch (IOException | InterruptedException ignored) {
-                    } finally {
-                        connected = false;
-                    }
-
-
-                } catch (IOException ignored) {
-
-                }
-            }
-        };
-        t.start();
-    }
-
-    private void saveDataOverWiFi(final String ip, final SavedCalibrationInterface callback) {
-        connected = false;
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Thread t = new Thread() {
-            public void run() {
-                try {
-                    Socket socket = new Socket(ip, 80);
-                    OutputStream outputStream = socket.getOutputStream();
-
-//                    CommandSender wifiSender = new CommandSender(outputStream, socket);
-
-                    try {
-                        writeData = 1;
-                        BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
-                        Thread.sleep(SLEEPING_INTERVAL);
-                        buffOutStream.write(bytesArray());
-                        buffOutStream.flush();
-                        socket.close();
-
-                        callback.onSavedData(true);
-
-                    } catch (IOException | InterruptedException ignored) {
-                    } finally {
-                        connected = false;
-                    }
-
-                } catch (IOException ignored) {
-                }
-            }
-        };
-        t.start();
-    }
-
-
-    private byte[] fetchBin(String params) {
-        ByteArrayOutputStream baos = null;
-        try {
-            URL url = new URL("http://" + params + "/linearization.bin");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.connect();
-
-            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                return new byte[0];
-            }
-
-            baos = new ByteArrayOutputStream();
-            DataOutputStream dos = new DataOutputStream(baos);
-            byte[] data = new byte[4096];
-            int count = conn.getInputStream().read(data);
-            while (count != -1) {
-                dos.write(data, 3, 18);
-                count = conn.getInputStream().read(data);
-
-            }
-        } catch (IOException ignored) {
-        }
-        return baos.toByteArray();
-    }
-
-
-    private byte[] bytesArray() {
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream() {
-        };
-        try {
-            outputStream.write("LIN".getBytes());
-            outputStream.write(newCalibrationArray);
-            outputStream.write(writeData);
-        } catch (IOException ignored) {
-        }
-
-        return outputStream.toByteArray();
+    @Override
+    protected void onStop() {
+        super.onStop();
+        hexapod.disconnect();
     }
 
     private class RepeatUpdater implements Runnable {
@@ -669,10 +549,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void decrement() {
-        if (!(newCalibrationArray[index] <= 0)) {
-            newCalibrationArray[index]--;
-            String sCalib = String.valueOf(newCalibrationArray[index]);
+        if (!(changedCalibrationValues[index] <= 0)) {
+            changedCalibrationValues[index]--;
+            String sCalib = String.valueOf(changedCalibrationValues[index]);
             tvCalibValue.setText(sCalib);
+            hexapod.decreaseValueAtIndex(index);
         } else {
             movingSound.pause();
             movingSoundShort.pause();
@@ -680,32 +561,51 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void increment() {
-        if (!(newCalibrationArray[index] >= 100)) {
-            newCalibrationArray[index]++;
-            String sCalib = String.valueOf(newCalibrationArray[index]);
+        if (!(changedCalibrationValues[index] >= 100)) {
+            changedCalibrationValues[index]++;
+            String sCalib = String.valueOf(changedCalibrationValues[index]);
             tvCalibValue.setText(sCalib);
+            hexapod.increaseValueAtIndex(index);
         } else {
             movingSound.pause();
             movingSoundShort.pause();
         }
     }
 
-    private void discardValuesToInitial(DiscardCalibInterface callback) {
+    private void discardValuesToInitial(DiscardCalibrationCallback discardCalibrationCallback) {
         byte[] calculatingNumbers = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         for (int i = 0; i <= 10; i++) {
-            for (int j = 0; j < calibrationArray.length; j++) {
+            for (int j = 0; j < calibrationValues.length; j++) {
                 if (i == 0) {
-                    byte calc = (byte) (Math.abs(calibrationArray[j] - newCalibrationArray[j]) / 10);
+                    byte calc = (byte) (Math.abs(calibrationValues[j] - changedCalibrationValues[j]) / 10);
                     calculatingNumbers[j] = calc;
                 }
+
                 if (i < 10) {
-                    if (newCalibrationArray[j] < calibrationArray[j]) {
-                        newCalibrationArray[j] += calculatingNumbers[j];
-                    } else if (newCalibrationArray[j] > calibrationArray[j]) {
-                        newCalibrationArray[j] -= calculatingNumbers[j];
+                    if (changedCalibrationValues[j] < calibrationValues[j]) {
+                        changedCalibrationValues[j] += calculatingNumbers[j];
+                        try {
+                            hexapod.setValue(changedCalibrationValues[j], j);
+                        } catch (IndexOutOfBoundsException e) {
+                            System.out.println(e);
+                        }
+
+                    } else if (changedCalibrationValues[j] > calibrationValues[j]) {
+                        changedCalibrationValues[j] -= calculatingNumbers[j];
+                        try {
+                            hexapod.setValue(changedCalibrationValues[j], j);
+                        } catch (IndexOutOfBoundsException e) {
+                            System.out.println(e);
+                        }
                     }
+
                 } else {
-                    newCalibrationArray[j] = calibrationArray[j];
+                    changedCalibrationValues[j] = calibrationValues[j];
+                    try {
+                        hexapod.setValue(calibrationValues[j], j);
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
                 }
             }
             try {
@@ -713,7 +613,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             } catch (InterruptedException ignored) {
             }
         }
-        callback.onDiscardedData(true);
+        discardCalibrationCallback.valuesDiscarded(true);
     }
 
     @Override

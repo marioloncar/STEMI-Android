@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Arrays;
 
 /**
  * Created by Mario on 10/11/2016.
@@ -17,7 +18,7 @@ class CalibrationPacketSender {
 
     private Hexapod hexapod;
     private Boolean connected = false;
-    private byte[] calibrationArray = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 0};
+    private byte[] calibrationArray = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
     private boolean openCommunication = true;
 
     CalibrationPacketSender(Hexapod hexapod) {
@@ -25,7 +26,7 @@ class CalibrationPacketSender {
     }
 
 
-    void enterCalibrationMode() {
+    void enterCalibrationMode(EnterCalibrationCallback enterCalibrationCallback) {
         ByteArrayOutputStream baos = null;
         try {
             URL url = new URL("http://" + this.hexapod.ipAddress + "/linearization.bin");
@@ -44,6 +45,7 @@ class CalibrationPacketSender {
         } catch (IOException ignored) {
         }
         this.calibrationArray = baos.toByteArray();
+        enterCalibrationCallback.enteredCalibration(true);
         this.sendData();
     }
 
@@ -58,6 +60,7 @@ class CalibrationPacketSender {
                 Thread.sleep(sendingInterval);
                 buffer.write(this.hexapod.calibrationPacket.toByteArray());
                 buffer.flush();
+                System.out.println("CALIBRATION -> " + Arrays.toString(this.hexapod.calibrationPacket.toByteArray()));
                 this.connected = true;
             }
             socket.close();
@@ -72,8 +75,11 @@ class CalibrationPacketSender {
         try {
             Socket socket = new Socket(this.hexapod.ipAddress, this.hexapod.port);
             OutputStream outputStream = socket.getOutputStream();
+
             BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
             buffOutStream.write(this.hexapod.calibrationPacket.toByteArray());
+            buffOutStream.flush();
+
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();

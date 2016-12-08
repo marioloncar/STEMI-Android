@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -33,6 +34,8 @@ public class JoystickL extends LinearLayout {
     protected float topAlpha, bottomAlpha, leftAlpha, rightAlpha;
 
 
+
+
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
 
@@ -45,9 +48,8 @@ public class JoystickL extends LinearLayout {
 
     }
 
-    public JoystickL(Context context) {
+    public JoystickL(Context context){
         super(context);
-        LayoutInflater.from(context).inflate(R.layout.joystick_l, this, true);
 
     }
 

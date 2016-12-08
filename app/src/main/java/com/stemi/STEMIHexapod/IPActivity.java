@@ -203,7 +203,7 @@ public class IPActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
         getMenuInflater().inflate(R.menu.menu_bar, menu);
-        menuItem = menu.findItem(R.id.save_ip);
+        menuItem = menu.findItem(R.id.save);
         menuItem.setEnabled(false);
         return super.onCreateOptionsMenu(menu);
     }
@@ -212,7 +212,7 @@ public class IPActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.save_ip) {
+        if (id == R.id.save) {
 
             String ip1 = et1.getText().toString();
             String ip2 = et2.getText().toString();
