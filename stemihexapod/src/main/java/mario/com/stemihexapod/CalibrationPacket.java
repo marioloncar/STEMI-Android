@@ -14,7 +14,7 @@ class CalibrationPacket {
         Yes
     }
 
-    int  writeToHexapod = WriteData.No.ordinal();
+    int writeToHexapod = WriteData.No.ordinal();
     byte[] legsValues = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
 
     byte[] toByteArray() {

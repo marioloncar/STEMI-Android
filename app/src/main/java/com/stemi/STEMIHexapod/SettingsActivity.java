@@ -30,6 +30,8 @@ import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
 
+import mario.com.stemihexapod.Hexapod;
+
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -80,6 +82,7 @@ public class SettingsActivity extends AppCompatActivity {
         boolean connected;
         final static int SLEEPING_INTERVAL = 100;
         int writeData;
+        private Hexapod hexapod;
 
         @Override
         public void onResume() {

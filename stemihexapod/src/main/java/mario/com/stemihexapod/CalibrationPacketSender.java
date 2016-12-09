@@ -35,7 +35,7 @@ class CalibrationPacketSender {
 
             baos = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(baos);
-            byte[] data = new byte[4096];
+            byte[] data = new byte[1024];
             int count = conn.getInputStream().read(data);
             while (count != -1) {
                 dos.write(data, 3, 18);
@@ -45,6 +45,9 @@ class CalibrationPacketSender {
         } catch (IOException ignored) {
         }
         this.calibrationArray = baos.toByteArray();
+        for (int i = 0; i < calibrationArray.length; i++) {
+            hexapod.setValue(calibrationArray[i], i);
+        }
         enterCalibrationCallback.onEnteredCalibration(true);
         this.sendData();
     }
@@ -78,6 +81,8 @@ class CalibrationPacketSender {
 
             BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
             buffOutStream.write(this.hexapod.calibrationPacket.toByteArray());
+            System.out.println("ONE PACKET -> " + Arrays.toString(this.hexapod.calibrationPacket.toByteArray()));
+
             buffOutStream.flush();
 
             socket.close();

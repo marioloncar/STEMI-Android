@@ -159,7 +159,6 @@ public class HeightActivity extends AppCompatActivity {
             }
         });
 
-//        sendCommandsOverWiFi(savedIp);
     }
 
 
