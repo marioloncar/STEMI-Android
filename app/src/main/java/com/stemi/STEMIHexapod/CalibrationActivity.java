@@ -123,7 +123,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             public void run() {
                 hexapod.connectWithCompletion(new ConnectingCompleteCallback() {
                     @Override
-                    public void connectingComplete(boolean connected) {
+                    public void onConnectingComplete(boolean connected) {
                         if (connected) {
                             try {
                                 calibrationValues = hexapod.fetchDataFromHexapod();
@@ -264,7 +264,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                     try {
                         hexapod.writeDataToHexapod(new SavedCalibrationCallback() {
                             @Override
-                            public void savedData(Boolean saved) {
+                            public void onSavedData(Boolean saved) {
                                 if (saved) {
                                     finish();
                                 }

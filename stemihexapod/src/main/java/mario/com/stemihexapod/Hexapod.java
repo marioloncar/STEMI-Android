@@ -87,7 +87,7 @@ public class Hexapod implements PacketSenderStatus {
             calibrationPacketSender = new CalibrationPacketSender(this);
             calibrationPacketSender.enterCalibrationMode(new EnterCalibrationCallback() {
                 @Override
-                public void enteredCalibration(boolean entered) {
+                public void onEnteredCalibration(boolean entered) {
                     if (entered){
                         initialCalibrationData = calibrationPacket.legsValues;
                     }
@@ -111,10 +111,10 @@ public class Hexapod implements PacketSenderStatus {
             calibrationPacketSender = new CalibrationPacketSender(this);
             calibrationPacketSender.enterCalibrationMode(new EnterCalibrationCallback() {
                 @Override
-                public void enteredCalibration(boolean entered) {
+                public void onEnteredCalibration(boolean entered) {
                     if (entered){
                         initialCalibrationData = calibrationPacket.legsValues;
-                        connectingCompleteCallback.connectingComplete(true);
+                        connectingCompleteCallback.onConnectingComplete(true);
                     }
                 }
             });
@@ -123,7 +123,7 @@ public class Hexapod implements PacketSenderStatus {
             sendPacket = new PacketSender(this);
             sendPacket.packetSenderStatus = this;
             sendPacket.startSendingData();
-            connectingCompleteCallback.connectingComplete(true);
+            connectingCompleteCallback.onConnectingComplete(true);
         }
     }
 
@@ -432,7 +432,7 @@ public class Hexapod implements PacketSenderStatus {
         calibrationPacketSender.sendOnePacket();
         calibrationPacket.writeToHexapod = CalibrationPacket.WriteData.No.ordinal();
         Thread.sleep(1000);
-        savedCalibrationCallback.savedData(true);
+        savedCalibrationCallback.onSavedData(true);
     }
 
     /**

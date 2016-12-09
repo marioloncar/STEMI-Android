@@ -5,5 +5,5 @@ package mario.com.stemihexapod;
  */
 
 public interface SavedCalibrationCallback {
-    void savedData(Boolean saved);
+    void onSavedData(Boolean saved);
 }

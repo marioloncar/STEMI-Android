@@ -45,7 +45,7 @@ class CalibrationPacketSender {
         } catch (IOException ignored) {
         }
         this.calibrationArray = baos.toByteArray();
-        enterCalibrationCallback.enteredCalibration(true);
+        enterCalibrationCallback.onEnteredCalibration(true);
         this.sendData();
     }
 

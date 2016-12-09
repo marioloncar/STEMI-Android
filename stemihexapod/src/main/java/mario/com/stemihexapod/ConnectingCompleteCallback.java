@@ -5,5 +5,5 @@ package mario.com.stemihexapod;
  */
 
 public interface ConnectingCompleteCallback {
-    void connectingComplete(boolean connected);
+    void onConnectingComplete(boolean connected);
 }

@@ -66,30 +66,46 @@
       <file leaf-file-name="CalibrationActivity.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/stemi/STEMIHexapod/CalibrationActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="630">
+            <state relative-caret-position="15">
               <caret line="42" column="40" selection-start-line="42" selection-start-column="40" selection-end-line="42" selection-end-column="40" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#5441#6166#0" expanded="true" />
-                <element signature="e#5556#6140#0" expanded="true" />
-                <element signature="e#6139#6140#0" expanded="true" />
-                <element signature="e#6165#6166#0" expanded="true" />
-                <element signature="e#9243#9519#0" expanded="true" />
-                <element signature="e#9518#9519#0" expanded="true" />
-                <element signature="e#10143#10771#0" expanded="true" />
-                <element signature="e#10297#10615#0" expanded="true" />
-                <element signature="e#10614#10615#0" expanded="true" />
-                <element signature="e#10770#10771#0" expanded="true" />
+                <element signature="e#5441#6168#0" expanded="true" />
+                <element signature="e#5556#6142#0" expanded="true" />
+                <element signature="e#6141#6142#0" expanded="true" />
+                <element signature="e#6167#6168#0" expanded="true" />
+                <element signature="e#6276#6594#0" expanded="true" />
+                <element signature="e#6593#6594#0" expanded="true" />
+                <element signature="e#6639#6973#0" expanded="true" />
+                <element signature="e#6972#6973#0" expanded="true" />
+                <element signature="e#7014#7421#0" expanded="true" />
+                <element signature="e#7420#7421#0" expanded="true" />
+                <element signature="e#7507#7824#0" expanded="true" />
+                <element signature="e#7823#7824#0" expanded="true" />
+                <element signature="e#7868#8203#0" expanded="true" />
+                <element signature="e#8202#8203#0" expanded="true" />
+                <element signature="e#8243#8650#0" expanded="true" />
+                <element signature="e#8649#8650#0" expanded="true" />
+                <element signature="e#9100#9548#0" expanded="true" />
+                <element signature="e#9245#9521#0" expanded="true" />
+                <element signature="e#9520#9521#0" expanded="true" />
+                <element signature="e#9547#9548#0" expanded="true" />
+                <element signature="e#9591#9753#0" expanded="true" />
+                <element signature="e#9752#9753#0" expanded="true" />
+                <element signature="e#10145#10775#0" expanded="true" />
+                <element signature="e#10299#10619#0" expanded="true" />
+                <element signature="e#10618#10619#0" expanded="true" />
+                <element signature="e#10774#10775#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="false">
+      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/stemihexapod/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="9" column="22" selection-start-line="9" selection-start-column="22" selection-end-line="9" selection-end-column="22" />
+            <state relative-caret-position="315">
+              <caret line="21" column="1" selection-start-line="21" selection-start-column="1" selection-end-line="21" selection-end-column="1" />
               <folding />
             </state>
           </provider>
@@ -113,7 +129,9 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="285">
               <caret line="20" column="12" selection-start-line="20" selection-start-column="12" selection-end-line="20" selection-end-column="12" />
-              <folding />
+              <folding>
+                <element signature="imports" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -134,8 +152,8 @@
             <state relative-caret-position="1005">
               <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
               <folding>
-                <element signature="e#2989#2990#0" expanded="true" />
-                <element signature="e#3035#3036#0" expanded="true" />
+                <element signature="e#2991#2992#0" expanded="true" />
+                <element signature="e#3037#3038#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -144,14 +162,9 @@
       <file leaf-file-name="Hexapod.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/Hexapod.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-5556">
-              <caret line="16" column="19" selection-start-line="16" selection-start-column="19" selection-end-line="16" selection-end-column="19" />
-              <folding>
-                <element signature="e#2717#3008#0" expanded="true" />
-                <element signature="e#3007#3008#0" expanded="true" />
-                <element signature="e#3717#4085#0" expanded="true" />
-                <element signature="e#4084#4085#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="1470">
+              <caret line="100" column="9" selection-start-line="100" selection-start-column="9" selection-end-line="100" selection-end-column="9" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -160,17 +173,17 @@
         <entry file="file://$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/ConnectingCompleteCallback.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="105">
-              <caret line="7" column="45" selection-start-line="7" selection-start-column="45" selection-end-line="7" selection-end-column="45" />
+              <caret line="7" column="12" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="12" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="EnterCalibrationCallback.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="EnterCalibrationCallback.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/EnterCalibrationCallback.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="105">
-              <caret line="7" column="45" selection-start-line="7" selection-start-column="45" selection-end-line="7" selection-end-column="45" />
+              <caret line="7" column="12" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="12" />
               <folding />
             </state>
           </provider>
@@ -180,7 +193,7 @@
         <entry file="file://$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/SavedCalibrationCallback.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="105">
-              <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+              <caret line="7" column="12" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="12" />
               <folding />
             </state>
           </provider>
@@ -2515,7 +2528,7 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="5920697162000" />
+        <entry key="$PROJECT_DIR$" value="5920739866000" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -2998,14 +3011,14 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/stemi/STEMIHexapod/JoystickR.java" />
         <option value="$PROJECT_DIR$/captures/STEMI_2016.12.08_22.01.txt" />
         <option value="$PROJECT_DIR$/app/src/main/res/menu/menu_bar.xml" />
-        <option value="$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/EnterCalibrationCallback.java" />
-        <option value="$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/ConnectingCompleteCallback.java" />
         <option value="$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/Hexapod.java" />
         <option value="$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/CalibrationPacket.java" />
         <option value="$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/CalibrationPacketSender.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/stemi/STEMIHexapod/CalibrationActivity.java" />
-        <option value="$PROJECT_DIR$/stemihexapod/build.gradle" />
+        <option value="$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/EnterCalibrationCallback.java" />
         <option value="$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/SavedCalibrationCallback.java" />
+        <option value="$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/ConnectingCompleteCallback.java" />
+        <option value="$PROJECT_DIR$/stemihexapod/build.gradle" />
       </list>
     </option>
   </component>
@@ -3059,12 +3072,10 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane />
       </pane>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
+      <pane id="Scratches" />
       <pane id="AndroidView">
         <subPane>
           <PATH>
@@ -3092,38 +3103,6 @@
               <option name="myItemId" value="STEMI" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="stemihexapod" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="STEMI" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="stemihexapod" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="stemihexapod" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="STEMI" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -3137,6 +3116,8 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -3511,7 +3492,7 @@
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32760897" sideWeight="0.5028694" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.0" sideWeight="0.8888092" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32893" sideWeight="0.8888092" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -3523,17 +3504,16 @@
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3493544" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5336856" sideWeight="0.49713057" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16776751" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1743185" sideWeight="0.6433289" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1743185" sideWeight="0.62401575" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Fabric" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25894135" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1743185" sideWeight="0.35667107" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1743185" sideWeight="0.37598425" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -3541,6 +3521,7 @@
       <window_info id="Assistant" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32998565" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3994374" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3493544" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.47688243" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
@@ -3761,7 +3742,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5940">
           <caret line="426" column="14" selection-start-line="426" selection-start-column="14" selection-end-line="426" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3769,7 +3749,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3315">
           <caret line="246" column="24" selection-start-line="246" selection-start-column="24" selection-end-line="246" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3784,7 +3763,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
           <caret line="11" column="7" selection-start-line="11" selection-start-column="7" selection-end-line="11" selection-end-column="7" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3820,7 +3798,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
           <caret line="6" column="27" selection-start-line="6" selection-start-column="27" selection-end-line="6" selection-end-column="27" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3845,7 +3822,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="540">
           <caret line="36" column="32" selection-start-line="36" selection-start-column="32" selection-end-line="36" selection-end-column="32" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3856,7 +3832,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="421">
           <caret line="88" column="30" selection-start-line="88" selection-start-column="30" selection-end-line="88" selection-end-column="30" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3864,7 +3839,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1215">
           <caret line="88" column="0" selection-start-line="88" selection-start-column="0" selection-end-line="88" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3872,9 +3846,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2700">
           <caret line="189" column="13" selection-start-line="189" selection-start-column="13" selection-end-line="189" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -3882,15 +3853,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
           <caret line="50" column="0" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#12302#12303#0" expanded="false" />
-            <element signature="e#12351#12352#0" expanded="false" />
-            <element signature="e#12429#12430#0" expanded="false" />
-            <element signature="e#12465#12466#0" expanded="false" />
-            <element signature="e#15024#15025#0" expanded="false" />
-            <element signature="e#15079#15080#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -3898,11 +3860,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2475">
           <caret line="200" column="0" selection-start-line="200" selection-start-column="0" selection-end-line="200" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#4183#4184#0" expanded="false" />
-            <element signature="e#4273#4274#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -3910,7 +3867,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1005">
           <caret line="82" column="47" selection-start-line="82" selection-start-column="0" selection-end-line="83" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3918,7 +3874,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
           <caret line="20" column="12" selection-start-line="20" selection-start-column="12" selection-end-line="20" selection-end-column="12" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -3926,7 +3884,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3934,7 +3891,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3962,57 +3918,16 @@
         <state relative-caret-position="1005">
           <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
           <folding>
-            <element signature="e#2989#2990#0" expanded="true" />
-            <element signature="e#3035#3036#0" expanded="true" />
+            <element signature="e#2991#2992#0" expanded="true" />
+            <element signature="e#3037#3038#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/Hexapod.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-5556">
-          <caret line="16" column="19" selection-start-line="16" selection-start-column="19" selection-end-line="16" selection-end-column="19" />
-          <folding>
-            <element signature="e#2717#3008#0" expanded="true" />
-            <element signature="e#3007#3008#0" expanded="true" />
-            <element signature="e#3717#4085#0" expanded="true" />
-            <element signature="e#4084#4085#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/stemi/STEMIHexapod/CalibrationActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
-          <caret line="42" column="40" selection-start-line="42" selection-start-column="40" selection-end-line="42" selection-end-column="40" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#5441#6166#0" expanded="true" />
-            <element signature="e#5556#6140#0" expanded="true" />
-            <element signature="e#6139#6140#0" expanded="true" />
-            <element signature="e#6165#6166#0" expanded="true" />
-            <element signature="e#9243#9519#0" expanded="true" />
-            <element signature="e#9518#9519#0" expanded="true" />
-            <element signature="e#10143#10771#0" expanded="true" />
-            <element signature="e#10297#10615#0" expanded="true" />
-            <element signature="e#10614#10615#0" expanded="true" />
-            <element signature="e#10770#10771#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/stemihexapod/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="22" selection-start-line="9" selection-start-column="22" selection-end-line="9" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/SavedCalibrationCallback.java">
+    <entry file="file://$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/EnterCalibrationCallback.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
-          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+          <caret line="7" column="12" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="12" />
           <folding />
         </state>
       </provider>
@@ -4020,15 +3935,67 @@
     <entry file="file://$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/ConnectingCompleteCallback.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
-          <caret line="7" column="45" selection-start-line="7" selection-start-column="45" selection-end-line="7" selection-end-column="45" />
+          <caret line="7" column="12" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="12" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/EnterCalibrationCallback.java">
+    <entry file="file://$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/SavedCalibrationCallback.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
-          <caret line="7" column="45" selection-start-line="7" selection-start-column="45" selection-end-line="7" selection-end-column="45" />
+          <caret line="7" column="12" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stemihexapod/src/main/java/mario/com/stemihexapod/Hexapod.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1470">
+          <caret line="100" column="9" selection-start-line="100" selection-start-column="9" selection-end-line="100" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/stemi/STEMIHexapod/CalibrationActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="42" column="40" selection-start-line="42" selection-start-column="40" selection-end-line="42" selection-end-column="40" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#5441#6168#0" expanded="true" />
+            <element signature="e#5556#6142#0" expanded="true" />
+            <element signature="e#6141#6142#0" expanded="true" />
+            <element signature="e#6167#6168#0" expanded="true" />
+            <element signature="e#6276#6594#0" expanded="true" />
+            <element signature="e#6593#6594#0" expanded="true" />
+            <element signature="e#6639#6973#0" expanded="true" />
+            <element signature="e#6972#6973#0" expanded="true" />
+            <element signature="e#7014#7421#0" expanded="true" />
+            <element signature="e#7420#7421#0" expanded="true" />
+            <element signature="e#7507#7824#0" expanded="true" />
+            <element signature="e#7823#7824#0" expanded="true" />
+            <element signature="e#7868#8203#0" expanded="true" />
+            <element signature="e#8202#8203#0" expanded="true" />
+            <element signature="e#8243#8650#0" expanded="true" />
+            <element signature="e#8649#8650#0" expanded="true" />
+            <element signature="e#9100#9548#0" expanded="true" />
+            <element signature="e#9245#9521#0" expanded="true" />
+            <element signature="e#9520#9521#0" expanded="true" />
+            <element signature="e#9547#9548#0" expanded="true" />
+            <element signature="e#9591#9753#0" expanded="true" />
+            <element signature="e#9752#9753#0" expanded="true" />
+            <element signature="e#10145#10775#0" expanded="true" />
+            <element signature="e#10299#10619#0" expanded="true" />
+            <element signature="e#10618#10619#0" expanded="true" />
+            <element signature="e#10774#10775#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stemihexapod/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="21" column="1" selection-start-line="21" selection-start-column="1" selection-end-line="21" selection-end-column="1" />
           <folding />
         </state>
       </provider>

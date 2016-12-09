@@ -5,5 +5,5 @@ package mario.com.stemihexapod;
  */
 
 public interface EnterCalibrationCallback {
-    void enteredCalibration(boolean entered);
+    void onEnteredCalibration(boolean entered);
 }
