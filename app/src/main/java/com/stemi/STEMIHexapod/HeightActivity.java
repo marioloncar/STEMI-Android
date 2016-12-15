@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -51,7 +52,12 @@ public class HeightActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
-        actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Adjust height</font>"));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Adjust height</font>", Html.FROM_HTML_MODE_LEGACY));
+        }
+        else{
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Adjust height</font>"));
+        }
 
         @SuppressLint("PrivateResource")
         final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
@@ -207,14 +213,12 @@ public class HeightActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-//        connected = false;
         hexapod.disconnect();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-//        connected = false;
         hexapod.disconnect();
     }
 

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -27,7 +28,6 @@ public class WalkingstyleActivity extends AppCompatActivity {
 
     private TextView tvWalkDesc;
     private SharedPreferences prefs;
-    public WalkingStyle walkingStyle;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,7 +37,12 @@ public class WalkingstyleActivity extends AppCompatActivity {
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
-        actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Walking style</font>"));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Walking style</font>", Html.FROM_HTML_MODE_LEGACY));
+        }
+        else{
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Walking style</font>"));
+        }
 
         @SuppressLint("PrivateResource")
         final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
@@ -76,27 +81,27 @@ public class WalkingstyleActivity extends AppCompatActivity {
                 switch (checkedId) {
                     case R.id.rb1:
                         tvWalkDesc.setText(R.string.tripod_desc);
-                        prefs.edit().putString("walk", walkingStyle.TripodGait.toString()).apply();
+                        prefs.edit().putString("walk", WalkingStyle.TripodGait.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb1).apply();
                         break;
                     case R.id.rb2:
                         tvWalkDesc.setText(R.string.tripod_delayed_desc);
-                        prefs.edit().putString("walk", walkingStyle.TripodGaitAngled.toString()).apply();
+                        prefs.edit().putString("walk", WalkingStyle.TripodGaitAngled.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb2).apply();
                         break;
                     case R.id.rb3:
                         tvWalkDesc.setText(R.string.ripple_desc);
-                        prefs.edit().putString("walk", walkingStyle.TripodGaitStar.toString()).apply();
+                        prefs.edit().putString("walk", WalkingStyle.TripodGaitStar.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb3).apply();
                         break;
                     case R.id.rb4:
                         tvWalkDesc.setText(R.string.wave_desc);
-                        prefs.edit().putString("walk", walkingStyle.WaveGait.toString()).apply();
+                        prefs.edit().putString("walk", WalkingStyle.WaveGait.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb4).apply();
                         break;
                     default:
                         tvWalkDesc.setText(R.string.tripod_desc);
-                        prefs.edit().putString("walk", walkingStyle.TripodGait.toString()).apply();
+                        prefs.edit().putString("walk", WalkingStyle.TripodGait.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb1).apply();
                         break;
                 }

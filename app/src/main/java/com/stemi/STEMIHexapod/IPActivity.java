@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -43,7 +44,12 @@ public class IPActivity extends AppCompatActivity {
         assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
-        actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>IP address</font>"));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>IP address</font>", Html.FROM_HTML_MODE_LEGACY));
+        }
+        else{
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>IP address</font>"));
+        }
 
         @SuppressLint("PrivateResource")
         final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);

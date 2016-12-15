@@ -39,7 +39,7 @@ public class JoystickR extends LinearLayout {
     }
 
 
-    public JoystickR(Context context, @Nullable AttributeSet attrs) {
+    public JoystickR(Context context, AttributeSet attrs) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.joystick_r, this, true);
 

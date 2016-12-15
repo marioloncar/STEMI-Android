@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -30,7 +31,10 @@ import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
 
+import mario.com.stemihexapod.ConnectingCompleteCallback;
 import mario.com.stemihexapod.Hexapod;
+import mario.com.stemihexapod.SavedCalibrationCallback;
+import mario.com.stemihexapod.WalkingStyle;
 
 
 public class SettingsActivity extends AppCompatActivity {
@@ -43,7 +47,12 @@ public class SettingsActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
-        actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Settings</font>"));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Settings</font>", Html.FROM_HTML_MODE_LEGACY));
+        }
+        else{
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Settings</font>"));
+        }
 
         @SuppressLint("PrivateResource")
         final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
@@ -60,15 +69,11 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
-    interface DiscardCalibInterface {
-        void onDiscardedData(Boolean finished);
-    }
-
-    interface DiscardInterface {
+    interface DiscardCallback {
         void onDiscardFinished(Boolean finished);
     }
 
-    interface SavedCalibrationInterface {
+    interface SavedCallback {
         void onSavedData(Boolean saved);
     }
 
@@ -77,8 +82,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         static SharedPreferences prefs;
         String savedIp, hardwareVersion, stemiId;
-        byte[] calibrationArray;
-        byte[] newCalibrationArray;
+        byte[] calibrationValues;
+        byte[] currentCalibrationValues;
         boolean connected;
         final static int SLEEPING_INTERVAL = 100;
         int writeData;
@@ -97,7 +102,7 @@ public class SettingsActivity extends AppCompatActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            calibrationArray = new byte[]{50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
+            calibrationValues = new byte[]{50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
 
             prefs = this.getActivity().getSharedPreferences("myPref", Context.MODE_PRIVATE);
 
@@ -149,7 +154,7 @@ public class SettingsActivity extends AppCompatActivity {
                         @Override
                         public void run() {
 
-                            discardValuesToInitial(new DiscardCalibInterface() {
+                            discardValuesToInitial(new DiscardCalibrationCallback() {
                                 @Override
                                 public void onDiscardedData(Boolean finished) {
                                     getActivity().runOnUiThread(new Runnable() {
@@ -176,18 +181,29 @@ public class SettingsActivity extends AppCompatActivity {
             builder.show();
         }
 
-        private void discardValuesToInitial(final DiscardCalibInterface callback) {
+        private void discardValuesToInitial(final DiscardCalibrationCallback discardCalibrationCallback) {
+            // DODATI THREAD
+            hexapod = new Hexapod(true);
+            hexapod.setIpAddress(savedIp);
+            hexapod.connectWithCompletion(new ConnectingCompleteCallback() {
+                @Override
+                public void onConnectingComplete(boolean connected) {
+                    if (connected) {
+                        currentCalibrationValues = hexapod.fetchDataFromHexapod();
+                    }
+                }
+            });
 
-            newCalibrationArray = fetchBin(savedIp);
-            if (newCalibrationArray != null) {
-                sendCommandsOverWiFi(savedIp);
-            }
+//            currentCalibrationValues = fetchBin(savedIp);
+//            if (currentCalibrationValues != null) {
+//                sendCommandsOverWiFi(savedIp);
+//            }
 
-            discard(new DiscardInterface() {
+            discard(new DiscardCallback() {
                 @Override
                 public void onDiscardFinished(Boolean finished) {
                     if (finished) {
-                        callback.onDiscardedData(true);
+                        discardCalibrationCallback.onDiscardedData(true);
                     }
 
                 }
@@ -197,24 +213,38 @@ public class SettingsActivity extends AppCompatActivity {
 
         }
 
-        private void discard(final DiscardInterface callback) {
-
-
+        private void discard(final DiscardCallback callback) {
             byte[] calculatingNumbers = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
             for (int i = 0; i <= 10; i++) {
-                for (int j = 0; j < calibrationArray.length; j++) {
+                for (int j = 0; j < calibrationValues.length; j++) {
                     if (i == 0) {
-                        byte calc = (byte) (Math.abs(calibrationArray[j] - newCalibrationArray[j]) / 10);
+                        byte calc = (byte) (Math.abs(calibrationValues[j] - currentCalibrationValues[j]) / 10);
                         calculatingNumbers[j] = calc;
                     }
                     if (i < 10) {
-                        if (newCalibrationArray[j] < calibrationArray[j]) {
-                            newCalibrationArray[j] += calculatingNumbers[j];
-                        } else if (newCalibrationArray[j] > calibrationArray[j]) {
-                            newCalibrationArray[j] -= calculatingNumbers[j];
+                        if (currentCalibrationValues[j] < calibrationValues[j]) {
+                            currentCalibrationValues[j] += calculatingNumbers[j];
+                            try {
+                                this.hexapod.setValue(this.currentCalibrationValues[j], j);
+                            } catch (Exception e) {
+                                Log.e("SettingsActivity", "Exception", e);
+                            }
+                        } else if (currentCalibrationValues[j] > calibrationValues[j]) {
+                            currentCalibrationValues[j] -= calculatingNumbers[j];
+                            try {
+                                this.hexapod.setValue(this.currentCalibrationValues[j], j);
+                            } catch (Exception e) {
+                                Log.e("SettingsActivity", "Exception", e);
+                            }
                         }
                     } else {
-                        newCalibrationArray[j] = calibrationArray[j];
+                        currentCalibrationValues[j] = calibrationValues[j];
+                        try{
+                            this.hexapod.setValue(this.currentCalibrationValues[j], j);
+                        }
+                        catch(Exception e){
+                            Log.e("SettingsActivity", "Exception", e);
+                        }
                     }
                 }
                 try {
@@ -223,187 +253,210 @@ public class SettingsActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-            saveDataOverWiFi(savedIp, new SavedCalibrationInterface() {
-                @Override
-                public void onSavedData(Boolean saved) {
-                    if (saved) {
-                        callback.onDiscardFinished(true);
-                    }
-                }
-            });
-
-        }
-
-        public void saveDataOverWiFi(final String ip, final SavedCalibrationInterface callback) {
-            connected = false;
+            this.hexapod.disconnect();
             try {
-                Thread.sleep(1000);
+                this.hexapod.writeDataToHexapod(new SavedCalibrationCallback() {
+                    @Override
+                    public void onSavedData(Boolean saved) {
+                        if (saved){
+                            currentCalibrationValues = new byte[]{};
+                            hexapod = null;
+                            prefs.edit().putString("walk", WalkingStyle.TripodGait.toString()).apply();
+                            prefs.edit().putInt("height", 50).apply();
+                            hexapod = new Hexapod(false);
+                            hexapod.setIpAddress(savedIp);
+                            int height = (byte) prefs.getInt("height", 0);
+                            hexapod.setHeight(height);
+                            // DOVRŠITI
+
+                        }
+                    }
+                });
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Thread t = new Thread() {
-                public void run() {
-                    try {
-                        Socket socket = new Socket(ip, 80);
-                        OutputStream outputStream = socket.getOutputStream();
 
-//                    CommandSender wifiSender = new CommandSender(outputStream, socket);
+//            saveDataOverWiFi(savedIp, new SavedCallback() {
+//                @Override
+//                public void onSavedData(Boolean saved) {
+//                    if (saved) {
+//                        callback.onDiscardFinished(true);
+//                    }
+//                }
+//            });
 
-                        try {
-                            writeData = 1;
-                            BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
-                            Thread.sleep(SLEEPING_INTERVAL);
-                            buffOutStream.write(bytesArray());
-                            buffOutStream.flush();
-                            socket.close();
-
-                            Thread.sleep(500);
-
-                            sendReturnCommandsOverWiFi(savedIp);
-                            prefs.edit().putInt("walk", 30).apply();
-                            prefs.edit().putInt("rbSelected", R.id.rb1).apply();
-                            prefs.edit().putInt("height", 50).apply();
-
-                            Thread.sleep(600);
-
-                            callback.onSavedData(true);
-
-                        } catch (IOException | InterruptedException e) {
-                            e.printStackTrace();
-                        } finally {
-                            connected = false;
-                        }
-
-                    } catch (IOException ignored) {
-                    }
-                }
-            };
-            t.start();
         }
 
-        public void sendCommandsOverWiFi(final String ip) {
-            connected = true;
+//        public void saveDataOverWiFi(final String ip, final SavedCallback callback) {
+//            connected = false;
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            Thread t = new Thread() {
+//                public void run() {
+//                    try {
+//                        Socket socket = new Socket(ip, 80);
+//                        OutputStream outputStream = socket.getOutputStream();
+//
+////                    CommandSender wifiSender = new CommandSender(outputStream, socket);
+//
+//                        try {
+//                            writeData = 1;
+//                            BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
+//                            Thread.sleep(SLEEPING_INTERVAL);
+//                            buffOutStream.write(bytesArray());
+//                            buffOutStream.flush();
+//                            socket.close();
+//
+//                            Thread.sleep(500);
+//
+//                            sendReturnCommandsOverWiFi(savedIp);
+//                            prefs.edit().putInt("walk", 30).apply();
+//                            prefs.edit().putInt("rbSelected", R.id.rb1).apply();
+//                            prefs.edit().putInt("height", 50).apply();
+//
+//                            Thread.sleep(600);
+//
+//                            callback.onSavedData(true);
+//
+//                        } catch (IOException | InterruptedException e) {
+//                            e.printStackTrace();
+//                        } finally {
+//                            connected = false;
+//                        }
+//
+//                    } catch (IOException ignored) {
+//                    }
+//                }
+//            };
+//            t.start();
+//        }
 
-            Thread t = new Thread() {
-                public void run() {
-                    try {
-                        Socket socket = new Socket(ip, 80);
-                        OutputStream outputStream = socket.getOutputStream();
+//        public void sendCommandsOverWiFi(final String ip) {
+//            connected = true;
+//
+//            Thread t = new Thread() {
+//                public void run() {
+//                    try {
+//                        Socket socket = new Socket(ip, 80);
+//                        OutputStream outputStream = socket.getOutputStream();
+//
+//                        try {
+//                            BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
+//                            while (connected) {
+//                                Thread.sleep(SLEEPING_INTERVAL);
+//                                buffOutStream.write(bytesArray());
+//                                buffOutStream.flush();
+//                            }
+//                            socket.close();
+//
+//                        } catch (IOException | InterruptedException e) {
+//                            e.printStackTrace();
+//                        } finally {
+//                            connected = false;
+//                        }
+//
+//                    } catch (IOException ignored) {
+//                    }
+//                }
+//            };
+//            t.start();
+//        }
 
-                        try {
-                            BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
-                            while (connected) {
-                                Thread.sleep(SLEEPING_INTERVAL);
-                                buffOutStream.write(bytesArray());
-                                buffOutStream.flush();
-                            }
-                            socket.close();
-
-                        } catch (IOException | InterruptedException e) {
-                            e.printStackTrace();
-                        } finally {
-                            connected = false;
-                        }
-
-                    } catch (IOException ignored) {
-                    }
-                }
-            };
-            t.start();
-        }
-
-        public void sendReturnCommandsOverWiFi(final String ip) {
-            connected = true;
-
-            Thread t = new Thread() {
-                public void run() {
-                    try {
-                        Socket socket = new Socket(ip, 80);
-                        OutputStream outputStream = socket.getOutputStream();
-
-                        try {
-                            BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
-                            Thread.sleep(SLEEPING_INTERVAL);
-                            buffOutStream.write(bytesArrayReturn());
-                            buffOutStream.flush();
-                            socket.close();
-
-                        } catch (IOException | InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                    } catch (IOException ignored) {
-                    }
-                }
-            };
-            t.start();
-        }
-
-        private byte[] fetchBin(String params) {
-            ByteArrayOutputStream baos = null;
-            try {
-                URL url = new URL("http://" + params + "/linearization.bin");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.connect();
-
-                if (conn.getResponseCode() != HttpURLConnection.HTTP_OK)
-                    return new byte[0];
-
-                baos = new ByteArrayOutputStream();
-                DataOutputStream dos = new DataOutputStream(baos);
-
-                byte[] data = new byte[4096];
-                int count = conn.getInputStream().read(data);
-                while (count != -1) {
-                    dos.write(data, 3, 18);
-                    count = conn.getInputStream().read(data);
-
-                }
-            } catch (IOException e) {
-                Log.d("TAG", "Getting calibration: " + e.getMessage());
-            }
-            return baos.toByteArray();
-        }
-
-        private byte[] bytesArray() {
-
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream() {
-            };
-            try {
-                outputStream.write("LIN".getBytes());
-                outputStream.write(newCalibrationArray);
-                outputStream.write(writeData);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return outputStream.toByteArray();
-        }
-
-        private byte[] bytesArrayReturn() {
-            byte[] slidersArray = {0, 0, 0, 50, 0, 0, 0, 0, 0};
-
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream() {
-            };
-            try {
-                outputStream.write("PKT".getBytes());
-                outputStream.write(0);
-                outputStream.write(0);
-                outputStream.write(0);
-                outputStream.write(0);
-                outputStream.write(0);
-                outputStream.write(1);
-                outputStream.write(0);
-                outputStream.write(0);
-                outputStream.write(50);
-                outputStream.write(30);
-                outputStream.write(slidersArray);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return outputStream.toByteArray();
-        }
+//        public void sendReturnCommandsOverWiFi(final String ip) {
+//            connected = true;
+//
+//            Thread t = new Thread() {
+//                public void run() {
+//                    try {
+//                        Socket socket = new Socket(ip, 80);
+//                        OutputStream outputStream = socket.getOutputStream();
+//
+//                        try {
+//                            BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
+//                            Thread.sleep(SLEEPING_INTERVAL);
+//                            buffOutStream.write(bytesArrayReturn());
+//                            buffOutStream.flush();
+//                            socket.close();
+//
+//                        } catch (IOException | InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                    } catch (IOException ignored) {
+//                    }
+//                }
+//            };
+//            t.start();
+//        }
+//
+//        private byte[] fetchBin(String params) {
+//            ByteArrayOutputStream baos = null;
+//            try {
+//                URL url = new URL("http://" + params + "/linearization.bin");
+//                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//                conn.connect();
+//
+//                if (conn.getResponseCode() != HttpURLConnection.HTTP_OK)
+//                    return new byte[0];
+//
+//                baos = new ByteArrayOutputStream();
+//                DataOutputStream dos = new DataOutputStream(baos);
+//
+//                byte[] data = new byte[4096];
+//                int count = conn.getInputStream().read(data);
+//                while (count != -1) {
+//                    dos.write(data, 3, 18);
+//                    count = conn.getInputStream().read(data);
+//
+//                }
+//            } catch (IOException e) {
+//                Log.d("TAG", "Getting calibration: " + e.getMessage());
+//            }
+//            return baos.toByteArray();
+//        }
+//
+//        private byte[] bytesArray() {
+//
+//            ByteArrayOutputStream outputStream = new ByteArrayOutputStream() {
+//            };
+//            try {
+//                outputStream.write("LIN".getBytes());
+//                outputStream.write(currentCalibrationValues);
+//                outputStream.write(writeData);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//            return outputStream.toByteArray();
+//        }
+//
+//        private byte[] bytesArrayReturn() {
+//            byte[] slidersArray = {0, 0, 0, 50, 0, 0, 0, 0, 0};
+//
+//            ByteArrayOutputStream outputStream = new ByteArrayOutputStream() {
+//            };
+//            try {
+//                outputStream.write("PKT".getBytes());
+//                outputStream.write(0);
+//                outputStream.write(0);
+//                outputStream.write(0);
+//                outputStream.write(0);
+//                outputStream.write(0);
+//                outputStream.write(1);
+//                outputStream.write(0);
+//                outputStream.write(0);
+//                outputStream.write(50);
+//                outputStream.write(30);
+//                outputStream.write(slidersArray);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//            return outputStream.toByteArray();
+//        }
 
 
     }

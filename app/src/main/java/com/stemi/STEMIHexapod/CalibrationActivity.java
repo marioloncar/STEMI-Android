@@ -7,6 +7,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,10 +33,6 @@ import mario.com.stemihexapod.SavedCalibrationCallback;
  * Created by Mario on 29/08/16.
  */
 public class CalibrationActivity extends AppCompatActivity implements View.OnClickListener {
-
-    interface DiscardCalibrationCallback {
-        void valuesDiscarded(Boolean finished);
-    }
 
     private ImageButton ibMotor0, ibMotor1, ibMotor2, ibMotor3, ibMotor4, ibMotor5, ibMotor6, ibMotor7,
             ibMotor8, ibMotor9, ibMotor10, ibMotor11, ibMotor12, ibMotor13, ibMotor14, ibMotor15, ibMotor16,
@@ -62,7 +60,12 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar_landscape));
-        actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Calibration</font>"));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Calibration</font>", Html.FROM_HTML_MODE_LEGACY));
+        }
+        else{
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Calibration</font>"));
+        }
 
         @SuppressLint("PrivateResource")
         final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
@@ -129,7 +132,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                                 calibrationValues = hexapod.fetchDataFromHexapod();
                                 changedCalibrationValues = calibrationValues.clone();
                             } catch (Exception e) {
-                                System.out.println(e);
+                                Log.e("CalibrationActivity", "error", e);
                             }
                         }
                     }
@@ -231,7 +234,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             public void onClick(DialogInterface dialog, int id) {
                 discardValuesToInitial(new DiscardCalibrationCallback() {
                     @Override
-                    public void valuesDiscarded(Boolean finished) {
+                    public void onDiscardedData(Boolean finished) {
                         if (finished) {
                             finish();
                         }
@@ -587,7 +590,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         try {
                             hexapod.setValue(changedCalibrationValues[j], j);
                         } catch (IndexOutOfBoundsException e) {
-                            System.out.println(e);
+                            Log.e("CalibrationActivity", "OutOfBounds", e);
                         }
 
                     } else if (changedCalibrationValues[j] > calibrationValues[j]) {
@@ -595,7 +598,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         try {
                             hexapod.setValue(changedCalibrationValues[j], j);
                         } catch (IndexOutOfBoundsException e) {
-                            System.out.println(e);
+                            Log.e("CalibrationActivity", "OutOfBounds", e);
                         }
                     }
 
@@ -604,7 +607,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                     try {
                         hexapod.setValue(calibrationValues[j], j);
                     } catch (Exception e) {
-                        System.out.println(e);
+                        Log.e("CalibrationActivity", "Error", e);
                     }
                 }
             }
@@ -613,7 +616,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             } catch (InterruptedException ignored) {
             }
         }
-        discardCalibrationCallback.valuesDiscarded(true);
+        discardCalibrationCallback.onDiscardedData(true);
     }
 
     @Override
