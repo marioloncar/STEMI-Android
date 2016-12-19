@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         ibStandby = (ImageButton) findViewById(R.id.ibStandby);
         vOverlay = findViewById(R.id.vOverlay);
         ibMovement = (ImageButton) findViewById(R.id.ibMovement);

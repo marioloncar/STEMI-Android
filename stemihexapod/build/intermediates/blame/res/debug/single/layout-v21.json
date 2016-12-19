@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "/Users/Mario/Documents/AndroidProjects/STEMI/stemihexapod/build/intermediates/res/merged/debug/layout-v21/notification_template_icon_group.xml",
+        "source": "/Users/Mario/Documents/AndroidProjects/STEMI/stemihexapod/build/intermediates/exploded-aar/com.android.support/appcompat-v7/25.1.0/res/layout-v21/notification_template_icon_group.xml"
+    },
+    {
+        "merged": "/Users/Mario/Documents/AndroidProjects/STEMI/stemihexapod/build/intermediates/res/merged/debug/layout-v21/notification_template_custom_big.xml",
+        "source": "/Users/Mario/Documents/AndroidProjects/STEMI/stemihexapod/build/intermediates/exploded-aar/com.android.support/appcompat-v7/25.1.0/res/layout-v21/notification_template_custom_big.xml"
+    },
+    {
+        "merged": "/Users/Mario/Documents/AndroidProjects/STEMI/stemihexapod/build/intermediates/res/merged/debug/layout-v21/notification_action.xml",
+        "source": "/Users/Mario/Documents/AndroidProjects/STEMI/stemihexapod/build/intermediates/exploded-aar/com.android.support/appcompat-v7/25.1.0/res/layout-v21/notification_action.xml"
+    },
+    {
+        "merged": "/Users/Mario/Documents/AndroidProjects/STEMI/stemihexapod/build/intermediates/res/merged/debug/layout-v21/notification_action_tombstone.xml",
+        "source": "/Users/Mario/Documents/AndroidProjects/STEMI/stemihexapod/build/intermediates/exploded-aar/com.android.support/appcompat-v7/25.1.0/res/layout-v21/notification_action_tombstone.xml"
+    }
+]
