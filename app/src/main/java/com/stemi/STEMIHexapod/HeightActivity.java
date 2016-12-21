@@ -28,6 +28,8 @@ import java.net.Socket;
 
 import mario.com.stemihexapod.Hexapod;
 
+import static com.stemi.STEMIHexapod.Constants.REPEAT_DELAY;
+
 /**
  * Created by Mario on 29/08/16.
  */
@@ -39,7 +41,6 @@ public class HeightActivity extends AppCompatActivity {
     private final Handler repeatUpdateHandler = new Handler();
     private boolean mAutoIncrement = false;
     private boolean mAutoDecrement = false;
-    private final static int REPEAT_DELAY = 50;
     private byte height = 50;
     private Hexapod hexapod;
 
@@ -49,21 +50,7 @@ public class HeightActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.height_layout);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Adjust height</font>", Html.FROM_HTML_MODE_LEGACY));
-        }
-        else{
-            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Adjust height</font>"));
-        }
-
-        @SuppressLint("PrivateResource")
-        final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
-        assert upArrow != null;
-        upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
-        actionBar.setHomeAsUpIndicator(upArrow);
+        initActionBarWithTitle("Adjust height");
 
         movingSound = MediaPlayer.create(this, R.raw.moving_sound);
         movingSoundShort = MediaPlayer.create(this, R.raw.moving_sound_short);
@@ -135,7 +122,6 @@ public class HeightActivity extends AppCompatActivity {
                 movingSound.start();
                 mAutoDecrement = true;
                 repeatUpdateHandler.post(new RepeatUpdater());
-
                 return true;
             }
         });
@@ -154,19 +140,31 @@ public class HeightActivity extends AppCompatActivity {
         ibHeightD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 decrement();
-                if (height == 0) {
+                if (height == 0)
                     movingSoundShort.pause();
-                } else {
+                else
                     movingSoundShort.start();
-                }
-
             }
         });
-
     }
 
+    private void initActionBarWithTitle(String title) {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>"+title+"</font>", Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>"+title+"</font>"));
+        }
+
+        @SuppressLint("PrivateResource")
+        final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
+        assert upArrow != null;
+        upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
+        actionBar.setHomeAsUpIndicator(upArrow);
+    }
 
     // Handler for long click on increase/decrease value buttons
     private class RepeatUpdater implements Runnable {

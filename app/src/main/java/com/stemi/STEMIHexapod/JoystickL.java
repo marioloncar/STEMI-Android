@@ -5,9 +5,11 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import static com.stemi.STEMIHexapod.Constants.JOYSTICK_COEFF;
+import static com.stemi.STEMIHexapod.Constants.RADIAN;
 
 
 /**
@@ -30,10 +32,8 @@ public class JoystickL extends LinearLayout {
 
     private int d;
 
-    private ImageView path_JoyLeftUp, path_JoyLeftDown, path_JoyLeftLeft, path_JoyLeftRight, joystickView, joystickPlus, joystickPath;
+    protected ImageView path_JoyLeftUp, path_JoyLeftDown, path_JoyLeftLeft, path_JoyLeftRight, joystickView, joystickPlus, joystickPath;
     protected float topAlpha, bottomAlpha, leftAlpha, rightAlpha;
-
-
 
 
     @Override
@@ -48,14 +48,10 @@ public class JoystickL extends LinearLayout {
 
     }
 
-    public JoystickL(Context context){
-        super(context);
-
-    }
-
     public JoystickL(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.joystick_l, this, true);
+
         path_JoyLeftDown = (ImageView) findViewById(R.id.ivJoystickLeft_Down);
         path_JoyLeftUp = (ImageView) findViewById(R.id.ivJoystickLeft_Up);
         path_JoyLeftLeft = (ImageView) findViewById(R.id.ivJoystickLeft_Left);
@@ -94,7 +90,7 @@ public class JoystickL extends LinearLayout {
         positionX = getWidth() / 2;
         positionY = getWidth() / 2;
         d = Math.min(xNew, yNew);
-        joystickRadius = (int) (d / 2 * 0.75);
+        joystickRadius = (int) (d / 2 * JOYSTICK_COEFF);
 
     }
 
@@ -223,15 +219,14 @@ public class JoystickL extends LinearLayout {
     }
 
     protected double getAngle() {
-        double radian = 57.2957795;
         if (positionX > centerX) {
             if (positionY < centerY) {
                 return lastAngle = (Math.atan((positionY - centerY)
                         / (positionX - centerX))
-                        * radian + 90);
+                        * RADIAN + 90);
             } else if (positionY > centerY) {
                 return lastAngle = (Math.atan((positionY - centerY)
-                        / (positionX - centerX)) * radian) + 90;
+                        / (positionX - centerX)) * RADIAN) + 90;
             } else {
                 return lastAngle = 90;
             }
@@ -239,10 +234,10 @@ public class JoystickL extends LinearLayout {
             if (positionY < centerY) {
                 return lastAngle = (Math.atan((positionY - centerY)
                         / (positionX - centerX))
-                        * radian - 90);
+                        * RADIAN - 90);
             } else if (positionY > centerY) {
                 return lastAngle = (Math.atan((positionY - centerY)
-                        / (positionX - centerX)) * radian) - 90;
+                        / (positionX - centerX)) * RADIAN) - 90;
             } else {
                 return lastAngle = -90;
             }

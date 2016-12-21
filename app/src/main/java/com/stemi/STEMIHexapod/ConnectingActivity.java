@@ -48,7 +48,7 @@ public class ConnectingActivity extends AppCompatActivity {
     private String savedIp;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        Fabric.with(this, new Crashlytics(), new Answers());
         setContentView(R.layout.connecting_layout);
@@ -79,6 +79,7 @@ public class ConnectingActivity extends AppCompatActivity {
                     public void run() {
                         try {
                             String jsonString = "";
+                            savedIp = prefs.getString("ip", null);
                             jsonString = fetchJSON("http://" + savedIp + "/stemiData.json");
                             // if jsonString object exists compare with one saved in SharedPreferences
                             if (jsonString != null) {
@@ -218,10 +219,7 @@ public class ConnectingActivity extends AppCompatActivity {
             prefs.edit().putString("ip", "192.168.4.1").apply();
             prefs.edit().putBoolean("firstrun", false).apply();
         } else {
-            SharedPreferences prefs = getSharedPreferences("myPref", MODE_PRIVATE);
             savedIp = prefs.getString("ip", null);
-            prefs.edit().putBoolean("firstrun", false).apply();
-
         }
     }
 

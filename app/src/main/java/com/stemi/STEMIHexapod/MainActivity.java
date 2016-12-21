@@ -209,7 +209,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
-
     // onClick listeners for buttons on screen
     @Override
     public void onClick(View v) {
@@ -238,9 +237,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.ibMovement:
                 if (!ibMovement.isSelected())
                     showShortToast("MOVEMENT ENABLED");
-                ibMovement.setSelected(true);
-                ibRotation.setSelected(false);
-                ibOrientation.setSelected(false);
+                setSelectedButtons(true, false, false);
                 hexapod.setMovementMode();
                 closeMenu();
                 break;
@@ -248,9 +245,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.ibRotation:
                 if (!ibRotation.isSelected())
                     showShortToast("ROTATION ENABLED");
-                ibRotation.setSelected(true);
-                ibMovement.setSelected(false);
-                ibOrientation.setSelected(false);
+                setSelectedButtons(false, true, false);
                 hexapod.setRotationMode();
                 closeMenu();
                 break;
@@ -258,9 +253,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.ibOrientation:
                 if (!ibOrientation.isSelected())
                     showShortToast("ORIENTATION ENABLED");
-                ibOrientation.setSelected(true);
-                ibMovement.setSelected(false);
-                ibRotation.setSelected(false);
+                setSelectedButtons(false, false, true);
                 hexapod.setOrientationMode();
                 closeMenu();
                 break;
@@ -289,6 +282,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent3);
                 break;
         }
+    }
+
+    private void setSelectedButtons(boolean movement, boolean rotation, boolean orientation) {
+        ibMovement.setSelected(movement);
+        ibRotation.setSelected(rotation);
+        ibOrientation.setSelected(orientation);
     }
 
     private void openMenu() {

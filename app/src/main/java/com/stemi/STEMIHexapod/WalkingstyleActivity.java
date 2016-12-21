@@ -34,21 +34,7 @@ public class WalkingstyleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.walkstyle_layout);
 
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Walking style</font>", Html.FROM_HTML_MODE_LEGACY));
-        }
-        else{
-            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Walking style</font>"));
-        }
-
-        @SuppressLint("PrivateResource")
-        final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
-        assert upArrow != null;
-        upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
-        actionBar.setHomeAsUpIndicator(upArrow);
+        initActionBarWithTitle("Walking style");
 
         Typeface tf = Typeface.createFromAsset(getAssets(),
                 "fonts/ProximaNova-Regular.otf");
@@ -131,6 +117,23 @@ public class WalkingstyleActivity extends AppCompatActivity {
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
         }
+    }
+
+    private void initActionBarWithTitle(String title) {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>", Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>"));
+        }
+
+        @SuppressLint("PrivateResource")
+        final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
+        assert upArrow != null;
+        upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
+        actionBar.setHomeAsUpIndicator(upArrow);
     }
 
 }

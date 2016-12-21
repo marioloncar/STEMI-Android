@@ -10,7 +10,6 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
@@ -28,6 +27,8 @@ import android.widget.TextView;
 import mario.com.stemihexapod.ConnectingCompleteCallback;
 import mario.com.stemihexapod.Hexapod;
 import mario.com.stemihexapod.SavedCalibrationCallback;
+
+import static com.stemi.STEMIHexapod.Constants.REPEAT_DELAY;
 
 /**
  * Created by Mario on 29/08/16.
@@ -48,30 +49,15 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     private final Handler repeatUpdateHandler = new Handler();
     private boolean mAutoIncrement = false;
     private boolean mAutoDecrement = false;
-    private static final int REPEAT_DELAY = 50;
     private String savedIp;
     private Hexapod hexapod;
 
     @Override
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.calibration_layout);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar_landscape));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Calibration</font>", Html.FROM_HTML_MODE_LEGACY));
-        }
-        else{
-            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Calibration</font>"));
-        }
-
-        @SuppressLint("PrivateResource")
-        final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
-        assert upArrow != null;
-        upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
-        actionBar.setHomeAsUpIndicator(upArrow);
+        initActionBarWithTitle("Calibration");
 
         ibMotor0 = (ImageButton) findViewById(R.id.ibMotor0);
         ibMotor1 = (ImageButton) findViewById(R.id.ibMotor1);
@@ -115,8 +101,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         movingSound = MediaPlayer.create(this, R.raw.moving_sound);
         movingSoundShort = MediaPlayer.create(this, R.raw.moving_sound_short);
 
-        ibCalibD.setEnabled(false);
-        ibCalibUp.setEnabled(false);
+        setButtonsEnabled(false, false);
 
         hexapod = new Hexapod(true);
         hexapod.setIpAddress(savedIp);
@@ -290,8 +275,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ibMotor0:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 0;
                 ibMotor0.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -303,8 +287,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 tvCalibValue.setText(string);
                 break;
             case R.id.ibMotor1:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 1;
                 ibMotor1.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -312,12 +295,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor2:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 2;
                 ibMotor2.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -325,12 +306,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor3:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 3;
                 ibMotor3.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -338,12 +317,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor4:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 4;
                 ibMotor4.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -351,12 +328,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor5:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 5;
                 ibMotor5.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -364,12 +339,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor6:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 6;
                 ibMotor6.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -377,12 +350,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor7:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 7;
                 ibMotor7.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -390,12 +361,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor8:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 8;
                 ibMotor8.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -403,12 +372,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor9:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 9;
                 ibMotor9.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -416,12 +383,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor10:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 10;
                 ibMotor10.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -429,12 +394,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor11:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 11;
                 ibMotor11.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -442,12 +405,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor12:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 12;
                 ibMotor12.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -455,12 +416,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor13:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 13;
                 ibMotor13.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -468,12 +427,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor14:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 14;
                 ibMotor14.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -481,12 +438,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor15:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 15;
                 ibMotor15.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -494,12 +449,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor16:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 16;
                 ibMotor16.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -507,12 +460,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
             case R.id.ibMotor17:
-                ibCalibD.setEnabled(true);
-                ibCalibUp.setEnabled(true);
+                setButtonsEnabled(true, true);
                 index = 17;
                 ibMotor17.setAlpha(1f);
                 for (int i = 0; i < motors.length; i++) {
@@ -520,10 +471,21 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         motors[i].setAlpha(0f);
                 }
                 setVisibility();
-                string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
+                setCalibrationValueText();
                 break;
         }
+    }
+
+    private void setCalibrationValueText() {
+        String string;
+        string = String.valueOf(changedCalibrationValues[index]);
+        tvCalibValue.setText(string);
+    }
+
+    private void setButtonsEnabled(boolean up, boolean down) {
+        ibCalibUp.setEnabled(up);
+        ibCalibD.setEnabled(down);
+
     }
 
     private void setVisibility() {
@@ -629,6 +591,23 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
         }
+    }
+
+    private void initActionBarWithTitle(String title) {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>"+title+"</font>", Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>"+title+"</font>"));
+        }
+
+        @SuppressLint("PrivateResource")
+        final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
+        assert upArrow != null;
+        upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
+        actionBar.setHomeAsUpIndicator(upArrow);
     }
 
 }

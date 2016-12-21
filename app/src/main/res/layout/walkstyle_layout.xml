@@ -34,7 +34,8 @@
             android:text="@string/tripod_gait"
             android:textAlignment="textStart"
             android:textColor="@color/highlightColor"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:fontFamily="sans-serif" />
 
         <RadioButton
             android:id="@+id/rb2"
