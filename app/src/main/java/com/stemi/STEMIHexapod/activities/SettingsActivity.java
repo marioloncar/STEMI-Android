@@ -1,4 +1,4 @@
-package com.stemi.STEMIHexapod;
+package com.stemi.STEMIHexapod.activities;
 
 import android.annotation.SuppressLint;
 import android.app.FragmentManager;
@@ -22,14 +22,8 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.Socket;
-import java.net.URL;
+import com.stemi.STEMIHexapod.interfaces.DiscardCalibrationCallback;
+import com.stemi.STEMIHexapod.R;
 
 import mario.com.stemihexapod.ConnectingCompleteCallback;
 import mario.com.stemihexapod.Hexapod;
@@ -228,14 +222,14 @@ public class SettingsActivity extends AppCompatActivity {
                         if (currentCalibrationValues[j] < calibrationValues[j]) {
                             currentCalibrationValues[j] += calculatingNumbers[j];
                             try {
-                                this.hexapod.setValue(this.currentCalibrationValues[j], j);
+                                this.hexapod.setCalibrationValue(this.currentCalibrationValues[j], j);
                             } catch (Exception e) {
                                 Log.e("SettingsActivity", "Exception", e);
                             }
                         } else if (currentCalibrationValues[j] > calibrationValues[j]) {
                             currentCalibrationValues[j] -= calculatingNumbers[j];
                             try {
-                                this.hexapod.setValue(this.currentCalibrationValues[j], j);
+                                this.hexapod.setCalibrationValue(this.currentCalibrationValues[j], j);
                             } catch (Exception e) {
                                 Log.e("SettingsActivity", "Exception", e);
                             }
@@ -243,7 +237,7 @@ public class SettingsActivity extends AppCompatActivity {
                     } else {
                         currentCalibrationValues[j] = calibrationValues[j];
                         try{
-                            this.hexapod.setValue(this.currentCalibrationValues[j], j);
+                            this.hexapod.setCalibrationValue(this.currentCalibrationValues[j], j);
                         }
                         catch(Exception e){
                             Log.e("SettingsActivity", "Exception", e);
@@ -264,7 +258,7 @@ public class SettingsActivity extends AppCompatActivity {
                         if (saved){
                             currentCalibrationValues = new byte[]{};
                             hexapod = null;
-                            prefs.edit().putString("walk", WalkingStyle.TripodGait.toString()).apply();
+                            prefs.edit().putString("walk", WalkingStyle.TRIPOD_GAIT.toString()).apply();
                             prefs.edit().putInt("height", 50).apply();
                             hexapod = new Hexapod(false);
                             hexapod.setIpAddress(savedIp);

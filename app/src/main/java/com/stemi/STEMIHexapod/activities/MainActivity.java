@@ -1,4 +1,4 @@
-package com.stemi.STEMIHexapod;
+package com.stemi.STEMIHexapod.activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,6 +23,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.stemi.STEMIHexapod.interfaces.JoystickMovement;
+import com.stemi.STEMIHexapod.Menu;
+import com.stemi.STEMIHexapod.R;
+import com.stemi.STEMIHexapod.joysticks.JoystickL;
+import com.stemi.STEMIHexapod.joysticks.JoystickR;
 
 import mario.com.stemihexapod.Hexapod;
 import mario.com.stemihexapod.HexapodStatus;
@@ -343,7 +349,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         String savedIp = prefs.getString("ip", null);
         byte heightPref = (byte) prefs.getInt("height", 0);
-        String walkingStyle = prefs.getString("walk", WalkingStyle.TripodGait.toString());
+        String walkingStyle = prefs.getString("walk", WalkingStyle.TRIPOD_GAIT.toString());
 
         hexapod.setIpAddress(savedIp);
         hexapod.setHeight(heightPref);

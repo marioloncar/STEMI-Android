@@ -1,4 +1,4 @@
-package com.stemi.STEMIHexapod;
+package com.stemi.STEMIHexapod.interfaces;
 
 /**
  * Created by Mario on 09/12/2016.

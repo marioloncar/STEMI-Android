@@ -1,5 +1,6 @@
 package com.stemi.STEMIHexapod;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
@@ -20,8 +21,11 @@ import android.widget.RelativeLayout;
  */
 public class Menu extends RelativeLayout {
 
+    @SuppressLint("StaticFieldLeak")
     public static ImageButton ibMovement, ibRotation, ibOrientation, ibHeight, ibCalibration, ibStyles, ibSettings;
+    @SuppressLint("StaticFieldLeak")
     public static ImageView ivBck, ivMenuActive;
+    @SuppressLint("StaticFieldLeak")
     public static Button bMenu;
     private static MediaPlayer puk;
     private static MediaPlayer tiu;

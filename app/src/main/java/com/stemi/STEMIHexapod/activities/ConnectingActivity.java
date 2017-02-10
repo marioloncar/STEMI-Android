@@ -1,4 +1,4 @@
-package com.stemi.STEMIHexapod;
+package com.stemi.STEMIHexapod.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,8 +18,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
+import com.stemi.STEMIHexapod.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,7 +31,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Objects;
 
-import io.fabric.sdk.android.Fabric;
 import mario.com.stemihexapod.WalkingStyle;
 
 /**
@@ -51,7 +49,7 @@ public class ConnectingActivity extends AppCompatActivity {
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        Fabric.with(this, new Crashlytics(), new Answers());
-        setContentView(R.layout.connecting_layout);
+        setContentView(R.layout.activity_connecting);
 
         tvConnectingTitle = (TextView) findViewById(R.id.tvConnectingTitle);
         tvConnectingHint = (TextView) findViewById(R.id.tvConnectingHint);
@@ -116,7 +114,7 @@ public class ConnectingActivity extends AppCompatActivity {
 
                         prefs.edit().putString("version", version).apply();
                         prefs.edit().putString("stemiId", stemiId).apply();
-                        prefs.edit().putString("walk", WalkingStyle.TripodGait.toString()).apply();
+                        prefs.edit().putString("walk", WalkingStyle.TRIPOD_GAIT.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb1).apply();
                         prefs.edit().putInt("height", 50).apply();
                         synchronized (this) {

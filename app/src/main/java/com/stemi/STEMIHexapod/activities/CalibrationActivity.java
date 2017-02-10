@@ -1,4 +1,4 @@
-package com.stemi.STEMIHexapod;
+package com.stemi.STEMIHexapod.activities;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -23,6 +23,9 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.stemi.STEMIHexapod.interfaces.DiscardCalibrationCallback;
+import com.stemi.STEMIHexapod.R;
 
 import mario.com.stemihexapod.ConnectingCompleteCallback;
 import mario.com.stemihexapod.Hexapod;
@@ -55,7 +58,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.calibration_layout);
+        setContentView(R.layout.activity_calibration);
 
         initActionBarWithTitle("Calibration");
 
@@ -518,7 +521,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             changedCalibrationValues[index]--;
             String sCalib = String.valueOf(changedCalibrationValues[index]);
             tvCalibValue.setText(sCalib);
-            hexapod.decreaseValueAtIndex(index);
+            hexapod.decreaseCalibrationValueAtIndex(index);
         } else {
             movingSound.pause();
             movingSoundShort.pause();
@@ -530,7 +533,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             changedCalibrationValues[index]++;
             String sCalib = String.valueOf(changedCalibrationValues[index]);
             tvCalibValue.setText(sCalib);
-            hexapod.increaseValueAtIndex(index);
+            hexapod.increaseCalibrationValueAtIndex(index);
         } else {
             movingSound.pause();
             movingSoundShort.pause();
@@ -550,7 +553,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                     if (changedCalibrationValues[j] < calibrationValues[j]) {
                         changedCalibrationValues[j] += calculatingNumbers[j];
                         try {
-                            hexapod.setValue(changedCalibrationValues[j], j);
+                            hexapod.setCalibrationValue(changedCalibrationValues[j], j);
                         } catch (IndexOutOfBoundsException e) {
                             Log.e("CalibrationActivity", "OutOfBounds", e);
                         }
@@ -558,7 +561,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                     } else if (changedCalibrationValues[j] > calibrationValues[j]) {
                         changedCalibrationValues[j] -= calculatingNumbers[j];
                         try {
-                            hexapod.setValue(changedCalibrationValues[j], j);
+                            hexapod.setCalibrationValue(changedCalibrationValues[j], j);
                         } catch (IndexOutOfBoundsException e) {
                             Log.e("CalibrationActivity", "OutOfBounds", e);
                         }
@@ -567,7 +570,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 } else {
                     changedCalibrationValues[j] = calibrationValues[j];
                     try {
-                        hexapod.setValue(calibrationValues[j], j);
+                        hexapod.setCalibrationValue(calibrationValues[j], j);
                     } catch (Exception e) {
                         Log.e("CalibrationActivity", "Error", e);
                     }

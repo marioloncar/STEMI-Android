@@ -12,11 +12,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * @author Mario
+ * Created by Mario on 23/10/2016.
  */
 
 class PacketSender {
@@ -80,14 +79,12 @@ class PacketSender {
                     Thread.sleep(sendingInterval);
                     buffer.write(this.hexapod.currentPacket.toByteArray());
                     buffer.flush();
-                    System.out.println("BUFFER -> " + Arrays.toString(this.hexapod.currentPacket.toByteArray()));
                     this.packetSenderStatus.connectionActive();
                     this.connected = true;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     this.dropConnection();
                 }
-
             }
             socket.close();
 
@@ -101,7 +98,7 @@ class PacketSender {
         this.openCommunication = false;
     }
 
-    private void dropConnection(){
+    private void dropConnection() {
         this.connected = false;
         this.packetSenderStatus.connectionLost();
         this.stopSendingData();

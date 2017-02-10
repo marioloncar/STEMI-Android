@@ -45,7 +45,7 @@
         android:supportsRtl="true"
         android:theme="@style/MainActivityTheme">
         <activity
-            android:name="com.stemi.STEMIHexapod.ConnectingActivity"
+            android:name="com.stemi.STEMIHexapod.activities.ConnectingActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -54,7 +54,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.stemi.STEMIHexapod.MainActivity"
+            android:name="com.stemi.STEMIHexapod.activities.MainActivity"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="com.loncar.stemi.MAINACTIVITY" />
@@ -68,7 +68,7 @@
             android:value="530f4085ae719e7a9651dc41526d94e7804be9ca" />
 
         <activity
-            android:name="com.stemi.STEMIHexapod.SettingsActivity"
+            android:name="com.stemi.STEMIHexapod.activities.SettingsActivity"
             android:label="Settings"
             android:screenOrientation="portrait"
             android:theme="@style/SettingsTheme">
@@ -79,7 +79,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.stemi.STEMIHexapod.IPActivity"
+            android:name="com.stemi.STEMIHexapod.activities.IPActivity"
             android:label="IP address"
             android:screenOrientation="portrait"
             android:theme="@style/SettingsTheme">
@@ -90,7 +90,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.stemi.STEMIHexapod.HeightActivity"
+            android:name="com.stemi.STEMIHexapod.activities.HeightActivity"
             android:label="Adjust height"
             android:screenOrientation="portrait"
             android:theme="@style/SettingsTheme">
@@ -101,7 +101,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.stemi.STEMIHexapod.CalibrationActivity"
+            android:name="com.stemi.STEMIHexapod.activities.CalibrationActivity"
             android:label="Calibration"
             android:screenOrientation="landscape"
             android:theme="@style/SettingsTheme">
@@ -112,7 +112,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.stemi.STEMIHexapod.WalkingstyleActivity"
+            android:name="com.stemi.STEMIHexapod.activities.WalkingstyleActivity"
             android:label="Walking style"
             android:screenOrientation="portrait"
             android:theme="@style/SettingsTheme">

@@ -14,7 +14,7 @@ public class Hexapod implements PacketSenderStatus {
     private CalibrationPacketSender calibrationPacketSender;
     private byte[] slidersArray = {50, 25, 0, 0, 0, 50, 0, 0, 0, 0, 0};
     private boolean calibrationModeEnabled = false;
-    private byte[] initialCalibrationData = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
+    private byte[] initialCalibrationData = {};
     public HexapodStatus hexapodStatus = new HexapodStatus() {
         @Override
         public void connectionStatus(boolean isConnected) {
@@ -24,13 +24,11 @@ public class Hexapod implements PacketSenderStatus {
     @Override
     public void connectionLost() {
         hexapodStatus.connectionStatus(false);
-        System.out.println("IZGUBLJENA KONEKCIJA");
     }
 
     @Override
     public void connectionActive() {
         hexapodStatus.connectionStatus(true);
-        System.out.println("KONEKCIJA AKTIVNA");
     }
 
 
@@ -52,10 +50,12 @@ public class Hexapod implements PacketSenderStatus {
         this.calibrationModeEnabled = withCalibrationMode;
         this.ipAddress = "192.168.4.1";
         this.port = 80;
-        if (calibrationModeEnabled)
+        if (calibrationModeEnabled) {
             this.calibrationPacket = new CalibrationPacket();
-        else
+        } else {
             this.currentPacket = new Packet();
+        }
+
     }
 
     /**
@@ -88,7 +88,7 @@ public class Hexapod implements PacketSenderStatus {
             calibrationPacketSender.enterCalibrationMode(new EnterCalibrationCallback() {
                 @Override
                 public void onEnteredCalibration(boolean entered) {
-                    if (entered){
+                    if (entered) {
                         initialCalibrationData = calibrationPacket.legsValues;
                     }
                 }
@@ -103,8 +103,6 @@ public class Hexapod implements PacketSenderStatus {
 
     /**
      * Establish connection with Hexapod with completion callback. After connection is established, it sends new packet every 100 ms.
-     *
-     * @param connectingCompleteCallback Takes true or false whether connection is established or not.
      */
     public void connectWithCompletion(final ConnectingCompleteCallback connectingCompleteCallback) {
         if (calibrationModeEnabled) {
@@ -112,7 +110,7 @@ public class Hexapod implements PacketSenderStatus {
             calibrationPacketSender.enterCalibrationMode(new EnterCalibrationCallback() {
                 @Override
                 public void onEnteredCalibration(boolean entered) {
-                    if (entered){
+                    if (entered) {
                         initialCalibrationData = calibrationPacket.legsValues;
                         connectingCompleteCallback.onConnectingComplete(true);
                     }
@@ -126,7 +124,6 @@ public class Hexapod implements PacketSenderStatus {
             connectingCompleteCallback.onConnectingComplete(true);
         }
     }
-
 
 
     /**
@@ -337,6 +334,7 @@ public class Hexapod implements PacketSenderStatus {
         currentPacket.movingTilt = 1;
     }
 
+
     /**
      * Puts Hexapod in standby.
      */
@@ -363,7 +361,7 @@ public class Hexapod implements PacketSenderStatus {
     /**
      * Set Hexapod walking style.
      *
-     * @param walkingStyle This value can be TripodGait, TripodGaitAngled, TripodGaitStar or WaveGait.
+     * @param walkingStyle This value can be TRIPOD_GAIT, TRIPOD_GAIT_ANGLED, TRIPOD_GAIT_STAR or WAVE_GAIT.
      */
     public void setWalkingStyle(WalkingStyle walkingStyle) {
         int walkingStyleValue;
@@ -387,42 +385,45 @@ public class Hexapod implements PacketSenderStatus {
     }
 
     /**
-     * Sets value of Hexapod leg at given index.
+     * Sets legs calibration value at given leg index.
      *
      * @param value Value of Hexapod motor.
      * @param index Index of Hexapod motor.
      */
-    public void setValue(byte value, int index) {
-        if (value >= 0 && value <= 100)
+    public void setCalibrationValue(byte value, int index) {
+        if (value >= 0 && value <= 100) {
             calibrationPacket.legsValues[index] = value;
-        else
+        } else {
             throw new IndexOutOfBoundsException("Value out of bounds");
+        }
+
     }
 
     /**
-     * Increase legs value at given index.
+     * Increase legs calibration value at given leg index.
      *
      * @param index Takes leg index.
      */
-    public void increaseValueAtIndex(int index) {
-        if (calibrationPacket.legsValues[index] < 100)
+    public void increaseCalibrationValueAtIndex(int index) {
+        if (calibrationPacket.legsValues[index] < 100) {
             calibrationPacket.legsValues[index]++;
+        }
     }
 
     /**
-     * Decrease legs value at given index.
+     * Decrease legs calibration value at given leg index.
      *
      * @param index Takes leg index.
      */
-    public void decreaseValueAtIndex(int index) {
-        if (calibrationPacket.legsValues[index] > 0)
+    public void decreaseCalibrationValueAtIndex(int index) {
+        if (calibrationPacket.legsValues[index] > 0) {
             calibrationPacket.legsValues[index]--;
+        }
     }
 
     /**
-     * Writes new calibration values to Hexapod
+     * Writes new calibration values to Hexapod.
      *
-     * @param savedCalibrationCallback Takes true of false whether data is saved or not.
      * @throws InterruptedException
      */
     public void writeDataToHexapod(SavedCalibrationCallback savedCalibrationCallback) throws InterruptedException {
@@ -436,6 +437,8 @@ public class Hexapod implements PacketSenderStatus {
     }
 
     /**
+     * Get calibration data saved on Hexapod.
+     *
      * @return initial array of calibration values stored on Hexapod.
      */
     public byte[] fetchDataFromHexapod() {

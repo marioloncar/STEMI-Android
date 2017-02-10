@@ -1,4 +1,4 @@
-package com.stemi.STEMIHexapod;
+package com.stemi.STEMIHexapod.activities;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -24,6 +24,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.stemi.STEMIHexapod.R;
+
 /**
  * Created by Mario on 11/08/16.
  */
@@ -37,7 +39,7 @@ public class IPActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ip_layout);
+        setContentView(R.layout.activity_ip);
 
         initActionBarWithTitle("IP address");
 

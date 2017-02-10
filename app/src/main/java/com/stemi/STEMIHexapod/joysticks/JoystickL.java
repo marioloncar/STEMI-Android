@@ -1,4 +1,4 @@
-package com.stemi.STEMIHexapod;
+package com.stemi.STEMIHexapod.joysticks;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import com.stemi.STEMIHexapod.interfaces.JoystickMovement;
+import com.stemi.STEMIHexapod.R;
 
 import static com.stemi.STEMIHexapod.Constants.JOYSTICK_COEFF;
 import static com.stemi.STEMIHexapod.Constants.RADIAN;

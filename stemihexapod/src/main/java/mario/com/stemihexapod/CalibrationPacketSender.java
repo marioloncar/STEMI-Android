@@ -30,6 +30,7 @@ class CalibrationPacketSender {
         ByteArrayOutputStream baos = null;
         try {
             URL url = new URL("http://" + this.hexapod.ipAddress + "/linearization.bin");
+
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.connect();
 
@@ -46,7 +47,7 @@ class CalibrationPacketSender {
         }
         this.calibrationArray = baos.toByteArray();
         for (int i = 0; i < calibrationArray.length; i++) {
-            hexapod.setValue(calibrationArray[i], i);
+            hexapod.setCalibrationValue(calibrationArray[i], i);
         }
         enterCalibrationCallback.onEnteredCalibration(true);
         this.sendData();
@@ -63,7 +64,6 @@ class CalibrationPacketSender {
                 Thread.sleep(sendingInterval);
                 buffer.write(this.hexapod.calibrationPacket.toByteArray());
                 buffer.flush();
-                System.out.println("CALIBRATION -> " + Arrays.toString(this.hexapod.calibrationPacket.toByteArray()));
                 this.connected = true;
             }
             socket.close();
@@ -81,8 +81,6 @@ class CalibrationPacketSender {
 
             BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
             buffOutStream.write(this.hexapod.calibrationPacket.toByteArray());
-            System.out.println("ONE PACKET -> " + Arrays.toString(this.hexapod.calibrationPacket.toByteArray()));
-
             buffOutStream.flush();
 
             socket.close();

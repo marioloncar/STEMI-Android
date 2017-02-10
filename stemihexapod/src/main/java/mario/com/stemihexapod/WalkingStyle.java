@@ -5,8 +5,8 @@ package mario.com.stemihexapod;
  */
 
 public enum WalkingStyle {
-    TripodGait,
-    TripodGaitAngled,
-    TripodGaitStar,
-    WaveGait
+    TRIPOD_GAIT,
+    TRIPOD_GAIT_ANGLED,
+    TRIPOD_GAIT_STAR,
+    WAVE_GAIT
 }

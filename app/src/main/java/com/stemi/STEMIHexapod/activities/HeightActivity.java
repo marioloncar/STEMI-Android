@@ -1,4 +1,4 @@
-package com.stemi.STEMIHexapod;
+package com.stemi.STEMIHexapod.activities;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
@@ -20,11 +20,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Socket;
+import com.stemi.STEMIHexapod.R;
 
 import mario.com.stemihexapod.Hexapod;
 
@@ -48,7 +44,7 @@ public class HeightActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.height_layout);
+        setContentView(R.layout.activity_height);
 
         initActionBarWithTitle("Adjust height");
 

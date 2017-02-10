@@ -1,4 +1,4 @@
-package com.stemi.STEMIHexapod;
+package com.stemi.STEMIHexapod.activities;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
@@ -18,6 +18,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.stemi.STEMIHexapod.R;
+
 import mario.com.stemihexapod.WalkingStyle;
 
 
@@ -32,7 +34,7 @@ public class WalkingstyleActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.walkstyle_layout);
+        setContentView(R.layout.activity_walkingstyle);
 
         initActionBarWithTitle("Walking style");
 
@@ -67,27 +69,27 @@ public class WalkingstyleActivity extends AppCompatActivity {
                 switch (checkedId) {
                     case R.id.rb1:
                         tvWalkDesc.setText(R.string.tripod_desc);
-                        prefs.edit().putString("walk", WalkingStyle.TripodGait.toString()).apply();
+                        prefs.edit().putString("walk", WalkingStyle.TRIPOD_GAIT.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb1).apply();
                         break;
                     case R.id.rb2:
                         tvWalkDesc.setText(R.string.tripod_delayed_desc);
-                        prefs.edit().putString("walk", WalkingStyle.TripodGaitAngled.toString()).apply();
+                        prefs.edit().putString("walk", WalkingStyle.TRIPOD_GAIT_ANGLED.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb2).apply();
                         break;
                     case R.id.rb3:
                         tvWalkDesc.setText(R.string.ripple_desc);
-                        prefs.edit().putString("walk", WalkingStyle.TripodGaitStar.toString()).apply();
+                        prefs.edit().putString("walk", WalkingStyle.TRIPOD_GAIT_STAR.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb3).apply();
                         break;
                     case R.id.rb4:
                         tvWalkDesc.setText(R.string.wave_desc);
-                        prefs.edit().putString("walk", WalkingStyle.WaveGait.toString()).apply();
+                        prefs.edit().putString("walk", WalkingStyle.WAVE_GAIT.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb4).apply();
                         break;
                     default:
                         tvWalkDesc.setText(R.string.tripod_desc);
-                        prefs.edit().putString("walk", WalkingStyle.TripodGait.toString()).apply();
+                        prefs.edit().putString("walk", WalkingStyle.TRIPOD_GAIT.toString()).apply();
                         prefs.edit().putInt("rbSelected", R.id.rb1).apply();
                         break;
                 }
