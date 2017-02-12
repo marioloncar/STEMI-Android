@@ -324,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        stopConnection();
+        hexapod.disconnect();
         finish();
     }
 
@@ -332,14 +332,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onPause() {
         super.onPause();
         hexapod.setMovementMode();
-        stopConnection();
+        hexapod.disconnect();
         sensorManager.unregisterListener(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        stopConnection();
+        hexapod.disconnect();
     }
 
     @Override
@@ -354,28 +354,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         hexapod.setIpAddress(savedIp);
         hexapod.setHeight(heightPref);
         hexapod.setWalkingStyle(WalkingStyle.valueOf(walkingStyle));
-
-        startConnection();
+        hexapod.connect();
 
         // hide soft keys and status bar
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-    }
-
-    private void startConnection() {
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                hexapod.connect();
-            }
-        };
-        thread.start();
-    }
-
-    private void stopConnection() {
-        hexapod.disconnect();
     }
 
     private void showShortToast(String message) {

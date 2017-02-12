@@ -1,5 +1,8 @@
 package mario.com.stemihexapod;
 
+import android.os.AsyncTask;
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,36 +38,41 @@ class PacketSender {
     }
 
     void startSendingData() {
-        try {
-            URL url = new URL("http://" + this.hexapod.ipAddress + "/stemiData.json");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setConnectTimeout(3000);
-            connection.setUseCaches(false);
-            connection.connect();
+        Thread thread = new Thread(){
+            @Override
+            public void run(){
+                try {
+                    URL url = new URL("http://" + hexapod.ipAddress + "/stemiData.json");
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setConnectTimeout(3000);
+                    connection.setUseCaches(false);
+                    connection.connect();
 
-            InputStream stream = connection.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+                    InputStream stream = connection.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+                    StringBuilder buffer = new StringBuilder();
+                    String line = "";
 
-            StringBuilder buffer = new StringBuilder();
-            String line = "";
+                    while ((line = reader.readLine()) != null) {
+                        buffer.append(line).append("\n");
+                    }
 
-            while ((line = reader.readLine()) != null) {
-                buffer.append(line).append("\n");
-            }
-
-            String bufferNew = buffer.toString();
-            if (bufferNew != null) {
-                JSONObject jsonObject = new JSONObject(bufferNew);
-                if (Objects.equals(jsonObject.getBoolean("isValid"), true)) {
-                    this.sendData();
-                } else {
-                    this.dropConnection();
+                    String bufferNew = buffer.toString();
+                    if (bufferNew != null) {
+                        JSONObject jsonObject = new JSONObject(bufferNew);
+                        if (Objects.equals(jsonObject.getBoolean("isValid"), true)) {
+                            sendData();
+                        } else {
+                            dropConnection();
+                        }
+                    }
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                    dropConnection();
                 }
             }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-            this.dropConnection();
-        }
+        };
+        thread.start();
     }
 
     private void sendData() {

@@ -1,7 +1,10 @@
 package mario.com.stemihexapod;
 
+import android.util.Log;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Created by Mario on 06/11/2016.
@@ -25,10 +28,9 @@ class CalibrationPacket {
             outputStream.write(pkt);
             outputStream.write(legsValues);
             outputStream.write(writeToHexapod);
-        } catch (IOException ignored) {
-            ignored.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
         return outputStream.toByteArray();
     }
 

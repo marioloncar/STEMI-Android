@@ -1,5 +1,7 @@
 package mario.com.stemihexapod;
 
+import android.util.Log;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -18,39 +20,47 @@ class CalibrationPacketSender {
 
     private Hexapod hexapod;
     private Boolean connected = false;
-    private byte[] calibrationArray = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
+    private byte[] calibrationArray = {};
     private boolean openCommunication = true;
+    private int sendingInterval = 100;
 
     CalibrationPacketSender(Hexapod hexapod) {
         this.hexapod = hexapod;
     }
 
 
-    void enterCalibrationMode(EnterCalibrationCallback enterCalibrationCallback) {
-        ByteArrayOutputStream baos = null;
-        try {
-            URL url = new URL("http://" + this.hexapod.ipAddress + "/linearization.bin");
+    void enterCalibrationMode(final EnterCalibrationCallback enterCalibrationCallback)  {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                ByteArrayOutputStream baos = null;
+                try {
+                    URL url = new URL("http://" + hexapod.ipAddress + "/linearization.bin");
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setConnectTimeout(3000);
+                    connection.setUseCaches(false);
+                    connection.connect();
 
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.connect();
-
-            baos = new ByteArrayOutputStream();
-            DataOutputStream dos = new DataOutputStream(baos);
-            byte[] data = new byte[1024];
-            int count = conn.getInputStream().read(data);
-            while (count != -1) {
-                dos.write(data, 3, 18);
-                count = conn.getInputStream().read(data);
-
+                    baos = new ByteArrayOutputStream();
+                    DataOutputStream dos = new DataOutputStream(baos);
+                    byte[] data = new byte[1024];
+                    int count = connection.getInputStream().read(data);
+                    while (count != -1) {
+                        dos.write(data, 3, 18);
+                        count = connection.getInputStream().read(data);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                calibrationArray = baos.toByteArray();
+                for (int i = 0; i < calibrationArray.length; i++) {
+                    hexapod.setCalibrationValue(calibrationArray[i], i);
+                }
+                enterCalibrationCallback.onEnteredCalibration(true);
+                sendData();
             }
-        } catch (IOException ignored) {
-        }
-        this.calibrationArray = baos.toByteArray();
-        for (int i = 0; i < calibrationArray.length; i++) {
-            hexapod.setCalibrationValue(calibrationArray[i], i);
-        }
-        enterCalibrationCallback.onEnteredCalibration(true);
-        this.sendData();
+        };
+        thread.start();
     }
 
     private void sendData() {
@@ -60,7 +70,6 @@ class CalibrationPacketSender {
             BufferedOutputStream buffer = new BufferedOutputStream(outputStream, 30);
 
             while (this.openCommunication) {
-                int sendingInterval = 100;
                 Thread.sleep(sendingInterval);
                 buffer.write(this.hexapod.calibrationPacket.toByteArray());
                 buffer.flush();
@@ -75,19 +84,22 @@ class CalibrationPacketSender {
     }
 
     void sendOnePacket() {
-        try {
-            Socket socket = new Socket(this.hexapod.ipAddress, this.hexapod.port);
-            OutputStream outputStream = socket.getOutputStream();
-
-            BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
-            buffOutStream.write(this.hexapod.calibrationPacket.toByteArray());
-            buffOutStream.flush();
-
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Socket socket = new Socket(hexapod.ipAddress, hexapod.port);
+                    OutputStream outputStream = socket.getOutputStream();
+                    BufferedOutputStream buffOutStream = new BufferedOutputStream(outputStream, 30);
+                    buffOutStream.write(hexapod.calibrationPacket.toByteArray());
+                    buffOutStream.flush();
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        thread.start();
     }
 
     void stopSendingData() {

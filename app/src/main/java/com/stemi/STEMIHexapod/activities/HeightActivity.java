@@ -72,7 +72,7 @@ public class HeightActivity extends AppCompatActivity {
         hexapod = new Hexapod();
         hexapod.setIpAddress(savedIp);
         hexapod.setHeight(height);
-        startConnection();
+        hexapod.connect();
 
         /*** Increase height listeners ***/
         ibHeightUp.setOnLongClickListener(new View.OnLongClickListener() {
@@ -150,9 +150,9 @@ public class HeightActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>"+title+"</font>", Html.FROM_HTML_MODE_LEGACY));
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>", Html.FROM_HTML_MODE_LEGACY));
         } else {
-            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>"+title+"</font>"));
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>"));
         }
 
         @SuppressLint("PrivateResource")
@@ -175,7 +175,7 @@ public class HeightActivity extends AppCompatActivity {
         }
     }
 
-    // Method for decrementing height value
+    // Decrements height value
     private void decrement() {
         if (!(height <= 0)) {
             height--;
@@ -187,7 +187,7 @@ public class HeightActivity extends AppCompatActivity {
             stopSound();
     }
 
-    // Method for incrementing height value
+    // Increments height value
     private void increment() {
         if (!(height >= 100)) {
             height++;
@@ -238,15 +238,5 @@ public class HeightActivity extends AppCompatActivity {
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
         }
-    }
-
-    private void startConnection() {
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                hexapod.connect();
-            }
-        };
-        thread.start();
     }
 }

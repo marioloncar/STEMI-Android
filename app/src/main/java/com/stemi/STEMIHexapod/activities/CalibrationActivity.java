@@ -27,6 +27,8 @@ import android.widget.TextView;
 import com.stemi.STEMIHexapod.interfaces.DiscardCalibrationCallback;
 import com.stemi.STEMIHexapod.R;
 
+import java.util.Arrays;
+
 import mario.com.stemihexapod.ConnectingCompleteCallback;
 import mario.com.stemihexapod.Hexapod;
 import mario.com.stemihexapod.SavedCalibrationCallback;
@@ -46,8 +48,8 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     private ImageView ivCircle;
     private TextView tvCalibValue, tvSelect;
     private MediaPlayer movingSound, movingSoundShort;
-    private byte[] calibrationValues = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
-    private byte[] changedCalibrationValues = {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
+    private byte[] calibrationValues = new byte[18];
+    private byte[] changedCalibrationValues = new byte[18];
     private int index;
     private final Handler repeatUpdateHandler = new Handler();
     private boolean mAutoIncrement = false;
@@ -109,26 +111,21 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         hexapod = new Hexapod(true);
         hexapod.setIpAddress(savedIp);
 
-        Thread thread = new Thread() {
+        hexapod.connectWithCompletion(new ConnectingCompleteCallback() {
             @Override
-            public void run() {
-                hexapod.connectWithCompletion(new ConnectingCompleteCallback() {
-                    @Override
-                    public void onConnectingComplete(boolean connected) {
-                        if (connected) {
-                            try {
-                                calibrationValues = hexapod.fetchDataFromHexapod();
-                                changedCalibrationValues = calibrationValues.clone();
-                            } catch (Exception e) {
-                                Log.e("CalibrationActivity", "error", e);
-                            }
-                        }
+            public void onConnectingComplete(boolean connected) {
+                if (connected) {
+                    try {
+                        // TODO: Arrays copying by reference!!!
+                        calibrationValues = hexapod.fetchDataFromHexapod();
+                        changedCalibrationValues = calibrationValues.clone();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                });
+                }
             }
-        };
+        });
 
-        thread.start();
 
         /*** Calibration up listeners ***/
         ibCalibUp.setOnClickListener(new View.OnClickListener() {
@@ -203,6 +200,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
 
     }
 
+
     @Override
     public boolean onSupportNavigateUp() {
         showBackDialog();
@@ -233,7 +231,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                //dismiss dialog
+                dialog.dismiss();
             }
         });
         builder.show();
@@ -249,29 +247,25 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.save) {
-            Thread thread = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        hexapod.writeDataToHexapod(new SavedCalibrationCallback() {
-                            @Override
-                            public void onSavedData(Boolean saved) {
-                                if (saved) {
-                                    finish();
-                                }
-                            }
-                        });
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            thread.start();
-
+            writeData();
         }
-
         return super.onOptionsItemSelected(item);
 
+    }
+
+    private void writeData() {
+        try {
+            hexapod.writeDataToHexapod(new SavedCalibrationCallback() {
+                @Override
+                public void onSavedData(Boolean saved) {
+                    if (saved) {
+                        finish();
+                    }
+                }
+            });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -480,9 +474,9 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void setCalibrationValueText() {
-        String string;
-        string = String.valueOf(changedCalibrationValues[index]);
-        tvCalibValue.setText(string);
+        String calibValue;
+        calibValue = String.valueOf(changedCalibrationValues[index]);
+        tvCalibValue.setText(calibValue);
     }
 
     private void setButtonsEnabled(boolean up, boolean down) {
@@ -543,7 +537,8 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     private void discardValuesToInitial(DiscardCalibrationCallback discardCalibrationCallback) {
         byte[] calculatingNumbers = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         for (int i = 0; i <= 10; i++) {
-            for (int j = 0; j < calibrationValues.length; j++) {
+            int n = calibrationValues.length;
+            for (int j = 0; j < n; j++) {
                 if (i == 0) {
                     byte calc = (byte) (Math.abs(calibrationValues[j] - changedCalibrationValues[j]) / 10);
                     calculatingNumbers[j] = calc;
@@ -578,7 +573,8 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             }
             try {
                 Thread.sleep(100);
-            } catch (InterruptedException ignored) {
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
         discardCalibrationCallback.onDiscardedData(true);
@@ -601,9 +597,9 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>"+title+"</font>", Html.FROM_HTML_MODE_LEGACY));
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>", Html.FROM_HTML_MODE_LEGACY));
         } else {
-            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>"+title+"</font>"));
+            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>"));
         }
 
         @SuppressLint("PrivateResource")

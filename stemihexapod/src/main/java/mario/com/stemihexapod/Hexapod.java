@@ -385,7 +385,7 @@ public class Hexapod implements PacketSenderStatus {
     }
 
     /**
-     * Sets legs calibration value at given leg index.
+     * Sets calibration value at given leg index.
      *
      * @param value Value of Hexapod motor.
      * @param index Index of Hexapod motor.
@@ -400,7 +400,7 @@ public class Hexapod implements PacketSenderStatus {
     }
 
     /**
-     * Increase legs calibration value at given leg index.
+     * Increase calibration value at given leg index.
      *
      * @param index Takes leg index.
      */
@@ -411,7 +411,7 @@ public class Hexapod implements PacketSenderStatus {
     }
 
     /**
-     * Decrease legs calibration value at given leg index.
+     * Decrease calibration value at given leg index.
      *
      * @param index Takes leg index.
      */
@@ -431,7 +431,7 @@ public class Hexapod implements PacketSenderStatus {
         Thread.sleep(500);
         calibrationPacket.writeToHexapod = CalibrationPacket.WriteData.Yes.ordinal();
         calibrationPacketSender.sendOnePacket();
-        calibrationPacket.writeToHexapod = CalibrationPacket.WriteData.No.ordinal();
+//        calibrationPacket.writeToHexapod = CalibrationPacket.WriteData.No.ordinal();
         Thread.sleep(1000);
         savedCalibrationCallback.onSavedData(true);
     }
