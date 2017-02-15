@@ -48,8 +48,8 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     private ImageView ivCircle;
     private TextView tvCalibValue, tvSelect;
     private MediaPlayer movingSound, movingSoundShort;
-    private byte[] calibrationValues = new byte[18];
-    private byte[] changedCalibrationValues = new byte[18];
+    private byte[] calibrationValues;
+    private byte[] changedCalibrationValues;
     private int index;
     private final Handler repeatUpdateHandler = new Handler();
     private boolean mAutoIncrement = false;
@@ -108,6 +108,9 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
 
         setButtonsEnabled(false, false);
 
+        calibrationValues = new byte[18];
+        changedCalibrationValues = new byte[18];
+
         hexapod = new Hexapod(true);
         hexapod.setIpAddress(savedIp);
 
@@ -116,9 +119,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             public void onConnectingComplete(boolean connected) {
                 if (connected) {
                     try {
-                        // TODO: Arrays copying by reference!!!
                         calibrationValues = hexapod.fetchDataFromHexapod();
-                        changedCalibrationValues = calibrationValues.clone();
+                        if (calibrationValues != null) {
+                            System.arraycopy(calibrationValues, 0, changedCalibrationValues, 0, 18);
+                        }
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -199,7 +204,6 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         });
 
     }
-
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -550,7 +554,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         try {
                             hexapod.setCalibrationValue(changedCalibrationValues[j], j);
                         } catch (IndexOutOfBoundsException e) {
-                            Log.e("CalibrationActivity", "OutOfBounds", e);
+                            e.printStackTrace();
                         }
 
                     } else if (changedCalibrationValues[j] > calibrationValues[j]) {
@@ -558,7 +562,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                         try {
                             hexapod.setCalibrationValue(changedCalibrationValues[j], j);
                         } catch (IndexOutOfBoundsException e) {
-                            Log.e("CalibrationActivity", "OutOfBounds", e);
+                            e.printStackTrace();
                         }
                     }
 
@@ -567,7 +571,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                     try {
                         hexapod.setCalibrationValue(calibrationValues[j], j);
                     } catch (Exception e) {
-                        Log.e("CalibrationActivity", "Error", e);
+                        e.printStackTrace();
                     }
                 }
             }

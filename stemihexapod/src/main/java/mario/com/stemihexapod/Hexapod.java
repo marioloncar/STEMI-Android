@@ -2,6 +2,7 @@ package mario.com.stemihexapod;
 
 /**
  * @author Mario
+ * @version 1.0
  */
 
 

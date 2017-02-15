@@ -1,7 +1,5 @@
 package mario.com.stemihexapod;
 
-import android.util.Log;
-
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -10,7 +8,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
-import java.util.Arrays;
 
 /**
  * Created by Mario on 10/11/2016.
@@ -20,7 +17,7 @@ class CalibrationPacketSender {
 
     private Hexapod hexapod;
     private Boolean connected = false;
-    private byte[] calibrationArray = {};
+    private byte[] calibrationArray = new byte[]{50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
     private boolean openCommunication = true;
     private int sendingInterval = 100;
 
@@ -53,10 +50,10 @@ class CalibrationPacketSender {
                     e.printStackTrace();
                 }
                 calibrationArray = baos.toByteArray();
+                enterCalibrationCallback.onEnteredCalibration(true);
                 for (int i = 0; i < calibrationArray.length; i++) {
                     hexapod.setCalibrationValue(calibrationArray[i], i);
                 }
-                enterCalibrationCallback.onEnteredCalibration(true);
                 sendData();
             }
         };

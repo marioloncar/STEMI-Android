@@ -36,7 +36,7 @@ import mario.com.stemihexapod.WalkingStyle;
 
 import static com.stemi.STEMIHexapod.Menu.bMenu;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener, HexapodStatus, JoystickMovement {
+public class JoystickActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener, HexapodStatus, JoystickMovement {
 
     private ImageButton ibStandby, ibMovement, ibRotation, ibOrientation;
     private View vOverlay;
@@ -230,10 +230,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.bMenu:
-                if (bMenu.isSelected())
+                if (bMenu.isSelected()) {
                     closeMenu();
-                else
+                } else {
                     openMenu();
+                }
+
                 break;
 
             case R.id.vOverlay:
@@ -241,24 +243,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.ibMovement:
-                if (!ibMovement.isSelected())
+                if (!ibMovement.isSelected()) {
                     showShortToast("MOVEMENT ENABLED");
+                }
                 setSelectedButtons(true, false, false);
                 hexapod.setMovementMode();
                 closeMenu();
                 break;
 
             case R.id.ibRotation:
-                if (!ibRotation.isSelected())
+                if (!ibRotation.isSelected()) {
                     showShortToast("ROTATION ENABLED");
+                }
                 setSelectedButtons(false, true, false);
                 hexapod.setRotationMode();
                 closeMenu();
                 break;
 
             case R.id.ibOrientation:
-                if (!ibOrientation.isSelected())
+                if (!ibOrientation.isSelected()) {
                     showShortToast("ORIENTATION ENABLED");
+                }
                 setSelectedButtons(false, false, true);
                 hexapod.setOrientationMode();
                 closeMenu();
@@ -266,25 +271,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.ibHeight:
                 closeMenu();
-                Intent intent = new Intent(MainActivity.this, HeightActivity.class);
+                Intent intent = new Intent(JoystickActivity.this, HeightActivity.class);
                 startActivity(intent);
                 break;
 
             case R.id.ibCalibration:
                 closeMenu();
-                Intent intent1 = new Intent(MainActivity.this, CalibrationActivity.class);
+                Intent intent1 = new Intent(JoystickActivity.this, CalibrationActivity.class);
                 startActivity(intent1);
                 break;
 
             case R.id.ibWalkingStyle:
                 closeMenu();
-                Intent intent2 = new Intent(MainActivity.this, WalkingstyleActivity.class);
+                Intent intent2 = new Intent(JoystickActivity.this, WalkingstyleActivity.class);
                 startActivity(intent2);
                 break;
 
             case R.id.ibSettings:
                 closeMenu();
-                Intent intent3 = new Intent(MainActivity.this, SettingsActivity.class);
+                Intent intent3 = new Intent(JoystickActivity.this, SettingsActivity.class);
                 startActivity(intent3);
                 break;
         }
@@ -348,7 +353,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
 
         String savedIp = prefs.getString("ip", null);
-        byte heightPref = (byte) prefs.getInt("height", 0);
+        byte heightPref = (byte) prefs.getInt("height", 50);
         String walkingStyle = prefs.getString("walk", WalkingStyle.TRIPOD_GAIT.toString());
 
         hexapod.setIpAddress(savedIp);
@@ -414,7 +419,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 builder.setMessage("Please check connection with your STEMI and try again.");
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Intent i = new Intent(MainActivity.this, ConnectingActivity.class);
+                        Intent i = new Intent(JoystickActivity.this, ConnectingActivity.class);
                         startActivity(i);
                         finish();
                     }
@@ -427,8 +432,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void connectionStatus(boolean isConnected) {
-        if (!isConnected)
+        if (!isConnected) {
             showConnectionDialog();
+        }
+
     }
 
     @Override

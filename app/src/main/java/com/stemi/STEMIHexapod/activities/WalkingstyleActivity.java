@@ -38,15 +38,15 @@ public class WalkingstyleActivity extends AppCompatActivity {
 
         initActionBarWithTitle("Walking style");
 
-        Typeface tf = Typeface.createFromAsset(getAssets(),
-                "fonts/ProximaNova-Regular.otf");
-
         tvWalkDesc = (TextView) findViewById(R.id.tvWalkDesc);
         RadioGroup rgWalk = (RadioGroup) findViewById(R.id.rgWalk);
         RadioButton rb1 = (RadioButton) rgWalk.findViewById(R.id.rb1);
         RadioButton rb2 = (RadioButton) rgWalk.findViewById(R.id.rb2);
         RadioButton rb3 = (RadioButton) rgWalk.findViewById(R.id.rb3);
         RadioButton rb4 = (RadioButton) rgWalk.findViewById(R.id.rb4);
+
+        Typeface tf = Typeface.createFromAsset(getAssets(),
+                "fonts/ProximaNova-Regular.otf");
 
         prefs = getSharedPreferences("myPref", MODE_PRIVATE);
 

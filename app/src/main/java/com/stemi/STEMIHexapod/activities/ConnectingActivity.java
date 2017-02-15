@@ -3,6 +3,7 @@ package com.stemi.STEMIHexapod.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
@@ -71,60 +72,8 @@ public class ConnectingActivity extends AppCompatActivity {
         bConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                animateUI();
-                Thread thread = new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            String jsonString = "";
-                            savedIp = prefs.getString("ip", null);
-                            jsonString = fetchJSON("http://" + savedIp + "/stemiData.json");
-                            // if jsonString object exists compare with one saved in SharedPreferences
-                            if (jsonString != null) {
-                                JSONObject jsonObject = new JSONObject(jsonString);
-                                if (Objects.equals(jsonObject.getString("stemiID"), prefs.getString("stemiId", null))) {
-                                    synchronized (this) {
-                                        wait(2000);
-                                    }
-                                    openMainActivity();
-                                } else {
-                                    // if IDs are not equal, set default STEMI values
-                                    initializeDefaultValues(jsonObject);
-                                }
-                            } else {
-                                // if connection is not established show different UI
-                                synchronized (this) {
-                                    wait(5000);
-                                }
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        changeUI();
-                                    }
-                                });
-                            }
-                        } catch (JSONException | InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    private void initializeDefaultValues(JSONObject jsonObject) throws JSONException, InterruptedException {
-                        String version = jsonObject.getString("version");
-                        String stemiId = jsonObject.getString("stemiID");
-
-                        prefs.edit().putString("version", version).apply();
-                        prefs.edit().putString("stemiId", stemiId).apply();
-                        prefs.edit().putString("walk", WalkingStyle.TRIPOD_GAIT.toString()).apply();
-                        prefs.edit().putInt("rbSelected", R.id.rb1).apply();
-                        prefs.edit().putInt("height", 50).apply();
-                        synchronized (this) {
-                            wait(2000);
-                        }
-                        openMainActivity();
-                    }
-
-                };
-                thread.start();
+                ConnectionTask connection = new ConnectionTask();
+                connection.execute();
             }
         });
 
@@ -135,6 +84,17 @@ public class ConnectingActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+    }
+
+    private void initDefaultValues(JSONObject jsonObject) throws JSONException, InterruptedException {
+        String version = jsonObject.getString("version");
+        String stemiId = jsonObject.getString("stemiID");
+
+        prefs.edit().putString("version", version).apply();
+        prefs.edit().putString("stemiId", stemiId).apply();
+        prefs.edit().putString("walk", WalkingStyle.TRIPOD_GAIT.toString()).apply();
+        prefs.edit().putInt("rbSelected", R.id.rb1).apply();
+        prefs.edit().putInt("height", 50).apply();
     }
 
     private void animateUI() {
@@ -166,7 +126,7 @@ public class ConnectingActivity extends AppCompatActivity {
         bChangeIP.setVisibility(View.INVISIBLE);
     }
 
-    private void changeUI() {
+    private void showErrorUI() {
         AnimationSet error = new AnimationSet(false);
         Animation leftMove = new TranslateAnimation(0, -10, 0, 0);
         leftMove.setDuration(50);
@@ -203,9 +163,9 @@ public class ConnectingActivity extends AppCompatActivity {
         tvConnectingHint.setText(R.string.hint_noConnection);
     }
 
-    private void openMainActivity() {
+    private void openJoystickActivity() {
         finish();
-        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+        Intent i = new Intent(getApplicationContext(), JoystickActivity.class);
         startActivity(i);
     }
 
@@ -240,10 +200,10 @@ public class ConnectingActivity extends AppCompatActivity {
             while ((line = reader.readLine()) != null) {
                 buffer.append(line).append("\n");
             }
-
             return buffer.toString();
 
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -252,7 +212,8 @@ public class ConnectingActivity extends AppCompatActivity {
                 if (reader != null) {
                     reader.close();
                 }
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         return null;
@@ -267,6 +228,55 @@ public class ConnectingActivity extends AppCompatActivity {
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
+        }
+    }
+
+    private class ConnectionTask extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            animateUI();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            String jsonString = "";
+            savedIp = prefs.getString("ip", null);
+            jsonString = fetchJSON("http://" + savedIp + "/stemiData.json");
+            // if jsonString object exists compare with one saved in SharedPreferences
+            if (jsonString != null) {
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(jsonString);
+                    if (Objects.equals(jsonObject.getString("stemiID"), prefs.getString("stemiId", null))) {
+                        Thread.sleep(2000);
+                        return true;
+                    } else {
+                        // if IDs are not equal, set default STEMI values
+                        initDefaultValues(jsonObject);
+                        Thread.sleep(2000);
+                        return true;
+                    }
+                } catch (JSONException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean successful) {
+            if (successful) {
+                openJoystickActivity();
+            } else {
+                showErrorUI();
+            }
         }
     }
 

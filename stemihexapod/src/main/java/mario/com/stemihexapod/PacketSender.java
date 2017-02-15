@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -38,9 +39,9 @@ class PacketSender {
     }
 
     void startSendingData() {
-        Thread thread = new Thread(){
+        Thread thread = new Thread() {
             @Override
-            public void run(){
+            public void run() {
                 try {
                     URL url = new URL("http://" + hexapod.ipAddress + "/stemiData.json");
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();

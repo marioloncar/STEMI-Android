@@ -40,7 +40,6 @@ public class HeightActivity extends AppCompatActivity {
     private byte height = 50;
     private Hexapod hexapod;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,15 +47,15 @@ public class HeightActivity extends AppCompatActivity {
 
         initActionBarWithTitle("Adjust height");
 
+        ImageButton ibHeightUp = (ImageButton) findViewById(R.id.ibHeightUp);
+        ImageButton ibHeightD = (ImageButton) findViewById(R.id.ibHeightD);
+        tvHeightValue = (TextView) findViewById(R.id.tvHeightValue);
+
         movingSound = MediaPlayer.create(this, R.raw.moving_sound);
         movingSoundShort = MediaPlayer.create(this, R.raw.moving_sound_short);
 
         Typeface tf = Typeface.createFromAsset(getAssets(),
                 "fonts/ProximaNova-Regular.otf");
-
-        ImageButton ibHeightUp = (ImageButton) findViewById(R.id.ibHeightUp);
-        ImageButton ibHeightD = (ImageButton) findViewById(R.id.ibHeightD);
-        tvHeightValue = (TextView) findViewById(R.id.tvHeightValue);
 
         String s = String.valueOf(height);
         tvHeightValue.setText(s);

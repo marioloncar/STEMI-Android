@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bck"
-    tools:context="com.stemi.STEMIHexapod.activities.MainActivity">
+    tools:context="com.stemi.STEMIHexapod.activities.JoystickActivity">
 
     <LinearLayout
         android:id="@+id/llMain"

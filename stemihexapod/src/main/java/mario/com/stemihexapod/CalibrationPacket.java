@@ -1,10 +1,7 @@
 package mario.com.stemihexapod;
 
-import android.util.Log;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * Created by Mario on 06/11/2016.

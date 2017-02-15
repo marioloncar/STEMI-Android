@@ -33,7 +33,6 @@ public class IPActivity extends AppCompatActivity {
 
     private EditText et1, et2, et3, et4;
     private MenuItem menuItem;
-
     private SharedPreferences prefs;
 
     @Override
@@ -51,7 +50,6 @@ public class IPActivity extends AppCompatActivity {
         TextView textView2 = (TextView) findViewById(R.id.textView2);
         Button bResetIp = (Button) findViewById(R.id.bResetIp);
 
-
         Typeface tf = Typeface.createFromAsset(getAssets(),
                 "fonts/ProximaNova-Regular.otf");
 
@@ -61,7 +59,6 @@ public class IPActivity extends AppCompatActivity {
 
         showSoftKeyboard();
 
-        //Postavljanje polja na vrijednosti spremljenog IP-a
         prefs = getSharedPreferences("myPref", MODE_PRIVATE);
         String savedIp = prefs.getString("ip", null);
 
@@ -211,9 +208,9 @@ public class IPActivity extends AppCompatActivity {
             String ip3 = et3.getText().toString();
             String ip4 = et4.getText().toString();
 
-            if ((ip1.trim().length() == 0) || (ip2.trim().length() == 0) || (ip3.trim().length() == 0) || (ip4.trim().length() == 0))
+            if ((ip1.trim().length() == 0) || (ip2.trim().length() == 0) || (ip3.trim().length() == 0) || (ip4.trim().length() == 0)) {
                 showIPAlert();
-            else {
+            } else {
                 int field1 = Integer.parseInt(ip1);
                 int field2 = Integer.parseInt(ip2);
                 int field3 = Integer.parseInt(ip3);
