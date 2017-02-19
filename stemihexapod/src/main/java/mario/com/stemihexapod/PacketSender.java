@@ -1,8 +1,5 @@
 package mario.com.stemihexapod;
 
-import android.os.AsyncTask;
-import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,7 +12,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Objects;
 
 /**

@@ -1,12 +1,15 @@
 package com.stemi.STEMIHexapod.activities;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,7 +19,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,8 +28,6 @@ import android.widget.TextView;
 
 import com.stemi.STEMIHexapod.interfaces.DiscardCalibrationCallback;
 import com.stemi.STEMIHexapod.R;
-
-import java.util.Arrays;
 
 import mario.com.stemihexapod.ConnectingCompleteCallback;
 import mario.com.stemihexapod.Hexapod;
@@ -48,8 +48,8 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     private ImageView ivCircle;
     private TextView tvCalibValue, tvSelect;
     private MediaPlayer movingSound, movingSoundShort;
-    private byte[] calibrationValues;
-    private byte[] changedCalibrationValues;
+    private byte[] calibrationValues = new byte[18];
+    private byte[] changedCalibrationValues = new byte[18];
     private int index;
     private final Handler repeatUpdateHandler = new Handler();
     private boolean mAutoIncrement = false;
@@ -97,7 +97,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         Typeface tf = Typeface.createFromAsset(getAssets(),
                 "fonts/ProximaNova-Regular.otf");
 
-        SharedPreferences prefs = getSharedPreferences("myPref", MODE_PRIVATE);
+        final SharedPreferences prefs = getSharedPreferences("myPref", MODE_PRIVATE);
         savedIp = prefs.getString("ip", null);
 
         tvSelect.setTypeface(tf);
@@ -108,8 +108,6 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
 
         setButtonsEnabled(false, false);
 
-        calibrationValues = new byte[18];
-        changedCalibrationValues = new byte[18];
 
         hexapod = new Hexapod(true);
         hexapod.setIpAddress(savedIp);
@@ -119,11 +117,12 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             public void onConnectingComplete(boolean connected) {
                 if (connected) {
                     try {
-                        calibrationValues = hexapod.fetchDataFromHexapod();
-                        if (calibrationValues != null) {
-                            System.arraycopy(calibrationValues, 0, changedCalibrationValues, 0, 18);
+                        byte[] fetchedValues = hexapod.fetchDataFromHexapod();
+                        if (fetchedValues != null) {
+                            int n = fetchedValues.length;
+                            System.arraycopy(fetchedValues, 0, calibrationValues, 0, n);
+                            changedCalibrationValues = calibrationValues.clone();
                         }
-
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -221,15 +220,9 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         builder.setTitle("Warning");
         builder.setMessage("Are you sure you want to reset STEMI Hexapod legs to their initial positions?");
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                discardValuesToInitial(new DiscardCalibrationCallback() {
-                    @Override
-                    public void onDiscardedData(Boolean finished) {
-                        if (finished) {
-                            finish();
-                        }
-                    }
-                });
+            public void onClick(final DialogInterface dialog, int id) {
+                DiscardTask task = new DiscardTask(CalibrationActivity.this);
+                task.execute();
             }
 
         });
@@ -500,6 +493,23 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     protected void onStop() {
         super.onStop();
         hexapod.disconnect();
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        hexapod.disconnect();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        );
     }
 
     private class RepeatUpdater implements Runnable {
@@ -538,7 +548,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    private void discardValuesToInitial(DiscardCalibrationCallback discardCalibrationCallback) {
+    private void discardValuesToInitial(final DiscardCalibrationCallback discardCalibrationCallback) {
         byte[] calculatingNumbers = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         for (int i = 0; i <= 10; i++) {
             int n = calibrationValues.length;
@@ -547,7 +557,6 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                     byte calc = (byte) (Math.abs(calibrationValues[j] - changedCalibrationValues[j]) / 10);
                     calculatingNumbers[j] = calc;
                 }
-
                 if (i < 10) {
                     if (changedCalibrationValues[j] < calibrationValues[j]) {
                         changedCalibrationValues[j] += calculatingNumbers[j];
@@ -576,7 +585,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 }
             }
             try {
-                Thread.sleep(100);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -584,33 +593,59 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         discardCalibrationCallback.onDiscardedData(true);
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            );
+    private class DiscardTask extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+
+        public DiscardTask(Context context) {
+            progressDialog = new ProgressDialog(context);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog.setMessage("Canceling...");
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            discardValuesToInitial(new DiscardCalibrationCallback() {
+                @Override
+                public void onDiscardedData(Boolean finished) {
+                    if (finished) {
+                        finish();
+                    }
+                }
+            });
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            progressDialog.dismiss();
         }
     }
 
     private void initActionBarWithTitle(String title) {
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>", Html.FROM_HTML_MODE_LEGACY));
-        } else {
-            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>"));
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>", Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>"));
+            }
+
+            @SuppressLint("PrivateResource")
+            final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
+            assert upArrow != null;
+            upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
+            actionBar.setHomeAsUpIndicator(upArrow);
         }
 
-        @SuppressLint("PrivateResource")
-        final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
-        assert upArrow != null;
-        upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
-        actionBar.setHomeAsUpIndicator(upArrow);
+
     }
 
 }

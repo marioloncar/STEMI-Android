@@ -19,8 +19,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
-import android.util.Log;
-import android.view.View;
 
 import com.stemi.STEMIHexapod.interfaces.DiscardCalibrationCallback;
 import com.stemi.STEMIHexapod.R;
@@ -51,19 +49,22 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void initActionBarWithTitle(String title) {
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>", Html.FROM_HTML_MODE_LEGACY));
-        } else {
-            actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>"));
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>", Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>"));
+            }
+
+            @SuppressLint("PrivateResource")
+            final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
+            assert upArrow != null;
+            upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
+            actionBar.setHomeAsUpIndicator(upArrow);
         }
 
-        @SuppressLint("PrivateResource")
-        final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
-        assert upArrow != null;
-        upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
-        actionBar.setHomeAsUpIndicator(upArrow);
     }
 
     interface DiscardCallback {
@@ -73,7 +74,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     public static class SettingsFragment extends PreferenceFragment {
 
-        static SharedPreferences prefs;
+        SharedPreferences prefs;
         String savedIp, hardwareVersion, stemiId;
         byte[] calibrationValues;
         byte[] currentCalibrationValues;
@@ -118,10 +119,7 @@ public class SettingsActivity extends AppCompatActivity {
                     return false;
                 }
             });
-
-
         }
-
 
         private void showResetDialog(final AlertDialog.Builder builder) {
             builder.setTitle("Warning");
@@ -158,7 +156,6 @@ public class SettingsActivity extends AppCompatActivity {
 
                     };
                     thread.start();
-
                 }
 
             });
@@ -178,7 +175,6 @@ public class SettingsActivity extends AppCompatActivity {
                 public void onConnectingComplete(boolean connected) {
                     if (connected) {
                         currentCalibrationValues = hexapod.fetchDataFromHexapod();
-                        System.out.println("CALIBRATION VAL -> " + currentCalibrationValues[3]);
                     }
                 }
             });
@@ -193,8 +189,6 @@ public class SettingsActivity extends AppCompatActivity {
                 }
 
             });
-
-
         }
 
         private void discard(final DiscardCallback discardCallback) {
@@ -257,6 +251,7 @@ public class SettingsActivity extends AppCompatActivity {
                             int height = (byte) prefs.getInt("height", 50);
                             hexapod.setHeight(height);
                             String walkingStyle = prefs.getString("walk", WalkingStyle.TRIPOD_GAIT.toString());
+                            prefs.edit().putInt("rbSelected", R.id.rb1).apply();
                             hexapod.setWalkingStyle(WalkingStyle.valueOf(walkingStyle));
                             hexapod.connect();
 
@@ -299,12 +294,8 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus)
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            );
+    public void onResume() {
+        super.onResume();
     }
+
 }

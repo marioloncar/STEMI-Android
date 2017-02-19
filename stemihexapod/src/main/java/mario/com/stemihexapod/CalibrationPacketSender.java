@@ -17,7 +17,7 @@ class CalibrationPacketSender {
 
     private Hexapod hexapod;
     private Boolean connected = false;
-    private byte[] calibrationArray = new byte[]{50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
+    private byte[] calibrationArray = new byte[18];
     private boolean openCommunication = true;
     private int sendingInterval = 100;
 
@@ -40,7 +40,7 @@ class CalibrationPacketSender {
 
                     baos = new ByteArrayOutputStream();
                     DataOutputStream dos = new DataOutputStream(baos);
-                    byte[] data = new byte[1024];
+                    byte[] data = new byte[22];
                     int count = connection.getInputStream().read(data);
                     while (count != -1) {
                         dos.write(data, 3, 18);
@@ -50,10 +50,10 @@ class CalibrationPacketSender {
                     e.printStackTrace();
                 }
                 calibrationArray = baos.toByteArray();
-                enterCalibrationCallback.onEnteredCalibration(true);
                 for (int i = 0; i < calibrationArray.length; i++) {
                     hexapod.setCalibrationValue(calibrationArray[i], i);
                 }
+                enterCalibrationCallback.onEnteredCalibration(true);
                 sendData();
             }
         };

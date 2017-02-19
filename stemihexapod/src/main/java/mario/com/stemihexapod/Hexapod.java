@@ -10,17 +10,20 @@ public class Hexapod implements PacketSenderStatus {
     Packet currentPacket;
     PacketSender sendPacket;
     String ipAddress;
+    String defaultIP = "192.168.4.1";
+    int defaultPort = 80;
     int port;
     CalibrationPacket calibrationPacket;
     private CalibrationPacketSender calibrationPacketSender;
     private byte[] slidersArray = {50, 25, 0, 0, 0, 50, 0, 0, 0, 0, 0};
     private boolean calibrationModeEnabled = false;
-    private byte[] initialCalibrationData = {};
+    private byte[] initialCalibrationData = new byte[18];
     public HexapodStatus hexapodStatus = new HexapodStatus() {
         @Override
         public void connectionStatus(boolean isConnected) {
         }
     };
+
 
     @Override
     public void connectionLost() {
@@ -37,8 +40,8 @@ public class Hexapod implements PacketSenderStatus {
      * Initializes default connection with IP address: 192.168.4.1 and port: 80
      */
     public Hexapod() {
-        this.ipAddress = "192.168.4.1";
-        this.port = 80;
+        this.ipAddress = this.defaultIP;
+        this.port = this.defaultPort;
         this.currentPacket = new Packet();
     }
 
@@ -49,8 +52,8 @@ public class Hexapod implements PacketSenderStatus {
      */
     public Hexapod(boolean withCalibrationMode) {
         this.calibrationModeEnabled = withCalibrationMode;
-        this.ipAddress = "192.168.4.1";
-        this.port = 80;
+        this.ipAddress = this.defaultIP;
+        this.port = this.defaultPort;
         if (calibrationModeEnabled) {
             this.calibrationPacket = new CalibrationPacket();
         } else {
@@ -432,7 +435,6 @@ public class Hexapod implements PacketSenderStatus {
         Thread.sleep(500);
         calibrationPacket.writeToHexapod = CalibrationPacket.WriteData.Yes.ordinal();
         calibrationPacketSender.sendOnePacket();
-//        calibrationPacket.writeToHexapod = CalibrationPacket.WriteData.No.ordinal();
         Thread.sleep(1000);
         savedCalibrationCallback.onSavedData(true);
     }
