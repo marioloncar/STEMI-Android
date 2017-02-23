@@ -17,6 +17,10 @@ First version of STEMI controller.
 - Calibration view for calibrating STEMI legs
 - Settings
 
+##Demo
+
+https://www.youtube.com/watch?v=31v0bN561qU
+
 ##Screenshots
 
 ![screenshot_20170102-180601](https://cloud.githubusercontent.com/assets/12370404/23261036/e2459400-f9d4-11e6-9603-1f755c889940.png)
