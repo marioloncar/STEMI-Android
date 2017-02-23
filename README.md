@@ -20,9 +20,7 @@ First version of STEMI controller.
 ##Screenshots
 
 ![screenshot_20170102-180601](https://cloud.githubusercontent.com/assets/12370404/23261036/e2459400-f9d4-11e6-9603-1f755c889940.png)
-![screenshot_20170102-180622](https://cloud.githubusercontent.com/assets/12370404/23261038/e26e7690-f9d4-11e6-859c-6f536126547b.png)
 ![screenshot_20170102-180633](https://cloud.githubusercontent.com/assets/12370404/23261042/e271bc42-f9d4-11e6-92a1-99b79c17346d.png)
-![screenshot_20170102-180637](https://cloud.githubusercontent.com/assets/12370404/23261039/e26f1050-f9d4-11e6-9b05-85aad11d0959.png)
 ![screenshot_20170102-180647](https://cloud.githubusercontent.com/assets/12370404/23261040/e2705a28-f9d4-11e6-8b0e-d7c6c618ce70.png)
 ![screenshot_20170102-180657](https://cloud.githubusercontent.com/assets/12370404/23261041/e2710da6-f9d4-11e6-861e-f97bece449b1.png)
 ![screenshot_20170102-180713](https://cloud.githubusercontent.com/assets/12370404/23261037/e2605bfa-f9d4-11e6-897d-00561f93b0e7.png)
