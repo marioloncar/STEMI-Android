@@ -11,6 +11,7 @@ buildscript {
 }
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'maven-publish'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -26,7 +27,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 25
         versionCode 96
-        versionName "1.0"
+        versionName "1.0.0"
     }
     buildTypes {
         release {
@@ -44,8 +45,8 @@ dependencies {
     }
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.android.support:support-v4:25.1.0'
-    compile project(":stemihexapod")
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
+    compile 'STEMI:stemihexapod:1.0.0'
 }
 
 

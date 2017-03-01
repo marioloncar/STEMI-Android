@@ -30,9 +30,9 @@ import com.stemi.STEMIHexapod.R;
 import com.stemi.STEMIHexapod.joysticks.JoystickL;
 import com.stemi.STEMIHexapod.joysticks.JoystickR;
 
-import mario.com.stemihexapod.Hexapod;
-import mario.com.stemihexapod.HexapodStatus;
-import mario.com.stemihexapod.WalkingStyle;
+import stemi.education.stemihexapod.Hexapod;
+import stemi.education.stemihexapod.HexapodStatus;
+import stemi.education.stemihexapod.WalkingStyle;
 
 import static com.stemi.STEMIHexapod.Menu.bMenu;
 
@@ -54,7 +54,7 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_joystick);
 
         ibStandby = (ImageButton) findViewById(R.id.ibStandby);
         vOverlay = findViewById(R.id.vOverlay);

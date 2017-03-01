@@ -32,7 +32,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Objects;
 
-import mario.com.stemihexapod.WalkingStyle;
+import stemi.education.stemihexapod.WalkingStyle;
 
 /**
  * Created by Mario on 24/08/16.

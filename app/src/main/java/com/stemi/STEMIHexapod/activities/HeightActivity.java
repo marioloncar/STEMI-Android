@@ -9,7 +9,6 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
@@ -22,7 +21,7 @@ import android.widget.TextView;
 
 import com.stemi.STEMIHexapod.R;
 
-import mario.com.stemihexapod.Hexapod;
+import stemi.education.stemihexapod.Hexapod;
 
 import static com.stemi.STEMIHexapod.Constants.REPEAT_DELAY;
 

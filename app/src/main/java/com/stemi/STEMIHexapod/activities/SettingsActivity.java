@@ -23,11 +23,10 @@ import android.text.Html;
 import com.stemi.STEMIHexapod.interfaces.DiscardCalibrationCallback;
 import com.stemi.STEMIHexapod.R;
 
-import mario.com.stemihexapod.ConnectingCompleteCallback;
-import mario.com.stemihexapod.Hexapod;
-import mario.com.stemihexapod.SavedCalibrationCallback;
-import mario.com.stemihexapod.WalkingStyle;
-
+import stemi.education.stemihexapod.ConnectingCompleteCallback;
+import stemi.education.stemihexapod.Hexapod;
+import stemi.education.stemihexapod.SavedCalibrationCallback;
+import stemi.education.stemihexapod.WalkingStyle;
 
 public class SettingsActivity extends AppCompatActivity {
 

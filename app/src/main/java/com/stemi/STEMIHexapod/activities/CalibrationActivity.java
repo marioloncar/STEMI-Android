@@ -29,9 +29,9 @@ import android.widget.TextView;
 import com.stemi.STEMIHexapod.interfaces.DiscardCalibrationCallback;
 import com.stemi.STEMIHexapod.R;
 
-import mario.com.stemihexapod.ConnectingCompleteCallback;
-import mario.com.stemihexapod.Hexapod;
-import mario.com.stemihexapod.SavedCalibrationCallback;
+import stemi.education.stemihexapod.ConnectingCompleteCallback;
+import stemi.education.stemihexapod.Hexapod;
+import stemi.education.stemihexapod.SavedCalibrationCallback;
 
 import static com.stemi.STEMIHexapod.Constants.REPEAT_DELAY;
 
