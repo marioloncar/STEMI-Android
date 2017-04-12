@@ -27,7 +27,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 25
         versionCode 96
-        versionName "1.0.0"
+        versionName "1.0.2"
     }
     buildTypes {
         release {
