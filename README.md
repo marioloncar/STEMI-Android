@@ -11,6 +11,12 @@
 And you can create one all by yourself. We’ll show you how. <br>
 <b>About STEMI App:</b> We almost never control another physical thing with our beloved device. The feeling of commanding your robot with a smartphone can hardly be described. You have to simply try it. The app takes advantage of the modern technology such as gyroscope in your smartphone. This allows for the calculation of orientation and rotation of the STEMI’s body. The result is – a dancing robot moving in the rhythm of your hand! <br>
 
+## STEMI Library
+
+		https://github.com/marioloncar/STEMI_Hexapod
+
+This app uses STEMI library for communicating with robot and can be used as example app for Library usage. 
+
 ## Screenshots
 
 ![screenshot_20170102-180601](https://cloud.githubusercontent.com/assets/12370404/23261036/e2459400-f9d4-11e6-9603-1f755c889940.png)
