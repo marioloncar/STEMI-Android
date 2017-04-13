@@ -41,15 +41,17 @@ public class ConnectingActivity extends AppCompatActivity {
 
     private TextView tvConnectingTitle, tvConnectingHint;
     private Button bConnect, bChangeIP;
-    private Typeface tf;
     private ImageView ivStemiIcon, ivProgressPath, ivProgress;
+
+    private Typeface tf;
+
     private SharedPreferences prefs = null;
+
     private String savedIp;
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        Fabric.with(this, new Crashlytics(), new Answers());
         setContentView(R.layout.activity_connecting);
 
         tvConnectingTitle = (TextView) findViewById(R.id.tvConnectingTitle);

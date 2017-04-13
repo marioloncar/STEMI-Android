@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.MotionEvent;
@@ -28,15 +29,23 @@ import static com.stemi.STEMIHexapod.Constants.REPEAT_DELAY;
 /**
  * Created by Mario on 29/08/16.
  */
-public class HeightActivity extends AppCompatActivity {
+public class HeightActivity extends AppCompatActivity{
 
     private TextView tvHeightValue;
+
     private MediaPlayer movingSound, movingSoundShort;
+
     private SharedPreferences prefs;
+
     private final Handler repeatUpdateHandler = new Handler();
+
     private boolean mAutoIncrement = false;
     private boolean mAutoDecrement = false;
+
+    private AlertDialog.Builder builder;
+
     private byte height = 50;
+
     private Hexapod hexapod;
 
     @Override
@@ -66,6 +75,9 @@ public class HeightActivity extends AppCompatActivity {
         tvHeightValue.setTypeface(tf);
 
         String savedIp = prefs.getString("ip", null);
+
+        builder = new AlertDialog.Builder(this);
+
 
         hexapod = new Hexapod();
         hexapod.setIpAddress(savedIp);
@@ -143,6 +155,26 @@ public class HeightActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        hexapod.disconnect();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        hexapod.disconnect();
+    }
+
     private void initActionBarWithTitle(String title) {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -206,18 +238,6 @@ public class HeightActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        hexapod.disconnect();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        hexapod.disconnect();
-    }
-
-    @Override
     public boolean onSupportNavigateUp() {
         finish();
         return super.onSupportNavigateUp();
@@ -229,12 +249,6 @@ public class HeightActivity extends AppCompatActivity {
         finish();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-    }
+
 
 }

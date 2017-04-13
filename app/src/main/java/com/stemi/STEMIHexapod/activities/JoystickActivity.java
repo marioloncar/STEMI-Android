@@ -24,9 +24,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.stemi.STEMIHexapod.interfaces.JoystickMovement;
 import com.stemi.STEMIHexapod.Menu;
 import com.stemi.STEMIHexapod.R;
+import com.stemi.STEMIHexapod.interfaces.JoystickMovement;
 import com.stemi.STEMIHexapod.joysticks.JoystickL;
 import com.stemi.STEMIHexapod.joysticks.JoystickR;
 
@@ -36,19 +36,26 @@ import stemi.education.stemihexapod.WalkingStyle;
 
 import static com.stemi.STEMIHexapod.Menu.bMenu;
 
-public class JoystickActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener, HexapodStatus, JoystickMovement {
+public class JoystickActivity extends AppCompatActivity implements View.OnClickListener,
+        SensorEventListener, HexapodStatus, JoystickMovement {
 
     private ImageButton ibStandby, ibMovement, ibRotation, ibOrientation;
     private View vOverlay;
-    private Typeface tf;
     private RelativeLayout lay;
     private ImageView longToastBck;
+
+    private Typeface tf;
+
     private SensorManager sensorManager;
     private Sensor accelerometer;
+
     private byte accelerometerX = 0;
     private byte accelerometerY = 0;
+
     private AlertDialog.Builder builder;
+
     private SharedPreferences prefs;
+
     private Hexapod hexapod;
 
     @Override
@@ -197,6 +204,42 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+
+        String savedIp = prefs.getString("ip", null);
+        byte heightPref = (byte) prefs.getInt("height", 50);
+        String walkingStyle = prefs.getString("walk", WalkingStyle.TRIPOD_GAIT.toString());
+
+        hexapod.setIpAddress(savedIp);
+        hexapod.setHeight(heightPref);
+        hexapod.setWalkingStyle(WalkingStyle.valueOf(walkingStyle));
+        hexapod.connect();
+
+        // hide soft keys and status bar
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        hexapod.setMovementMode();
+        hexapod.disconnect();
+        sensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        hexapod.disconnect();
+    }
+
+
+    @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             if (event.values[0] < -4) accelerometerX = -40;
@@ -321,40 +364,6 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
         finish();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        hexapod.setMovementMode();
-        hexapod.disconnect();
-        sensorManager.unregisterListener(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        hexapod.disconnect();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
-
-        String savedIp = prefs.getString("ip", null);
-        byte heightPref = (byte) prefs.getInt("height", 50);
-        String walkingStyle = prefs.getString("walk", WalkingStyle.TRIPOD_GAIT.toString());
-
-        hexapod.setIpAddress(savedIp);
-        hexapod.setHeight(heightPref);
-        hexapod.setWalkingStyle(WalkingStyle.valueOf(walkingStyle));
-        hexapod.connect();
-
-        // hide soft keys and status bar
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-    }
 
     private void showShortToast(String message) {
         LayoutInflater inflater = getLayoutInflater();
@@ -415,7 +424,6 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
                 builder.show();
             }
         });
-
     }
 
     @Override

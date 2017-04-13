@@ -74,9 +74,12 @@ public class SettingsActivity extends AppCompatActivity {
     public static class SettingsFragment extends PreferenceFragment {
 
         SharedPreferences prefs;
+
         String savedIp, hardwareVersion, stemiId;
+
         byte[] calibrationValues;
         byte[] currentCalibrationValues;
+
         private Hexapod hexapod;
 
         @Override
@@ -290,11 +293,6 @@ public class SettingsActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
 }

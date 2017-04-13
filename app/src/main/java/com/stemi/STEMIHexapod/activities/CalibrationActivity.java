@@ -26,8 +26,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.stemi.STEMIHexapod.interfaces.DiscardCalibrationCallback;
 import com.stemi.STEMIHexapod.R;
+import com.stemi.STEMIHexapod.interfaces.DiscardCalibrationCallback;
 
 import stemi.education.stemihexapod.ConnectingCompleteCallback;
 import stemi.education.stemihexapod.Hexapod;
@@ -44,17 +44,25 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             ibMotor8, ibMotor9, ibMotor10, ibMotor11, ibMotor12, ibMotor13, ibMotor14, ibMotor15, ibMotor16,
             ibMotor17, ibCalibUp, ibCalibD;
     private ImageButton[] motors;
+
     private AlertDialog.Builder builder;
     private ImageView ivCircle;
     private TextView tvCalibValue, tvSelect;
+
     private MediaPlayer movingSound, movingSoundShort;
+
     private byte[] calibrationValues = new byte[18];
     private byte[] changedCalibrationValues = new byte[18];
+
     private int index;
-    private final Handler repeatUpdateHandler = new Handler();
+
     private boolean mAutoIncrement = false;
     private boolean mAutoDecrement = false;
+
+    private final Handler repeatUpdateHandler = new Handler();
+
     private String savedIp;
+
     private Hexapod hexapod;
 
     @Override
@@ -107,7 +115,6 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         movingSoundShort = MediaPlayer.create(this, R.raw.moving_sound_short);
 
         setButtonsEnabled(false, false);
-
 
         hexapod = new Hexapod(true);
         hexapod.setIpAddress(savedIp);
@@ -203,6 +210,30 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         });
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        );
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        hexapod.disconnect();
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        hexapod.disconnect();
+    }
+
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -486,30 +517,6 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         tvSelect.setVisibility(View.INVISIBLE);
         ivCircle.setVisibility(View.VISIBLE);
         tvCalibValue.setVisibility(View.VISIBLE);
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        hexapod.disconnect();
-        finish();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        hexapod.disconnect();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        );
     }
 
     private class RepeatUpdater implements Runnable {

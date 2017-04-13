@@ -32,7 +32,9 @@ import com.stemi.STEMIHexapod.R;
 public class IPActivity extends AppCompatActivity {
 
     private EditText et1, et2, et3, et4;
+
     private MenuItem menuItem;
+
     private SharedPreferences prefs;
 
     @Override
@@ -176,6 +178,24 @@ public class IPActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        hideSoftKeyboard();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        hideSoftKeyboard();
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         finish();
         return super.onSupportNavigateUp();
@@ -252,24 +272,6 @@ public class IPActivity extends AppCompatActivity {
                     }
                 })
                 .show();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        hideSoftKeyboard();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        hideSoftKeyboard();
     }
 
 
