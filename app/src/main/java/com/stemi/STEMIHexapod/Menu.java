@@ -1,5 +1,6 @@
 package com.stemi.STEMIHexapod;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
@@ -20,8 +21,11 @@ import android.widget.RelativeLayout;
  */
 public class Menu extends RelativeLayout {
 
+    @SuppressLint("StaticFieldLeak")
     public static ImageButton ibMovement, ibRotation, ibOrientation, ibHeight, ibCalibration, ibStyles, ibSettings;
+    @SuppressLint("StaticFieldLeak")
     public static ImageView ivBck, ivMenuActive;
+    @SuppressLint("StaticFieldLeak")
     public static Button bMenu;
     private static MediaPlayer puk;
     private static MediaPlayer tiu;
@@ -62,26 +66,26 @@ public class Menu extends RelativeLayout {
 
         AnimationSet close = new AnimationSet(false);
 
-        Animation leftMove = new TranslateAnimation(0, -10, 10, 0); //lijevi pomak
+        Animation leftMove = new TranslateAnimation(0, -10, 10, 0); // Left movement
         leftMove.setDuration(50);
 
-        Animation rightMove = new TranslateAnimation(0, 20, 10, 0); //desni pomak
+        Animation rightMove = new TranslateAnimation(0, 20, 10, 0); // Right movement
         rightMove.setStartOffset(50);
         rightMove.setDuration(50);
 
-        Animation leftMove2 = new TranslateAnimation(0, -20, 10, 0); //lijevi pomak
+        Animation leftMove2 = new TranslateAnimation(0, -20, 10, 0); // Left movement
         leftMove2.setStartOffset(100);
         leftMove2.setDuration(50);
 
-        Animation jumpUp = new TranslateAnimation(0, 10, 10, -20); //skok prema gore
+        Animation jumpUp = new TranslateAnimation(0, 10, 10, -20); // Jump up
         jumpUp.setStartOffset(150);
         jumpUp.setDuration(50);
 
-        Animation fallDown = new TranslateAnimation(0, 10, -20, 30); //spustanje prema dolje
+        Animation fallDown = new TranslateAnimation(0, 10, -20, 30); // Fall down
         fallDown.setStartOffset(200);
         fallDown.setDuration(200);
 
-        Animation fadeOut = new AlphaAnimation(1, 0); //nestajanje
+        Animation fadeOut = new AlphaAnimation(1, 0); // Disappear
         fadeOut.setStartOffset(200);
         fadeOut.setDuration(200);
 
@@ -105,7 +109,6 @@ public class Menu extends RelativeLayout {
 
     public static void openMenu() {
         long delay = 0;
-
         puk.start();
 
         ivMenuActive.setVisibility(View.VISIBLE);
@@ -123,7 +126,6 @@ public class Menu extends RelativeLayout {
         set.addAnimation(animation2);
 
         ivMenuActive.startAnimation(set);
-
 
         for (ImageButton button : buttons) {
             Animation fadeIn = new AlphaAnimation(0, 1);
