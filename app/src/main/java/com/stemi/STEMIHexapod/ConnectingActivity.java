@@ -102,86 +102,9 @@ public class ConnectingActivity extends AppCompatActivity {
                 bConnect.setAlpha(0.6f);
                 bChangeIP.setVisibility(View.INVISIBLE);
 
-                /*** Connect to STEMI Hexapod ***/
-                Thread thread = new Thread() {
-                    @Override
-                    public void run() {
-                        String jsonString = "";
-                        jsonString = fetchJSON("http://" + savedIp + "/stemiData.json");
-                        try {
-                            // if jsonString object exists compare with one saved in SharedPrefs
-                            if (jsonString != null) {
-                                JSONObject jsonObject = new JSONObject(jsonString);
-                                if (Objects.equals(jsonObject.getString("stemiID"), prefs.getString("stemiId", null))) {
-                                    synchronized (this) {
-                                        wait(2000);
-                                    }
-                                    openMainActivity();
-                                } else {
-                                    // if IDs are not equal, set default STEMI values
-                                    String version = jsonObject.getString("version");
-                                    String stemiId = jsonObject.getString("stemiID");
+                Thread connectionThread = new Thread(new ConnectionRunnable());
 
-                                    prefs.edit().putString("version", version).apply();
-                                    prefs.edit().putString("stemiId", stemiId).apply();
-                                    prefs.edit().putInt("walk", 30).apply();
-                                    prefs.edit().putInt("rbSelected", R.id.rb1).apply();
-                                    prefs.edit().putInt("height", 50).apply();
-                                    synchronized (this) {
-                                        wait(2000);
-                                    }
-                                    openMainActivity();
-                                }
-                            } else {
-                                // if connection is not established show different UI
-                                synchronized (this) {
-                                    wait(5000);
-                                }
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        AnimationSet error = new AnimationSet(false);
-                                        Animation leftMove = new TranslateAnimation(0, -10, 0, 0);
-                                        leftMove.setDuration(50);
-                                        Animation rightMove = new TranslateAnimation(0, 20, 0, 0);
-                                        rightMove.setStartOffset(50);
-                                        rightMove.setDuration(50);
-
-                                        Animation fadeIn = new AlphaAnimation(0f, 1.0f);
-                                        fadeIn.setDuration(500);
-
-                                        error.addAnimation(leftMove);
-                                        error.addAnimation(rightMove);
-
-                                        ivProgress.clearAnimation();
-                                        ivStemiIcon.clearAnimation();
-                                        ivProgressPath.setVisibility(View.INVISIBLE);
-                                        ivProgress.setVisibility(View.INVISIBLE);
-                                        ivStemiIcon.setVisibility(View.INVISIBLE);
-                                        tvConnectingHint.setVisibility(View.VISIBLE);
-                                        tvConnectingTitle.setVisibility(View.VISIBLE);
-                                        bConnect.setText(R.string.try_again);
-                                        bConnect.setEnabled(true);
-                                        bConnect.setTextSize(16);
-                                        bConnect.setAlpha(1f);
-                                        bConnect.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.button_connecting, null));
-                                        bConnect.startAnimation(fadeIn);
-                                        bChangeIP.setVisibility(View.VISIBLE);
-                                        bChangeIP.setTypeface(tf);
-                                        tvConnectingTitle.setText(R.string.unable_to_connect);
-                                        tvConnectingTitle.startAnimation(error);
-                                        tvConnectingHint.setText(R.string.hint_noConnection);
-                                    }
-                                });
-                            }
-                        } catch (JSONException | InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                };
-                thread.start();
-                /*** Connect to STEMI Hexapod END ***/
-
+                connectionThread.start();
             }
         });
 
@@ -198,7 +121,6 @@ public class ConnectingActivity extends AppCompatActivity {
         finish();
         Intent i = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(i);
-
     }
 
 
@@ -264,6 +186,79 @@ public class ConnectingActivity extends AppCompatActivity {
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
+        }
+    }
+
+    private class ConnectionRunnable implements Runnable {
+        @Override
+        public void run() {
+            String jsonString = "";
+            jsonString = fetchJSON("http://" + savedIp + "/stemiData.json");
+            try {
+                // if jsonString object exists compare with one saved in SharedPrefs
+                if (jsonString != null) {
+                    JSONObject jsonObject = new JSONObject(jsonString);
+                    if (Objects.equals(jsonObject.getString("stemiID"), prefs.getString("stemiId", null))) {
+                        Thread.sleep(2000);
+                        openMainActivity();
+                    } else {
+                        // if IDs are not equal, set default STEMI values
+                        String version = jsonObject.getString("version");
+                        String stemiId = jsonObject.getString("stemiID");
+
+                        prefs.edit().putString("version", version).apply();
+                        prefs.edit().putString("stemiId", stemiId).apply();
+                        prefs.edit().putInt("walk", 30).apply();
+                        prefs.edit().putInt("rbSelected", R.id.rb1).apply();
+                        prefs.edit().putInt("height", 50).apply();
+                        Thread.sleep(2000);
+                        openMainActivity();
+                    }
+                } else {
+                    // if connection is not established show different UI
+                    Thread.sleep(2000);
+                    runOnUiThread(new ConnectionFailedRunnable());
+                }
+            } catch (JSONException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class ConnectionFailedRunnable implements Runnable {
+        @Override
+        public void run() {
+            AnimationSet error = new AnimationSet(false);
+            Animation leftMove = new TranslateAnimation(0, -10, 0, 0);
+            leftMove.setDuration(50);
+            Animation rightMove = new TranslateAnimation(0, 20, 0, 0);
+            rightMove.setStartOffset(50);
+            rightMove.setDuration(50);
+
+            Animation fadeIn = new AlphaAnimation(0f, 1.0f);
+            fadeIn.setDuration(500);
+
+            error.addAnimation(leftMove);
+            error.addAnimation(rightMove);
+
+            ivProgress.clearAnimation();
+            ivStemiIcon.clearAnimation();
+            ivProgressPath.setVisibility(View.INVISIBLE);
+            ivProgress.setVisibility(View.INVISIBLE);
+            ivStemiIcon.setVisibility(View.INVISIBLE);
+            tvConnectingHint.setVisibility(View.VISIBLE);
+            tvConnectingTitle.setVisibility(View.VISIBLE);
+            bConnect.setText(R.string.try_again);
+            bConnect.setEnabled(true);
+            bConnect.setTextSize(16);
+            bConnect.setAlpha(1f);
+            bConnect.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.button_connecting, null));
+            bConnect.startAnimation(fadeIn);
+            bChangeIP.setVisibility(View.VISIBLE);
+            bChangeIP.setTypeface(tf);
+            tvConnectingTitle.setText(R.string.unable_to_connect);
+            tvConnectingTitle.startAnimation(error);
+            tvConnectingHint.setText(R.string.hint_noConnection);
         }
     }
 
