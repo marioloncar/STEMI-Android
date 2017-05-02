@@ -72,48 +72,42 @@ public class ConnectingActivity extends AppCompatActivity {
 
         prefs = getSharedPreferences("myPref", MODE_PRIVATE);
 
-        bConnect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bConnect.setText(R.string.pairing);
+        bConnect.setOnClickListener(v -> {
+            bConnect.setText(R.string.pairing);
 
-                Animation animation = new AlphaAnimation(0.5f, 1.0f);
-                animation.setDuration(700);
-                animation.setStartOffset(20);
-                animation.setRepeatMode(Animation.REVERSE);
-                animation.setRepeatCount(Animation.INFINITE);
+            Animation animation = new AlphaAnimation(0.5f, 1.0f);
+            animation.setDuration(700);
+            animation.setStartOffset(20);
+            animation.setRepeatMode(Animation.REVERSE);
+            animation.setRepeatCount(Animation.INFINITE);
 
-                RotateAnimation rotateAnimation = new RotateAnimation(0, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-                rotateAnimation.setInterpolator(new LinearInterpolator());
-                rotateAnimation.setDuration(1300);
-                rotateAnimation.setRepeatCount(Animation.INFINITE);
+            RotateAnimation rotateAnimation = new RotateAnimation(0, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            rotateAnimation.setInterpolator(new LinearInterpolator());
+            rotateAnimation.setDuration(1300);
+            rotateAnimation.setRepeatCount(Animation.INFINITE);
 
-                tvConnectingHint.setVisibility(View.INVISIBLE);
-                tvConnectingTitle.setVisibility(View.INVISIBLE);
-                ivStemiIcon.setVisibility(View.VISIBLE);
-                ivProgress.setVisibility(View.VISIBLE);
-                ivProgressPath.setVisibility(View.VISIBLE);
+            tvConnectingHint.setVisibility(View.INVISIBLE);
+            tvConnectingTitle.setVisibility(View.INVISIBLE);
+            ivStemiIcon.setVisibility(View.VISIBLE);
+            ivProgress.setVisibility(View.VISIBLE);
+            ivProgressPath.setVisibility(View.VISIBLE);
 
-                ivProgress.startAnimation(rotateAnimation);
-                ivStemiIcon.startAnimation(animation);
-                bConnect.setBackground(null);
-                bConnect.setEnabled(false);
-                bConnect.setTextSize(20);
-                bConnect.setAlpha(0.6f);
-                bChangeIP.setVisibility(View.INVISIBLE);
+            ivProgress.startAnimation(rotateAnimation);
+            ivStemiIcon.startAnimation(animation);
+            bConnect.setBackground(null);
+            bConnect.setEnabled(false);
+            bConnect.setTextSize(20);
+            bConnect.setAlpha(0.6f);
+            bChangeIP.setVisibility(View.INVISIBLE);
 
-                Thread connectionThread = new Thread(new ConnectionRunnable());
+            Thread connectionThread = new Thread(new ConnectionRunnable());
 
-                connectionThread.start();
-            }
+            connectionThread.start();
         });
 
-        bChangeIP.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), IPActivity.class);
-                startActivity(i);
-            }
+        bChangeIP.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), IPActivity.class);
+            startActivity(i);
         });
     }
 
@@ -153,7 +147,7 @@ public class ConnectingActivity extends AppCompatActivity {
             reader = new BufferedReader(new InputStreamReader(stream));
 
             StringBuilder buffer = new StringBuilder();
-            String line = "";
+            String line;
 
             while ((line = reader.readLine()) != null) {
                 buffer.append(line).append("\n");
@@ -192,7 +186,7 @@ public class ConnectingActivity extends AppCompatActivity {
     private class ConnectionRunnable implements Runnable {
         @Override
         public void run() {
-            String jsonString = "";
+            String jsonString;
             jsonString = fetchJSON("http://" + savedIp + "/stemiData.json");
             try {
                 // if jsonString object exists compare with one saved in SharedPrefs
