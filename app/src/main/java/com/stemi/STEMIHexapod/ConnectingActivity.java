@@ -151,7 +151,6 @@ public class ConnectingActivity extends AppCompatActivity {
 
             while ((line = reader.readLine()) != null) {
                 buffer.append(line).append("\n");
-
             }
 
             return buffer.toString();

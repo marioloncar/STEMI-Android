@@ -85,115 +85,79 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         /**** OnLongClick Listeners ****/
-        ibMovement.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showLongToast("Movement", getString(R.string.movement_hint));
-                return true;
+        ibMovement.setOnLongClickListener(v -> {
+            showLongToast("Movement", getString(R.string.movement_hint));
+            return true;
 
-            }
         });
 
-        ibRotation.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showLongToast("Rotation", getString(R.string.rotation_hint));
-                return true;
-            }
+        ibRotation.setOnLongClickListener(v -> {
+            showLongToast("Rotation", getString(R.string.rotation_hint));
+            return true;
         });
 
-        ibOrientation.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showLongToast("Orientation", getString(R.string.orientation_hint));
-                return true;
-            }
+        ibOrientation.setOnLongClickListener(v -> {
+            showLongToast("Orientation", getString(R.string.orientation_hint));
+            return true;
         });
 
-        ibHeight.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showLongToast("Height", getString(R.string.height_hint));
-                return true;
-            }
+        ibHeight.setOnLongClickListener(v -> {
+            showLongToast("Height", getString(R.string.height_hint));
+            return true;
         });
 
-        ibCalibration.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showLongToast("Calibration", getString(R.string.calibration_hint));
-                return true;
-            }
+        ibCalibration.setOnLongClickListener(v -> {
+            showLongToast("Calibration", getString(R.string.calibration_hint));
+            return true;
         });
 
-        ibWalkingStyle.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showLongToast("Walk style", getString(R.string.walkstyle_hint));
-                return true;
-            }
+        ibWalkingStyle.setOnLongClickListener(v -> {
+            showLongToast("Walk style", getString(R.string.walkstyle_hint));
+            return true;
         });
 
 
         /**** OnTouch Listeners ****/
-        ibMovement.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    hideToast();
-                }
-                return false;
+        ibMovement.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                hideToast();
             }
+            return false;
         });
 
-        ibRotation.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    hideToast();
-                }
-                return false;
+        ibRotation.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                hideToast();
             }
+            return false;
         });
 
-        ibOrientation.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    hideToast();
-                }
-                return false;
+        ibOrientation.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                hideToast();
             }
+            return false;
         });
 
-        ibHeight.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    hideToast();
-                }
-                return false;
+        ibHeight.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                hideToast();
             }
+            return false;
         });
 
-        ibCalibration.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    hideToast();
-                }
-                return false;
+        ibCalibration.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                hideToast();
             }
+            return false;
         });
 
-        ibWalkingStyle.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    hideToast();
-                }
-                return false;
+        ibWalkingStyle.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                hideToast();
             }
+            return false;
         });
 
     }
@@ -459,21 +423,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void showConnectionDialog() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                builder.setCancelable(false);
-                builder.setTitle("Connection lost");
-                builder.setMessage("Please check connection with your STEMI and try again.");
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Intent i = new Intent(MainActivity.this, ConnectingActivity.class);
-                        startActivity(i);
-                        finish();
-                    }
-                });
-                builder.show();
-            }
+        runOnUiThread(() -> {
+            builder.setCancelable(false);
+            builder.setTitle("Connection lost");
+            builder.setMessage("Please check connection with your STEMI and try again.");
+            builder.setPositiveButton("Ok", (dialog, id) -> {
+                Intent i = new Intent(MainActivity.this, ConnectingActivity.class);
+                startActivity(i);
+                finish();
+            });
+            builder.show();
         });
 
     }
