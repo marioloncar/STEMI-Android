@@ -29,11 +29,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import static com.stemi.STEMIHexapod.Menu.bMenu;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
 
     private ImageButton ibStandby, ibMovement, ibRotation, ibOrientation;
+    private Menu menu;
     private View vOverlay;
     private Typeface tf;
     private RelativeLayout lay;
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        menu = (Menu) findViewById(R.id.menu);
         ibStandby = (ImageButton) findViewById(R.id.ibStandby);
         vOverlay = findViewById(R.id.vOverlay);
         ibMovement = (ImageButton) findViewById(R.id.ibMovement);
@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.bMenu:
-                if (bMenu.isSelected()) {
+                if (menu.bMenu.isSelected()) {
                     closeMenu();
                 } else {
                     openMenu();
@@ -293,14 +293,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void openMenu() {
-        Menu.openMenu();
-        bMenu.setSelected(true);
+        menu.openMenu();
+        menu.bMenu.setSelected(true);
         vOverlay.setVisibility(View.VISIBLE);
     }
 
     private void closeMenu() {
-        Menu.closeMenu();
-        bMenu.setSelected(false);
+        menu.closeMenu();
+        menu.bMenu.setSelected(false);
         vOverlay.setVisibility(View.INVISIBLE);
     }
 

@@ -20,11 +20,11 @@ import android.widget.RelativeLayout;
  */
 public class Menu extends RelativeLayout {
 
-    public static ImageButton ibMovement, ibRotation, ibOrientation, ibHeight, ibCalibration, ibStyles, ibSettings;
-    public static ImageView ivBck, ivMenuActive;
-    public static Button bMenu;
-    private static MediaPlayer puk;
-    private static MediaPlayer tiu;
+    public ImageButton ibMovement, ibRotation, ibOrientation, ibHeight, ibCalibration, ibStyles, ibSettings;
+    public ImageView ivBck, ivMenuActive;
+    public Button bMenu;
+    private MediaPlayer puk;
+    private MediaPlayer tiu;
 
 
     private static ImageButton[] buttons;
@@ -32,12 +32,16 @@ public class Menu extends RelativeLayout {
     public Menu(Context context) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.menu, this, true);
+        initButtons(context);
     }
 
     public Menu(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.menu, this, true);
+        initButtons(context);
+    }
 
+    private void initButtons(Context context) {
         ibMovement = (ImageButton) findViewById(R.id.ibMovement);
         ibRotation = (ImageButton) findViewById(R.id.ibRotation);
         ibOrientation = (ImageButton) findViewById(R.id.ibOrientation);
@@ -53,11 +57,9 @@ public class Menu extends RelativeLayout {
 
         puk = MediaPlayer.create(context, R.raw.puk);
         tiu = MediaPlayer.create(context, R.raw.tiu);
-
-
     }
 
-    public static void closeMenu() {
+    public void closeMenu() {
         tiu.start();
 
         AnimationSet close = new AnimationSet(false);
@@ -103,7 +105,7 @@ public class Menu extends RelativeLayout {
         ivBck.setVisibility(View.INVISIBLE);
     }
 
-    public static void openMenu() {
+    public void openMenu() {
         long delay = 0;
 
         puk.start();
@@ -133,7 +135,6 @@ public class Menu extends RelativeLayout {
             button.setAnimation(fadeIn);
             button.setVisibility(View.VISIBLE);
             delay += 50;
-
         }
     }
 
