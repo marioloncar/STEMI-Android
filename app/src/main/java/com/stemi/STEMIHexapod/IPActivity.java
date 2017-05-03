@@ -91,17 +91,14 @@ public class IPActivity extends AppCompatActivity {
             et4.requestFocus();
         }
 
-        bResetIp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                menuItem.setEnabled(true);
-                et1.setText("192");
-                et2.setText("168");
-                et3.setText("4");
-                et4.setText("1");
-                et4.requestFocus();
-                et4.setSelection(et4.getText().length());
-            }
+        bResetIp.setOnClickListener(v -> {
+            menuItem.setEnabled(true);
+            et1.setText("192");
+            et2.setText("168");
+            et3.setText("4");
+            et4.setText("1");
+            et4.requestFocus();
+            et4.setSelection(et4.getText().length());
         });
 
         // izmjena fokusa na poljima
@@ -265,11 +262,7 @@ public class IPActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("Error")
                 .setMessage("IP fields must be in range 0-255")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
+                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
                 .show();
     }
 
