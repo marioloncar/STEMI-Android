@@ -40,7 +40,7 @@ public class WalkstyleActivity extends AppCompatActivity {
         actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>Walking style</font>"));
 
         @SuppressLint("PrivateResource")
-        final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_mtrl_am_alpha, null);
+        final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
         assert upArrow != null;
         upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
         actionBar.setHomeAsUpIndicator(upArrow);
