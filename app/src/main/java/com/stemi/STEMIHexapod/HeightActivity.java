@@ -82,39 +82,30 @@ public class HeightActivity extends AppCompatActivity {
         String savedIp = prefs.getString("ip", null);
 
         /*** Increase height listeners ***/
-        ibHeightUp.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                movingSound.seekTo(0);
-                movingSound.start();
-                mAutoIncrement = true;
-                repeatUpdateHandler.post(new RepeatUpdater());
+        ibHeightUp.setOnLongClickListener(v -> {
+            movingSound.seekTo(0);
+            movingSound.start();
+            mAutoIncrement = true;
+            repeatUpdateHandler.post(new RepeatUpdater());
 
-                return true;
-            }
+            return true;
         });
 
-        ibHeightUp.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoIncrement) {
-                    mAutoIncrement = false;
-                    movingSound.pause();
-                }
-                return false;
+        ibHeightUp.setOnTouchListener((v, event) -> {
+            if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoIncrement) {
+                mAutoIncrement = false;
+                movingSound.pause();
             }
+            return false;
         });
 
-        ibHeightUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                increment();
+        ibHeightUp.setOnClickListener(v -> {
+            increment();
 
-                if (height == 100) {
-                    movingSoundShort.pause();
-                } else {
-                    movingSoundShort.start();
-                }
+            if (height == 100) {
+                movingSoundShort.pause();
+            } else {
+                movingSoundShort.start();
             }
         });
 
@@ -122,40 +113,29 @@ public class HeightActivity extends AppCompatActivity {
 
 
         /*** Decrease height listeners ***/
-        ibHeightD.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                movingSound.seekTo(0);
-                movingSound.start();
-                mAutoDecrement = true;
-                repeatUpdateHandler.post(new RepeatUpdater());
+        ibHeightD.setOnLongClickListener(v -> {
+            movingSound.seekTo(0);
+            movingSound.start();
+            mAutoDecrement = true;
+            repeatUpdateHandler.post(new RepeatUpdater());
 
-                return true;
-            }
+            return true;
         });
 
-        ibHeightD.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoDecrement) {
-                    mAutoDecrement = false;
-                    movingSound.pause();
-                }
-                return false;
+        ibHeightD.setOnTouchListener((v, event) -> {
+            if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoDecrement) {
+                mAutoDecrement = false;
+                movingSound.pause();
             }
+            return false;
         });
 
-        ibHeightD.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                decrement();
-                if (height == 0) {
-                    movingSoundShort.pause();
-                } else {
-                    movingSoundShort.start();
-                }
-
+        ibHeightD.setOnClickListener(v -> {
+            decrement();
+            if (height == 0) {
+                movingSoundShort.pause();
+            } else {
+                movingSoundShort.start();
             }
         });
         /*** Decrease height listeners END ***/
