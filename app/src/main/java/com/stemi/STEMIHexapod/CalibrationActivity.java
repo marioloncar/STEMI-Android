@@ -1,7 +1,6 @@
 package com.stemi.STEMIHexapod;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
@@ -142,77 +141,59 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
 
         thread.start();
         /*** Calibration up listeners ***/
-        ibCalibUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                increment();
-                if (newCalibrationArray[index] == 100) {
-                    movingSoundShort.pause();
-                } else {
-                    movingSoundShort.start();
-                }
+        ibCalibUp.setOnClickListener(v -> {
+            increment();
+            if (newCalibrationArray[index] == 100) {
+                movingSoundShort.pause();
+            } else {
+                movingSoundShort.start();
             }
         });
 
-        ibCalibUp.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                movingSound.seekTo(0);
-                movingSound.start();
-                mAutoIncrement = true;
-                repeatUpdateHandler.post(new RepeatUpdater());
-                return true;
-            }
+        ibCalibUp.setOnLongClickListener(v -> {
+            movingSound.seekTo(0);
+            movingSound.start();
+            mAutoIncrement = true;
+            repeatUpdateHandler.post(new RepeatUpdater());
+            return true;
         });
 
-        ibCalibUp.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoIncrement) {
-                    mAutoIncrement = false;
-                    movingSound.pause();
-                }
-                return false;
+        ibCalibUp.setOnTouchListener((v, event) -> {
+            if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoIncrement) {
+                mAutoIncrement = false;
+                movingSound.pause();
             }
+            return false;
         });
 
         /*** Calibration up listeners END***/
 
 
         /*** Calibration down listeners ***/
-        ibCalibD.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                decrement();
-                if (newCalibrationArray[index] == 0) {
-                    movingSoundShort.pause();
-                } else {
-                    movingSoundShort.start();
-                }
+        ibCalibD.setOnClickListener(v -> {
+            decrement();
+            if (newCalibrationArray[index] == 0) {
+                movingSoundShort.pause();
+            } else {
+                movingSoundShort.start();
             }
         });
 
-        ibCalibD.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                movingSound.seekTo(0);
-                movingSound.start();
-                mAutoDecrement = true;
-                repeatUpdateHandler.post(new RepeatUpdater());
+        ibCalibD.setOnLongClickListener(v -> {
+            movingSound.seekTo(0);
+            movingSound.start();
+            mAutoDecrement = true;
+            repeatUpdateHandler.post(new RepeatUpdater());
 
-                return true;
-            }
+            return true;
         });
 
-        ibCalibD.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoDecrement) {
-                    mAutoDecrement = false;
-                    movingSound.pause();
-                }
-                return false;
+        ibCalibD.setOnTouchListener((v, event) -> {
+            if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoDecrement) {
+                mAutoDecrement = false;
+                movingSound.pause();
             }
+            return false;
         });
 
         /*** Calibration down listeners END ***/
@@ -233,25 +214,15 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     private void showBackDialog() {
         builder.setTitle("Warning");
         builder.setMessage("Are you sure you want to reset STEMI Hexapod legs to their initial positions?");
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                discardValuesToInitial(new DiscardCalibInterface() {
-                    @Override
-                    public void onDiscardedData(Boolean finished) {
-                        if (finished) {
-                            connected = false;
-                            finish();
+        builder.setPositiveButton("Yes", (dialog, id) -> discardValuesToInitial(finished -> {
+            if (finished) {
+                connected = false;
+                finish();
 
-                        }
-                    }
-                });
             }
-
-        });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //dismiss dialog
-            }
+        }));
+        builder.setNegativeButton("No", (dialog, id) -> {
+            //dismiss dialog
         });
         builder.show();
     }
@@ -266,12 +237,9 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.save_ip) {
-            saveDataOverWiFi(savedIp, new SavedCalibrationInterface() {
-                @Override
-                public void onSavedData(Boolean saved) {
-                    if (saved) {
-                        finish();
-                    }
+            saveDataOverWiFi(savedIp, saved -> {
+                if (saved) {
+                    finish();
                 }
             });
         }
