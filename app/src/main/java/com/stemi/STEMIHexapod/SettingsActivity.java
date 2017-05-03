@@ -5,7 +5,6 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -114,12 +113,9 @@ public class SettingsActivity extends AppCompatActivity {
 
             writeData = 0;
 
-            reset.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    showResetDialog(builder);
-                    return false;
-                }
+            reset.setOnPreferenceClickListener(preference -> {
+                showResetDialog(builder);
+                return false;
             });
 
 
@@ -129,46 +125,25 @@ public class SettingsActivity extends AppCompatActivity {
         private void showResetDialog(final AlertDialog.Builder builder) {
             builder.setTitle("Warning");
             builder.setMessage("Are you sure that you want to reset STEMI Hexapod legs to their initial positions?");
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    final ProgressDialog[] progress = new ProgressDialog[1];
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            progress[0] = new ProgressDialog(getActivity());
-                            progress[0].setIndeterminate(true);
-                            progress[0].setMessage("Resetting...");
-                            progress[0].setCancelable(false);
-                            progress[0].show();
-                        }
-                    });
-                    Thread thread = new Thread() {
-                        @Override
-                        public void run() {
-
-                            discardValuesToInitial(new DiscardCalibInterface() {
-                                @Override
-                                public void onDiscardedData(Boolean finished) {
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            progress[0].dismiss();
-                                        }
-                                    });
-                                }
-                            });
-                        }
-
-                    };
-                    thread.start();
-
-                }
+            builder.setPositiveButton("Yes", (dialog, id) -> {
+                final ProgressDialog[] progress = new ProgressDialog[1];
+                getActivity().runOnUiThread(() -> {
+                    progress[0] = new ProgressDialog(getActivity());
+                    progress[0].setIndeterminate(true);
+                    progress[0].setMessage("Resetting...");
+                    progress[0].setCancelable(false);
+                    progress[0].show();
+                });
+                Thread thread = new Thread() {
+                    @Override
+                    public void run() {
+                        discardValuesToInitial(finished -> getActivity().runOnUiThread(progress[0]::dismiss));
+                    }
+                };
+                thread.start();
 
             });
-            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                }
+            builder.setNegativeButton("No", (dialog, which) -> {
             });
             builder.show();
         }
@@ -180,15 +155,10 @@ public class SettingsActivity extends AppCompatActivity {
                 sendCommandsOverWiFi(savedIp);
             }
 
-            discard(new DiscardInterface() {
-                @Override
-                public void onDiscardFinished(Boolean finished) {
-                    if (finished) {
-                        callback.onDiscardedData(true);
-                    }
-
+            discard(finished -> {
+                if (finished) {
+                    callback.onDiscardedData(true);
                 }
-
             });
 
 
@@ -220,12 +190,9 @@ public class SettingsActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-            saveDataOverWiFi(savedIp, new SavedCalibrationInterface() {
-                @Override
-                public void onSavedData(Boolean saved) {
-                    if (saved) {
-                        callback.onDiscardFinished(true);
-                    }
+            saveDataOverWiFi(savedIp, saved -> {
+                if (saved) {
+                    callback.onDiscardFinished(true);
                 }
             });
 
