@@ -70,41 +70,38 @@ public class WalkstyleActivity extends AppCompatActivity {
             rbtn.setChecked(true);
         }
 
-        rgWalk.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.rb1:
-                        tvWalkDesc.setText(R.string.tripod_desc);
-                        walkValue = 30;
-                        prefs.edit().putInt("walk", walkValue).apply();
-                        prefs.edit().putInt("rbSelected", R.id.rb1).apply();
-                        break;
-                    case R.id.rb2:
-                        tvWalkDesc.setText(R.string.tripod_delayed_desc);
-                        walkValue = 60;
-                        prefs.edit().putInt("walk", walkValue).apply();
-                        prefs.edit().putInt("rbSelected", R.id.rb2).apply();
-                        break;
-                    case R.id.rb3:
-                        tvWalkDesc.setText(R.string.ripple_desc);
-                        walkValue = 80;
-                        prefs.edit().putInt("walk", walkValue).apply();
-                        prefs.edit().putInt("rbSelected", R.id.rb3).apply();
-                        break;
-                    case R.id.rb4:
-                        tvWalkDesc.setText(R.string.wave_desc);
-                        walkValue = 100;
-                        prefs.edit().putInt("walk", walkValue).apply();
-                        prefs.edit().putInt("rbSelected", R.id.rb4).apply();
-                        break;
-                    default:
-                        tvWalkDesc.setText(R.string.tripod_desc);
-                        walkValue = 30;
-                        prefs.edit().putInt("walk", walkValue).apply();
-                        prefs.edit().putInt("rbSelected", R.id.rb1).apply();
-                        break;
-                }
+        rgWalk.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId) {
+                case R.id.rb1:
+                    tvWalkDesc.setText(R.string.tripod_desc);
+                    walkValue = 30;
+                    prefs.edit().putInt("walk", walkValue).apply();
+                    prefs.edit().putInt("rbSelected", R.id.rb1).apply();
+                    break;
+                case R.id.rb2:
+                    tvWalkDesc.setText(R.string.tripod_delayed_desc);
+                    walkValue = 60;
+                    prefs.edit().putInt("walk", walkValue).apply();
+                    prefs.edit().putInt("rbSelected", R.id.rb2).apply();
+                    break;
+                case R.id.rb3:
+                    tvWalkDesc.setText(R.string.ripple_desc);
+                    walkValue = 80;
+                    prefs.edit().putInt("walk", walkValue).apply();
+                    prefs.edit().putInt("rbSelected", R.id.rb3).apply();
+                    break;
+                case R.id.rb4:
+                    tvWalkDesc.setText(R.string.wave_desc);
+                    walkValue = 100;
+                    prefs.edit().putInt("walk", walkValue).apply();
+                    prefs.edit().putInt("rbSelected", R.id.rb4).apply();
+                    break;
+                default:
+                    tvWalkDesc.setText(R.string.tripod_desc);
+                    walkValue = 30;
+                    prefs.edit().putInt("walk", walkValue).apply();
+                    prefs.edit().putInt("rbSelected", R.id.rb1).apply();
+                    break;
             }
         });
     }
