@@ -1,12 +1,17 @@
 package com.stemi.STEMIHexapod;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -17,12 +22,14 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.polidea.rxandroidble.RxBleClient;
+import com.polidea.rxandroidble.RxBleDevice;
+import com.polidea.rxandroidble.exceptions.BleScanException;
+import com.polidea.rxandroidble.internal.RxBleLog;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,9 +37,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Objects;
 
 import io.fabric.sdk.android.Fabric;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
 
 
 /**
@@ -40,19 +49,52 @@ import io.fabric.sdk.android.Fabric;
  */
 public class ConnectingActivity extends AppCompatActivity {
 
+    private static final String TAG = "ConnectingActivity";
+
     private TextView tvConnectingTitle, tvConnectingHint;
     private Button bConnect, bChangeIP;
     private Typeface tf;
     private ImageView ivStemiIcon, ivProgressPath, ivProgress;
     private SharedPreferences prefs = null;
-    private String savedIp;
+    private static Subscription scanSubscription;
+    private static RxBleClient rxBleClient;
+    private static RxBleDevice rxBleDevice;
+    private static PublishSubject<Void> disconnectTriggerSubject = PublishSubject.create();
 
+    public static RxBleClient getRxBleClient() {
+        return rxBleClient;
+    }
+
+    public static void triggerDisconnect() {
+        disconnectTriggerSubject.onNext(null);
+    }
+
+    private boolean noLocationPermission() {
+        String permission = "android.permission.ACCESS_COARSE_LOCATION";
+        int res = this.checkCallingOrSelfPermission(permission);
+        return (res != PackageManager.PERMISSION_GRANTED);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics(), new Answers());
+        rxBleClient = RxBleClient.create(this);
+        RxBleClient.setLogLevel(RxBleLog.DEBUG);
         setContentView(R.layout.connecting_layout);
+
+        if (noLocationPermission()) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("This app needs location access to use Bluetooth Low Energy.");
+            builder.setMessage("Please grant location access so this app can detect beacons.");
+            builder.setPositiveButton(android.R.string.ok, null);
+            builder.setOnDismissListener(dialog -> {
+                if(Build.VERSION.SDK_INT >= 23) {
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                }
+            });
+            builder.show();
+        }
 
         tvConnectingTitle = (TextView) findViewById(R.id.tvConnectingTitle);
         tvConnectingHint = (TextView) findViewById(R.id.tvConnectingHint);
@@ -102,6 +144,24 @@ public class ConnectingActivity extends AppCompatActivity {
 
             Thread connectionThread = new Thread(new ConnectionRunnable());
 
+            Log.w(TAG, " Start BLE scan!");
+
+            scanSubscription = rxBleClient.scanBleDevices()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnUnsubscribe(ConnectingActivity::clearSubscription)
+                    .subscribe(rxBleScanResult -> {
+                                rxBleDevice = rxBleScanResult.getBleDevice();
+                                Log.w(TAG, " BLE SCAN > " + rxBleDevice.getMacAddress());
+                                if(rxBleDevice.getMacAddress().equals("98:4F:EE:0C:FA:4F")) {  // Arduino 101 MAC
+                                    connectionThread.interrupt();
+                                    openMainActivity("98:4F:EE:0C:FA:4F");
+                                }
+                            },
+                            throwable -> {
+                                Log.w(TAG, " BLE SCAN ERROR > " + throwable.toString());
+                                onScanFailure(throwable);
+                            });
+
             connectionThread.start();
         });
 
@@ -111,9 +171,10 @@ public class ConnectingActivity extends AppCompatActivity {
         });
     }
 
-    private void openMainActivity() {
+    private void openMainActivity(String macAddress) {
         finish();
         Intent i = new Intent(getApplicationContext(), MainActivity.class);
+        i.putExtra("ARDUINO_BT_MAC_ADDRESS", macAddress);
         startActivity(i);
     }
 
@@ -126,10 +187,25 @@ public class ConnectingActivity extends AppCompatActivity {
             prefs.edit().putBoolean("firstrun", false).apply();
         } else {
             SharedPreferences prefs = getSharedPreferences("myPref", MODE_PRIVATE);
-            savedIp = prefs.getString("ip", null);
             prefs.edit().putBoolean("firstrun", false).apply();
-
         }
+    }
+
+    private boolean isScanning() {
+        return scanSubscription != null;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (isScanning()) {
+            scanSubscription.unsubscribe();
+        }
+    }
+
+    private static void clearSubscription() {
+        scanSubscription = null;
     }
 
     private String fetchJSON(String params) {
@@ -185,38 +261,43 @@ public class ConnectingActivity extends AppCompatActivity {
     private class ConnectionRunnable implements Runnable {
         @Override
         public void run() {
-            String jsonString;
-            jsonString = fetchJSON("http://" + savedIp + "/stemiData.json");
             try {
-                // if jsonString object exists compare with one saved in SharedPrefs
-                if (jsonString != null) {
-                    JSONObject jsonObject = new JSONObject(jsonString);
-                    if (Objects.equals(jsonObject.getString("stemiID"), prefs.getString("stemiId", null))) {
-                        Thread.sleep(2000);
-                        openMainActivity();
-                    } else {
-                        // if IDs are not equal, set default STEMI values
-                        String version = jsonObject.getString("version");
-                        String stemiId = jsonObject.getString("stemiID");
-
-                        prefs.edit().putString("version", version).apply();
-                        prefs.edit().putString("stemiId", stemiId).apply();
-                        prefs.edit().putInt("walk", 30).apply();
-                        prefs.edit().putInt("rbSelected", R.id.rb1).apply();
-                        prefs.edit().putInt("height", 50).apply();
-                        Thread.sleep(2000);
-                        openMainActivity();
-                    }
-                } else {
-                    // if connection is not established show different UI
-                    Thread.sleep(2000);
-                    runOnUiThread(new ConnectionFailedRunnable());
-                }
-            } catch (JSONException | InterruptedException e) {
-                e.printStackTrace();
+                Thread.sleep(8000);
+                runOnUiThread(new ConnectionFailedRunnable());
+            } catch (InterruptedException e) {
             }
         }
     }
+
+    private void onScanFailure(Throwable throwable) {
+        if (throwable instanceof BleScanException) {
+            handleBleScanException((BleScanException) throwable);
+        }
+    }
+
+    private void handleBleScanException(BleScanException bleScanException) {
+
+        switch (bleScanException.getReason()) {
+            case BleScanException.BLUETOOTH_NOT_AVAILABLE:
+                Toast.makeText(ConnectingActivity.this, "Bluetooth is not available", Toast.LENGTH_SHORT).show();
+                break;
+            case BleScanException.BLUETOOTH_DISABLED:
+                Toast.makeText(ConnectingActivity.this, "Enable bluetooth and try again", Toast.LENGTH_SHORT).show();
+                break;
+            case BleScanException.LOCATION_PERMISSION_MISSING:
+                Toast.makeText(ConnectingActivity.this,
+                        "On Android 6.0 location permission is required. Implement Runtime Permissions", Toast.LENGTH_SHORT).show();
+                break;
+            case BleScanException.LOCATION_SERVICES_DISABLED:
+                Toast.makeText(ConnectingActivity.this, "Location services needs to be enabled on Android 6.0", Toast.LENGTH_SHORT).show();
+                break;
+            case BleScanException.BLUETOOTH_CANNOT_START:
+            default:
+                Toast.makeText(ConnectingActivity.this, "Unable to start scanning", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
 
     private class ConnectionFailedRunnable implements Runnable {
         @Override

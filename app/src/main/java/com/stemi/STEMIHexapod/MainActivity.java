@@ -9,7 +9,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,16 +23,28 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedOutputStream;
+import com.polidea.rxandroidble.RxBleConnection;
+import com.polidea.rxandroidble.RxBleDevice;
+import com.polidea.rxandroidble.utils.ConnectionSharingAdapter;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
+import java.util.UUID;
 
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
+import static com.trello.rxlifecycle.android.ActivityEvent.PAUSE;
+
+public class MainActivity extends RxAppCompatActivity implements View.OnClickListener, SensorEventListener {
+
+    private static final String TAG = "MainActivity";
+
+    int logCounter = 0;
 
     private class ToastText {
         String title;
@@ -64,10 +76,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private SharedPreferences prefs;
 
+    private Observable<RxBleConnection> connectionObservable;
+    private PublishSubject<Void> disconnectTriggerSubject = PublishSubject.create();
+    private RxBleDevice rxBleDevice;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        String macAddress = getIntent().getStringExtra("ARDUINO_BT_MAC_ADDRESS");
+
+        rxBleDevice = ConnectingActivity.getRxBleClient().getBleDevice(macAddress);
+        connectionObservable = prepareConnectionObservable();
 
         menu = (Menu) findViewById(R.id.menu);
         ibStandby = (ImageButton) findViewById(R.id.ibStandby);
@@ -124,34 +145,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return false;
     }
 
-    public void sendCommandsOverWiFi(final String ip) {
+    private boolean isConnected() {
+        return rxBleDevice.getConnectionState() == RxBleConnection.RxBleConnectionState.CONNECTED;
+    }
+
+    private Observable<RxBleConnection> prepareConnectionObservable() {
+        return rxBleDevice
+                .establishConnection(false)
+                .takeUntil(disconnectTriggerSubject)
+                .compose(bindUntilEvent(PAUSE))
+                .compose(new ConnectionSharingAdapter());
+    }
+
+    public void sendCommandsOverWiFi() {
         connected = true;
+        UUID characteristicUUID = UUID.fromString("19B10001-E8F2-537E-4F6C-D104768A1214");
 
         Thread t = new Thread() {
             public void run() {
                 try {
-                    //connect to IP address, port 80
-                    Socket socket = new Socket(ip, 80);
-                    OutputStream outputStream = socket.getOutputStream();
-
-                    try {
-                        BufferedOutputStream buffer = new BufferedOutputStream(outputStream, 30);
-                        while (connected) {
-                            Thread.sleep(SLEEPING_INTERVAL);
-                            buffer.write(bytesArray());
-                            buffer.flush();
-                        }
-                        socket.close();
-
-                    } catch (IOException | InterruptedException e) {
-                        showConnectionDialog();
-                    } finally {
-                        connected = false;
-
-
+                    while (connected) {
+                        Thread.sleep(SLEEPING_INTERVAL);
+                        logCounter++;
+                        connectionObservable
+                            .flatMap(rxBleConnection -> rxBleConnection.writeCharacteristic(characteristicUUID, bytesArray()))
+                            .subscribe(
+                                characteristicValue -> {
+                                    if (logCounter % 10 == 0) Log.w(TAG, " Val confirmed > " + Arrays.toString(characteristicValue));
+                                },
+                                throwable -> {
+                                    if (logCounter % 10 == 0) Log.w(TAG, " Char ERROR > " + throwable.toString());
+                                }
+                            );
                     }
-
-                } catch (IOException ignored) {
+                } catch (InterruptedException e) {
+                    showConnectionDialog();
+                } finally {
+                    connected = false;
                 }
             }
         };
@@ -284,6 +314,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onBackPressed() {
         super.onBackPressed();
         connected = false;
+        ConnectingActivity.triggerDisconnect();
         finish();
     }
 
@@ -308,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String savedIp = prefs.getString("ip", null);
         heightPref = (byte) prefs.getInt("height", 0);
         walk = (byte) prefs.getInt("walk", 30);
-        sendCommandsOverWiFi(savedIp);
+        sendCommandsOverWiFi();
 
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -360,7 +391,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream() {
         };
         try {
-            outputStream.write("PKT".getBytes());
+            outputStream.write("P".getBytes());
             outputStream.write(joyL.power);
             outputStream.write(joyL.angle);
             outputStream.write(joyR.rotation);
@@ -392,5 +423,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             builder.show();
         });
 
+    }
+
+    private void triggerDisconnect() {
+        disconnectTriggerSubject.onNext(null);
     }
 }

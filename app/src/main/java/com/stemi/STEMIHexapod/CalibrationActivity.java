@@ -134,7 +134,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                 calibrationArray = fetchBin(savedIp);
                 newCalibrationArray = calibrationArray.clone();
                 if (calibrationArray != null) {
-                    sendCommandsOverWiFi(savedIp);
+                    sendCommandsOverWiFi("");
                 }
             }
         };
@@ -276,7 +276,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-    private void sendCommandsOverWiFi(final String ip) {
+    private void sendCommandsOverWiFi(String ip) {
         connected = true;
 
         Thread t = new Thread() {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">STEMI</string>
+    <string name="app_name">STEMI BLE</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="manually_enter_ip">MANUALLY ENTER IP</string>
