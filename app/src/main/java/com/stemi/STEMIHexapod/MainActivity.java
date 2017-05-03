@@ -1,6 +1,5 @@
 package com.stemi.STEMIHexapod;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -29,7 +28,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Arrays;
 
 import static com.stemi.STEMIHexapod.Menu.bMenu;
 
