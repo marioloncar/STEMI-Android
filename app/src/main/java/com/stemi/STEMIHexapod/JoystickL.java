@@ -29,7 +29,7 @@ public class JoystickL extends LinearLayout {
 
     private int d;
 
-    private ImageView path_JoyLeftUp, path_JoyLeftDown, path_JoyLeftLeft, path_JoyLeftRight, joystickView, joystickPlus, joystickPath;
+    private ImageView path_JoyLeftUp, path_JoyLeftDown, path_JoyLeftLeft, path_JoyLeftRight, joystickView;
     protected float topAlpha, bottomAlpha, leftAlpha, rightAlpha;
 
 
@@ -59,10 +59,9 @@ public class JoystickL extends LinearLayout {
         path_JoyLeftUp = (ImageView) findViewById(R.id.ivJoystickLeft_Up);
         path_JoyLeftLeft = (ImageView) findViewById(R.id.ivJoystickLeft_Left);
         path_JoyLeftRight = (ImageView) findViewById(R.id.ivJoystickLeft_Right);
-        joystickPath = (ImageView) findViewById(R.id.ivJoystickLeft);
 
         joystickView = new ImageView(context);
-        joystickPlus = new ImageView(context);
+        ImageView joystickPlus = new ImageView(context);
         joystickPlus.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         joystickPlus.setImageResource(R.drawable.center);
         this.addView(joystickPlus);

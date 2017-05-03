@@ -23,7 +23,7 @@ public class JoystickR extends LinearLayout {
 
     public byte rotation = 0;
 
-    private ImageView path_JoyRightLeft, path_JoyRightRight, joystickView, joystickPlus, joystickPath;
+    private ImageView path_JoyRightLeft, path_JoyRightRight, joystickView;
     protected float leftAlpha, rightAlpha;
 
     @Override
@@ -47,9 +47,8 @@ public class JoystickR extends LinearLayout {
 
         path_JoyRightLeft = (ImageView) findViewById(R.id.ivJoystickRight_Left);
         path_JoyRightRight = (ImageView) findViewById(R.id.ivJoystickRight_Right);
-        joystickPath = (ImageView) findViewById(R.id.ivJoystickRight);
 
-        joystickPlus = new ImageView(context);
+        ImageView joystickPlus = new ImageView(context);
         joystickPlus.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         joystickPlus.setImageResource(R.drawable.center);
         this.addView(joystickPlus);
