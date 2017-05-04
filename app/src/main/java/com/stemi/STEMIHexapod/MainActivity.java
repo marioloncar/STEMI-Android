@@ -28,9 +28,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
+
+    private class ToastText {
+        String title;
+        String message;
+
+        ToastText(String t, String m) {
+            title = t;
+            message = m;
+        }
+    }
 
     private ImageButton ibStandby, ibMovement, ibRotation, ibOrientation;
     private Menu menu;
@@ -83,83 +95,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         builder = new AlertDialog.Builder(this);
 
+        Map<ImageButton, ToastText> menuButtons = new HashMap<>(7);
+        menuButtons.put(ibMovement, new ToastText("Movement", getString(R.string.movement_hint)));
+        menuButtons.put(ibRotation, new ToastText("Rotation", getString(R.string.rotation_hint)));
+        menuButtons.put(ibOrientation, new ToastText("Orientation", getString(R.string.orientation_hint)));
+        menuButtons.put(ibHeight, new ToastText("Height", getString(R.string.height_hint)));
+        menuButtons.put(ibCalibration, new ToastText("Calibration", getString(R.string.calibration_hint)));
+        menuButtons.put(ibWalkingStyle, new ToastText("Walk style", getString(R.string.walkstyle_hint)));
 
-        /**** OnLongClick Listeners ****/
-        ibMovement.setOnLongClickListener(v -> {
-            showLongToast("Movement", getString(R.string.movement_hint));
-            return true;
+        /**** Listeners ****/
+        for(ImageButton ib : menuButtons.keySet()) {
+            ToastText toastText = menuButtons.get(ib);
+            ib.setOnLongClickListener(v -> {
+                showLongToast(toastText.title, toastText.message);
+                return true;
+            });
+            ib.setOnTouchListener(this::hideToast);
+        }
+    }
 
-        });
-
-        ibRotation.setOnLongClickListener(v -> {
-            showLongToast("Rotation", getString(R.string.rotation_hint));
-            return true;
-        });
-
-        ibOrientation.setOnLongClickListener(v -> {
-            showLongToast("Orientation", getString(R.string.orientation_hint));
-            return true;
-        });
-
-        ibHeight.setOnLongClickListener(v -> {
-            showLongToast("Height", getString(R.string.height_hint));
-            return true;
-        });
-
-        ibCalibration.setOnLongClickListener(v -> {
-            showLongToast("Calibration", getString(R.string.calibration_hint));
-            return true;
-        });
-
-        ibWalkingStyle.setOnLongClickListener(v -> {
-            showLongToast("Walk style", getString(R.string.walkstyle_hint));
-            return true;
-        });
-
-
-        /**** OnTouch Listeners ****/
-        ibMovement.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                hideToast();
-            }
-            return false;
-        });
-
-        ibRotation.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                hideToast();
-            }
-            return false;
-        });
-
-        ibOrientation.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                hideToast();
-            }
-            return false;
-        });
-
-        ibHeight.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                hideToast();
-            }
-            return false;
-        });
-
-        ibCalibration.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                hideToast();
-            }
-            return false;
-        });
-
-        ibWalkingStyle.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                hideToast();
-            }
-            return false;
-        });
-
+    private boolean hideToast(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            Animation hide = new AlphaAnimation(1, 0);
+            hide.setDuration(200);
+            longToastBck.startAnimation(hide);
+            lay.setVisibility(View.INVISIBLE);
+        }
+        return false;
     }
 
     public void sendCommandsOverWiFi(final String ip) {
@@ -389,12 +351,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void hideToast() {
-        Animation hide = new AlphaAnimation(1, 0);
-        hide.setDuration(200);
-        longToastBck.startAnimation(hide);
-        lay.setVisibility(View.INVISIBLE);
-    }
+
 
     private byte[] bytesArray() {
 
