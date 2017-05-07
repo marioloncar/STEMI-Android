@@ -32,9 +32,7 @@ import com.stemi.STEMIHexapod.R;
 public class IPActivity extends AppCompatActivity {
 
     private EditText et1, et2, et3, et4;
-
     private MenuItem menuItem;
-
     private SharedPreferences prefs;
 
     @Override
@@ -101,7 +99,7 @@ public class IPActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // TODO Auto-generated method stub
                 menuItem.setEnabled(true);
-                if (et1.getText().toString().length() == 3)     //size as per your requirement
+                if (et1.getText().toString().length() == 3)
                     et2.requestFocus();
 
             }
@@ -122,7 +120,7 @@ public class IPActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // TODO Auto-generated method stub
                 menuItem.setEnabled(true);
-                if (et2.getText().toString().length() == 3)     //size as per your requirement
+                if (et2.getText().toString().length() == 3)
                     et3.requestFocus();
 
             }
@@ -142,7 +140,7 @@ public class IPActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // TODO Auto-generated method stub
                 menuItem.setEnabled(true);
-                if (et3.getText().toString().length() == 3)     //size as per your requirement
+                if (et3.getText().toString().length() == 3)
                     et4.requestFocus();
 
             }
@@ -174,12 +172,6 @@ public class IPActivity extends AppCompatActivity {
 
             }
         });
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
 
     }
 
@@ -264,9 +256,9 @@ public class IPActivity extends AppCompatActivity {
 
     private void showIPAlert() {
         new AlertDialog.Builder(this)
-                .setTitle("Error")
-                .setMessage("IP fields must be in range 0-255")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.error)
+                .setMessage(R.string.out_of_range)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }

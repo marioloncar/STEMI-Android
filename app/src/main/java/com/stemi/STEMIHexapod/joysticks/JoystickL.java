@@ -8,12 +8,9 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.stemi.STEMIHexapod.Constants;
 import com.stemi.STEMIHexapod.interfaces.JoystickMovement;
 import com.stemi.STEMIHexapod.R;
-
-import static com.stemi.STEMIHexapod.Constants.JOYSTICK_COEFF;
-import static com.stemi.STEMIHexapod.Constants.RADIAN;
-
 
 /**
  * Created by Mario on 24/03/16.
@@ -93,7 +90,7 @@ public class JoystickL extends LinearLayout {
         positionX = getWidth() / 2;
         positionY = getWidth() / 2;
         d = Math.min(xNew, yNew);
-        joystickRadius = (int) (d / 2 * JOYSTICK_COEFF);
+        joystickRadius = (int) (d / 2 * Constants.JOYSTICK_COEFF);
 
     }
 
@@ -226,10 +223,10 @@ public class JoystickL extends LinearLayout {
             if (positionY < centerY) {
                 return lastAngle = (Math.atan((positionY - centerY)
                         / (positionX - centerX))
-                        * RADIAN + 90);
+                        * Constants.RADIAN + 90);
             } else if (positionY > centerY) {
                 return lastAngle = (Math.atan((positionY - centerY)
-                        / (positionX - centerX)) * RADIAN) + 90;
+                        / (positionX - centerX)) * Constants.RADIAN) + 90;
             } else {
                 return lastAngle = 90;
             }
@@ -237,10 +234,10 @@ public class JoystickL extends LinearLayout {
             if (positionY < centerY) {
                 return lastAngle = (Math.atan((positionY - centerY)
                         / (positionX - centerX))
-                        * RADIAN - 90);
+                        * Constants.RADIAN - 90);
             } else if (positionY > centerY) {
                 return lastAngle = (Math.atan((positionY - centerY)
-                        / (positionX - centerX)) * RADIAN) - 90;
+                        / (positionX - centerX)) * Constants.RADIAN) - 90;
             } else {
                 return lastAngle = -90;
             }

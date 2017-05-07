@@ -42,11 +42,8 @@ public class ConnectingActivity extends AppCompatActivity {
     private TextView tvConnectingTitle, tvConnectingHint;
     private Button bConnect, bChangeIP;
     private ImageView ivStemiIcon, ivProgressPath, ivProgress;
-
     private Typeface tf;
-
     private SharedPreferences prefs = null;
-
     private String savedIp;
 
     @Override

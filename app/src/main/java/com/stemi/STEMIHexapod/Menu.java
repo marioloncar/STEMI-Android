@@ -1,6 +1,5 @@
 package com.stemi.STEMIHexapod;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
@@ -21,27 +20,27 @@ import android.widget.RelativeLayout;
  */
 public class Menu extends RelativeLayout {
 
-    @SuppressLint("StaticFieldLeak")
-    public static ImageButton ibMovement, ibRotation, ibOrientation, ibHeight, ibCalibration, ibStyles, ibSettings;
-    @SuppressLint("StaticFieldLeak")
-    public static ImageView ivBck, ivMenuActive;
-    @SuppressLint("StaticFieldLeak")
-    public static Button bMenu;
-    private static MediaPlayer puk;
-    private static MediaPlayer tiu;
-
+    public ImageButton ibMovement, ibRotation, ibOrientation, ibHeight, ibCalibration, ibStyles, ibSettings;
+    public ImageView ivBck, ivMenuActive;
+    public Button bMenu;
+    private MediaPlayer puk;
+    private MediaPlayer tiu;
 
     private static ImageButton[] buttons;
 
     public Menu(Context context) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.menu, this, true);
+        initButtons(context);
     }
 
     public Menu(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.menu, this, true);
+        initButtons(context);
+    }
 
+    private void initButtons(Context context) {
         ibMovement = (ImageButton) findViewById(R.id.ibMovement);
         ibRotation = (ImageButton) findViewById(R.id.ibRotation);
         ibOrientation = (ImageButton) findViewById(R.id.ibOrientation);
@@ -57,35 +56,33 @@ public class Menu extends RelativeLayout {
 
         puk = MediaPlayer.create(context, R.raw.puk);
         tiu = MediaPlayer.create(context, R.raw.tiu);
-
-
     }
 
-    public static void closeMenu() {
+    public void closeMenu() {
         tiu.start();
 
         AnimationSet close = new AnimationSet(false);
 
-        Animation leftMove = new TranslateAnimation(0, -10, 10, 0); // Left movement
+        Animation leftMove = new TranslateAnimation(0, -10, 10, 0);
         leftMove.setDuration(50);
 
-        Animation rightMove = new TranslateAnimation(0, 20, 10, 0); // Right movement
+        Animation rightMove = new TranslateAnimation(0, 20, 10, 0);
         rightMove.setStartOffset(50);
         rightMove.setDuration(50);
 
-        Animation leftMove2 = new TranslateAnimation(0, -20, 10, 0); // Left movement
+        Animation leftMove2 = new TranslateAnimation(0, -20, 10, 0);
         leftMove2.setStartOffset(100);
         leftMove2.setDuration(50);
 
-        Animation jumpUp = new TranslateAnimation(0, 10, 10, -20); // Jump up
+        Animation jumpUp = new TranslateAnimation(0, 10, 10, -20);
         jumpUp.setStartOffset(150);
         jumpUp.setDuration(50);
 
-        Animation fallDown = new TranslateAnimation(0, 10, -20, 30); // Fall down
+        Animation fallDown = new TranslateAnimation(0, 10, -20, 30);
         fallDown.setStartOffset(200);
         fallDown.setDuration(200);
 
-        Animation fadeOut = new AlphaAnimation(1, 0); // Disappear
+        Animation fadeOut = new AlphaAnimation(1, 0);
         fadeOut.setStartOffset(200);
         fadeOut.setDuration(200);
 
@@ -107,8 +104,9 @@ public class Menu extends RelativeLayout {
         ivBck.setVisibility(View.INVISIBLE);
     }
 
-    public static void openMenu() {
+    public void openMenu() {
         long delay = 0;
+
         puk.start();
 
         ivMenuActive.setVisibility(View.VISIBLE);
@@ -127,6 +125,7 @@ public class Menu extends RelativeLayout {
 
         ivMenuActive.startAnimation(set);
 
+
         for (ImageButton button : buttons) {
             Animation fadeIn = new AlphaAnimation(0, 1);
             fadeIn.setInterpolator(new DecelerateInterpolator());
@@ -135,7 +134,6 @@ public class Menu extends RelativeLayout {
             button.setAnimation(fadeIn);
             button.setVisibility(View.VISIBLE);
             delay += 50;
-
         }
     }
 

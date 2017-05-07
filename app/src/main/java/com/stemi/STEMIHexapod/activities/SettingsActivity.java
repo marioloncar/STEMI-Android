@@ -20,8 +20,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 
-import com.stemi.STEMIHexapod.interfaces.DiscardCalibrationCallback;
 import com.stemi.STEMIHexapod.R;
+import com.stemi.STEMIHexapod.Utils;
+import com.stemi.STEMIHexapod.interfaces.DiscardCalibrationCallback;
 
 import stemi.education.stemihexapod.ConnectingCompleteCallback;
 import stemi.education.stemihexapod.Hexapod;
@@ -72,13 +73,12 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     public static class SettingsFragment extends PreferenceFragment {
-
         SharedPreferences prefs;
-
         String savedIp, hardwareVersion, stemiId;
 
         byte[] calibrationValues;
         byte[] currentCalibrationValues;
+        boolean standby;
 
         private Hexapod hexapod;
 
@@ -109,6 +109,8 @@ public class SettingsActivity extends AppCompatActivity {
             hardwareVersion = prefs.getString("version", null);
             stemiId = prefs.getString("stemiId", null);
 
+            standby = getActivity().getIntent().getExtras().getBoolean("standby");
+
             id.setSummary(stemiId);
             hwVersion.setSummary(hardwareVersion);
 
@@ -117,15 +119,19 @@ public class SettingsActivity extends AppCompatActivity {
             reset.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    showResetDialog(builder);
+                    if (standby) {
+                        Utils.showStandbyDialog(getActivity(), SettingsFragment.this.getActivity());
+                    } else {
+                        showResetDialog(builder);
+                    }
                     return false;
                 }
             });
         }
 
         private void showResetDialog(final AlertDialog.Builder builder) {
-            builder.setTitle("Warning");
-            builder.setMessage("Are you sure that you want to reset STEMI Hexapod legs to their initial positions?");
+            builder.setTitle(R.string.warning);
+            builder.setMessage(R.string.reset_to_initial);
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     final ProgressDialog[] progress = new ProgressDialog[1];
@@ -161,7 +167,7 @@ public class SettingsActivity extends AppCompatActivity {
                 }
 
             });
-            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                 }

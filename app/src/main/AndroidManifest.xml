@@ -63,10 +63,6 @@
             </intent-filter>
         </activity>
 
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="530f4085ae719e7a9651dc41526d94e7804be9ca" />
-
         <activity
             android:name="com.stemi.STEMIHexapod.activities.SettingsActivity"
             android:label="Settings"

@@ -19,7 +19,7 @@
     <string name="hint_noConnection">Make sure your STEMI Hexapod is charged, turned on and connected to your phone or home network via wifi.</string>
     <string name="unable_to_connect">UNABLE TO CONNECT TO YOUR STEMI HEXAPOD</string>
     <string name="try_again">TRY AGAIN</string>
-    <string name="pairing">PAIRING…</string>
+    <string name="pairing">PAIRING&#8230;</string>
     <string name="select_motor_n_you_wish_to_n_calibrate">Select motor \n you wish to \n calibrate</string>
     <string name="if_you_have_a_stemi_hexapod_simply_connect_it_now">If you have a STEMI Hexapod, simply connect it now.</string>
     <string name="get_started">GET STARTED</string>
@@ -30,5 +30,26 @@
     <string name="ripple_gait">Ripple Gait</string>
     <string name="tripod_delayed_gait">Tripod Delayed Gait</string>
     <string name="wave_gait">Wave Gait</string>
+    <string name="check_connection">Please check connection with your STEMI and try again.</string>
+    <string name="connection_lost">Connection lost</string>
+    <string name="standby_mode_active">Standby mode active</string>
+    <string name="standby_mode_message">STEMI Hexapod is in standby mode. Please activate your STEMI Hexapod if you want to use this feature.</string>
+    <string name="ok">OK</string>
+    <string name="movement_enabled">MOVEMENT ENABLED</string>
+    <string name="rotation_enabled">ROTATION ENABLED</string>
+    <string name="orientation_enabled">ORIENTATION ENABLED</string>
+    <string name="movement">Movement</string>
+    <string name="rotation">Rotation</string>
+    <string name="orientation">Orientation</string>
+    <string name="height">Height</string>
+    <string name="calibration">Calibration</string>
+    <string name="walk_style">Walk style</string>
+    <string name="warning">Warning</string>
+    <string name="reset_to_initial">Are you sure you want to reset STEMI Hexapod legs to their initial positions?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="canceling">Canceling&#8230;</string>
+    <string name="error">Error</string>
+    <string name="out_of_range">IP fields must be in range 0&#8211;255</string>
 
 </resources>

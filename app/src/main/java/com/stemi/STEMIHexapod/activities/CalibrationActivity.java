@@ -26,43 +26,55 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.stemi.STEMIHexapod.Constants;
 import com.stemi.STEMIHexapod.R;
+import com.stemi.STEMIHexapod.Utils;
 import com.stemi.STEMIHexapod.interfaces.DiscardCalibrationCallback;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import stemi.education.stemihexapod.ConnectingCompleteCallback;
 import stemi.education.stemihexapod.Hexapod;
+import stemi.education.stemihexapod.HexapodStatus;
 import stemi.education.stemihexapod.SavedCalibrationCallback;
-
-import static com.stemi.STEMIHexapod.Constants.REPEAT_DELAY;
 
 /**
  * Created by Mario on 29/08/16.
  */
-public class CalibrationActivity extends AppCompatActivity implements View.OnClickListener {
+public class CalibrationActivity extends AppCompatActivity implements
+        View.OnClickListener, HexapodStatus {
 
-    private ImageButton ibMotor0, ibMotor1, ibMotor2, ibMotor3, ibMotor4, ibMotor5, ibMotor6, ibMotor7,
-            ibMotor8, ibMotor9, ibMotor10, ibMotor11, ibMotor12, ibMotor13, ibMotor14, ibMotor15, ibMotor16,
-            ibMotor17, ibCalibUp, ibCalibD;
-    private ImageButton[] motors;
+    private class Motor {
+        int idx;
+        ImageButton imageButton;
+
+        Motor(int idx, ImageButton imageButton) {
+            this.idx = idx;
+            this.imageButton = imageButton;
+        }
+    }
+
+    private Map<Integer, Motor> motorsMap;
+    private int[] motorResIds = {R.id.ibMotor0, R.id.ibMotor1, R.id.ibMotor2, R.id.ibMotor3, R.id.ibMotor4,
+            R.id.ibMotor5, R.id.ibMotor6, R.id.ibMotor7, R.id.ibMotor8, R.id.ibMotor9,
+            R.id.ibMotor10, R.id.ibMotor11, R.id.ibMotor12, R.id.ibMotor13, R.id.ibMotor14,
+            R.id.ibMotor15, R.id.ibMotor16, R.id.ibMotor17};
 
     private AlertDialog.Builder builder;
     private ImageView ivCircle;
     private TextView tvCalibValue, tvSelect;
-
+    private ImageButton ibCalibUp, ibCalibD;
     private MediaPlayer movingSound, movingSoundShort;
 
     private byte[] calibrationValues = new byte[18];
     private byte[] changedCalibrationValues = new byte[18];
 
     private int index;
-
     private boolean mAutoIncrement = false;
     private boolean mAutoDecrement = false;
-
     private final Handler repeatUpdateHandler = new Handler();
-
     private String savedIp;
-
     private Hexapod hexapod;
 
     @Override
@@ -72,35 +84,16 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
 
         initActionBarWithTitle("Calibration");
 
-        ibMotor0 = (ImageButton) findViewById(R.id.ibMotor0);
-        ibMotor1 = (ImageButton) findViewById(R.id.ibMotor1);
-        ibMotor2 = (ImageButton) findViewById(R.id.ibMotor2);
-        ibMotor3 = (ImageButton) findViewById(R.id.ibMotor3);
-        ibMotor4 = (ImageButton) findViewById(R.id.ibMotor4);
-        ibMotor5 = (ImageButton) findViewById(R.id.ibMotor5);
-        ibMotor6 = (ImageButton) findViewById(R.id.ibMotor6);
-        ibMotor7 = (ImageButton) findViewById(R.id.ibMotor7);
-        ibMotor8 = (ImageButton) findViewById(R.id.ibMotor8);
-        ibMotor9 = (ImageButton) findViewById(R.id.ibMotor9);
-        ibMotor10 = (ImageButton) findViewById(R.id.ibMotor10);
-        ibMotor11 = (ImageButton) findViewById(R.id.ibMotor11);
-        ibMotor12 = (ImageButton) findViewById(R.id.ibMotor12);
-        ibMotor13 = (ImageButton) findViewById(R.id.ibMotor13);
-        ibMotor14 = (ImageButton) findViewById(R.id.ibMotor14);
-        ibMotor15 = (ImageButton) findViewById(R.id.ibMotor15);
-        ibMotor16 = (ImageButton) findViewById(R.id.ibMotor16);
-        ibMotor17 = (ImageButton) findViewById(R.id.ibMotor17);
         ivCircle = (ImageView) findViewById(R.id.ivCircle);
         tvCalibValue = (TextView) findViewById(R.id.tvCalibValue);
         tvSelect = (TextView) findViewById(R.id.tvSelect);
         ibCalibUp = (ImageButton) findViewById(R.id.ibCalibUp);
         ibCalibD = (ImageButton) findViewById(R.id.ibCalibDown);
 
-        motors = new ImageButton[]{ibMotor0, ibMotor1, ibMotor2, ibMotor3, ibMotor4, ibMotor5, ibMotor6,
-                ibMotor7, ibMotor8, ibMotor9, ibMotor10, ibMotor11, ibMotor12, ibMotor13, ibMotor14, ibMotor15,
-                ibMotor16, ibMotor17};
-
-        builder = new AlertDialog.Builder(this);
+        motorsMap = new LinkedHashMap<>(19);
+        for (int i = 0; i < 18; i++) {
+            motorsMap.put(motorResIds[i], new Motor(i, (ImageButton) findViewById(motorResIds[i])));
+        }
 
         Typeface tf = Typeface.createFromAsset(getAssets(),
                 "fonts/ProximaNova-Regular.otf");
@@ -114,10 +107,14 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         movingSound = MediaPlayer.create(this, R.raw.moving_sound);
         movingSoundShort = MediaPlayer.create(this, R.raw.moving_sound_short);
 
-        setButtonsEnabled(false, false);
+        ibCalibUp.setEnabled(false);
+        ibCalibD.setEnabled(false);
+
+        builder = new AlertDialog.Builder(this);
 
         hexapod = new Hexapod(true);
         hexapod.setIpAddress(savedIp);
+        hexapod.hexapodStatus = this;
 
         hexapod.connectWithCompletion(new ConnectingCompleteCallback() {
             @Override
@@ -138,7 +135,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         });
 
 
-        /*** Calibration up listeners ***/
+        /* Calibration up listeners */
         ibCalibUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -173,7 +170,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         });
 
 
-        /*** Calibration down listeners ***/
+        /* Calibration down listeners */
         ibCalibD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -246,18 +243,40 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
         showBackDialog();
     }
 
+    private void showSelectedMotor(int resId) {
+        Motor m = motorsMap.get(resId);
+        ibCalibD.setEnabled(true);
+        ibCalibUp.setEnabled(true);
+        index = m.idx;
+        m.imageButton.setAlpha(1f);
+        for (int key : motorsMap.keySet()) {
+            if (key != resId) {
+                motorsMap.get(key).imageButton.setAlpha(0f);
+            }
+        }
+        tvSelect.setVisibility(View.INVISIBLE);
+        ivCircle.setVisibility(View.VISIBLE);
+        tvCalibValue.setVisibility(View.VISIBLE);
+        String string = String.valueOf(changedCalibrationValues[m.idx]);
+        tvCalibValue.setText(string);
+    }
+
+    @Override
+    public void onClick(View view) {
+        showSelectedMotor(view.getId());
+    }
 
     private void showBackDialog() {
-        builder.setTitle("Warning");
-        builder.setMessage("Are you sure you want to reset STEMI Hexapod legs to their initial positions?");
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.warning);
+        builder.setMessage(R.string.reset_to_initial);
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, int id) {
                 DiscardTask task = new DiscardTask(CalibrationActivity.this);
                 task.execute();
             }
 
         });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.dismiss();
             }
@@ -297,236 +316,20 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.ibMotor0:
-                setButtonsEnabled(true, true);
-                index = 0;
-                ibMotor0.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor0)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                String string = String.valueOf(changedCalibrationValues[index]);
-                tvCalibValue.setText(string);
-                break;
-            case R.id.ibMotor1:
-                setButtonsEnabled(true, true);
-                index = 1;
-                ibMotor1.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor1)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor2:
-                setButtonsEnabled(true, true);
-                index = 2;
-                ibMotor2.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor2)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor3:
-                setButtonsEnabled(true, true);
-                index = 3;
-                ibMotor3.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor3)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor4:
-                setButtonsEnabled(true, true);
-                index = 4;
-                ibMotor4.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor4)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor5:
-                setButtonsEnabled(true, true);
-                index = 5;
-                ibMotor5.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor5)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor6:
-                setButtonsEnabled(true, true);
-                index = 6;
-                ibMotor6.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor6)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor7:
-                setButtonsEnabled(true, true);
-                index = 7;
-                ibMotor7.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor7)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor8:
-                setButtonsEnabled(true, true);
-                index = 8;
-                ibMotor8.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor8)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor9:
-                setButtonsEnabled(true, true);
-                index = 9;
-                ibMotor9.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor9)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor10:
-                setButtonsEnabled(true, true);
-                index = 10;
-                ibMotor10.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor10)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor11:
-                setButtonsEnabled(true, true);
-                index = 11;
-                ibMotor11.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor11)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor12:
-                setButtonsEnabled(true, true);
-                index = 12;
-                ibMotor12.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor12)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor13:
-                setButtonsEnabled(true, true);
-                index = 13;
-                ibMotor13.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor13)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor14:
-                setButtonsEnabled(true, true);
-                index = 14;
-                ibMotor14.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor14)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor15:
-                setButtonsEnabled(true, true);
-                index = 15;
-                ibMotor15.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor15)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor16:
-                setButtonsEnabled(true, true);
-                index = 16;
-                ibMotor16.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor16)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
-            case R.id.ibMotor17:
-                setButtonsEnabled(true, true);
-                index = 17;
-                ibMotor17.setAlpha(1f);
-                for (int i = 0; i < motors.length; i++) {
-                    if (motors[i] != ibMotor17)
-                        motors[i].setAlpha(0f);
-                }
-                setVisibility();
-                setCalibrationValueText();
-                break;
+    public void connectionStatus(boolean isConnected) {
+        if (!isConnected) {
+            Utils.showConnectionDialog(this, CalibrationActivity.this);
         }
-    }
-
-    private void setCalibrationValueText() {
-        String calibValue;
-        calibValue = String.valueOf(changedCalibrationValues[index]);
-        tvCalibValue.setText(calibValue);
-    }
-
-    private void setButtonsEnabled(boolean up, boolean down) {
-        ibCalibUp.setEnabled(up);
-        ibCalibD.setEnabled(down);
-
-    }
-
-    private void setVisibility() {
-        tvSelect.setVisibility(View.INVISIBLE);
-        ivCircle.setVisibility(View.VISIBLE);
-        tvCalibValue.setVisibility(View.VISIBLE);
     }
 
     private class RepeatUpdater implements Runnable {
         public void run() {
             if (mAutoIncrement) {
                 increment();
-                repeatUpdateHandler.postDelayed(new RepeatUpdater(), REPEAT_DELAY);
+                repeatUpdateHandler.postDelayed(new RepeatUpdater(), Constants.REPEAT_DELAY);
             } else if (mAutoDecrement) {
                 decrement();
-                repeatUpdateHandler.postDelayed(new RepeatUpdater(), REPEAT_DELAY);
+                repeatUpdateHandler.postDelayed(new RepeatUpdater(), Constants.REPEAT_DELAY);
             }
         }
     }
@@ -609,7 +412,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
 
         @Override
         protected void onPreExecute() {
-            progressDialog.setMessage("Canceling...");
+            progressDialog.setMessage(getString(R.string.canceling));
             progressDialog.setIndeterminate(true);
             progressDialog.setCancelable(false);
             progressDialog.show();
@@ -651,8 +454,6 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
             actionBar.setHomeAsUpIndicator(upArrow);
         }
-
-
     }
 
 }

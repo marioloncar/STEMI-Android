@@ -1,6 +1,5 @@
 package com.stemi.STEMIHexapod.activities;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -9,7 +8,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -26,24 +25,35 @@ import android.widget.Toast;
 
 import com.stemi.STEMIHexapod.Menu;
 import com.stemi.STEMIHexapod.R;
+import com.stemi.STEMIHexapod.Utils;
 import com.stemi.STEMIHexapod.interfaces.JoystickMovement;
 import com.stemi.STEMIHexapod.joysticks.JoystickL;
 import com.stemi.STEMIHexapod.joysticks.JoystickR;
+
+import java.util.Map;
 
 import stemi.education.stemihexapod.Hexapod;
 import stemi.education.stemihexapod.HexapodStatus;
 import stemi.education.stemihexapod.WalkingStyle;
 
-import static com.stemi.STEMIHexapod.Menu.bMenu;
-
 public class JoystickActivity extends AppCompatActivity implements View.OnClickListener,
         SensorEventListener, HexapodStatus, JoystickMovement {
 
+    private class ToastText {
+        String title;
+        String message;
+
+        ToastText(String t, String m) {
+            title = t;
+            message = m;
+        }
+    }
+
     private ImageButton ibStandby, ibMovement, ibRotation, ibOrientation;
+    private Menu menu;
     private View vOverlay;
     private RelativeLayout lay;
     private ImageView longToastBck;
-
     private Typeface tf;
 
     private SensorManager sensorManager;
@@ -52,10 +62,7 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
     private byte accelerometerX = 0;
     private byte accelerometerY = 0;
 
-    private AlertDialog.Builder builder;
-
     private SharedPreferences prefs;
-
     private Hexapod hexapod;
 
     @Override
@@ -63,6 +70,7 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_joystick);
 
+        menu = (Menu) findViewById(R.id.menu);
         ibStandby = (ImageButton) findViewById(R.id.ibStandby);
         vOverlay = findViewById(R.id.vOverlay);
         ibMovement = (ImageButton) findViewById(R.id.ibMovement);
@@ -85,121 +93,38 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
         ibMovement.setSelected(true);
         ibStandby.setSelected(true);
 
-        builder = new AlertDialog.Builder(this);
+        Map<ImageButton, ToastText> menuButtons = new ArrayMap<>(7);
+        menuButtons.put(ibMovement, new ToastText(getString(R.string.movement), getString(R.string.movement_hint)));
+        menuButtons.put(ibRotation, new ToastText(getString(R.string.rotation), getString(R.string.rotation_hint)));
+        menuButtons.put(ibOrientation, new ToastText(getString(R.string.orientation), getString(R.string.orientation_hint)));
+        menuButtons.put(ibHeight, new ToastText(getString(R.string.height), getString(R.string.height_hint)));
+        menuButtons.put(ibCalibration, new ToastText(getString(R.string.calibration), getString(R.string.calibration_hint)));
+        menuButtons.put(ibWalkingStyle, new ToastText(getString(R.string.walk_style), getString(R.string.walkstyle_hint)));
+
+        for (ImageButton ib : menuButtons.keySet()) {
+            final ToastText toastText = menuButtons.get(ib);
+            ib.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    showLongToast(toastText.title, toastText.message);
+                    return true;
+                }
+            });
+            ib.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_UP)
+                        hideToast();
+                    return false;
+                }
+            });
+        }
 
         hexapod = new Hexapod();
         hexapod.hexapodStatus = this;
 
-        // interface methods
         JoystickL.leftJoystick = this;
         JoystickR.rightJoystick = this;
-
-
-        /**** OnLongClick Listeners ****/
-        ibMovement.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showLongToast("Movement", getString(R.string.movement_hint));
-                return true;
-
-            }
-        });
-
-        ibRotation.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showLongToast("Rotation", getString(R.string.rotation_hint));
-                return true;
-            }
-        });
-
-        ibOrientation.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showLongToast("Orientation", getString(R.string.orientation_hint));
-                return true;
-            }
-        });
-
-        ibHeight.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showLongToast("Height", getString(R.string.height_hint));
-                return true;
-            }
-        });
-
-        ibCalibration.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showLongToast("Calibration", getString(R.string.calibration_hint));
-                return true;
-            }
-        });
-
-        ibWalkingStyle.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showLongToast("Walk style", getString(R.string.walkstyle_hint));
-                return true;
-            }
-        });
-
-
-        /**** OnTouch Listeners ****/
-        ibMovement.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP)
-                    hideToast();
-                return false;
-            }
-        });
-
-        ibRotation.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP)
-                    hideToast();
-                return false;
-            }
-        });
-
-        ibOrientation.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP)
-                    hideToast();
-                return false;
-            }
-        });
-
-        ibHeight.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP)
-                    hideToast();
-                return false;
-            }
-        });
-
-        ibCalibration.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP)
-                    hideToast();
-                return false;
-            }
-        });
-
-        ibWalkingStyle.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP)
-                    hideToast();
-                return false;
-            }
-        });
 
     }
 
@@ -258,7 +183,6 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
-    // onClick listeners for buttons on screen
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -273,7 +197,7 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.bMenu:
-                if (bMenu.isSelected()) {
+                if (menu.bMenu.isSelected()) {
                     closeMenu();
                 } else {
                     openMenu();
@@ -287,7 +211,7 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
 
             case R.id.ibMovement:
                 if (!ibMovement.isSelected()) {
-                    showShortToast("MOVEMENT ENABLED");
+                    showShortToast(getString(R.string.movement_enabled));
                 }
                 setSelectedButtons(true, false, false);
                 hexapod.setMovementMode();
@@ -296,7 +220,7 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
 
             case R.id.ibRotation:
                 if (!ibRotation.isSelected()) {
-                    showShortToast("ROTATION ENABLED");
+                    showShortToast(getString(R.string.rotation_enabled));
                 }
                 setSelectedButtons(false, true, false);
                 hexapod.setRotationMode();
@@ -305,7 +229,7 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
 
             case R.id.ibOrientation:
                 if (!ibOrientation.isSelected()) {
-                    showShortToast("ORIENTATION ENABLED");
+                    showShortToast(getString(R.string.orientation_enabled));
                 }
                 setSelectedButtons(false, false, true);
                 hexapod.setOrientationMode();
@@ -314,14 +238,22 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
 
             case R.id.ibHeight:
                 closeMenu();
-                Intent intent = new Intent(JoystickActivity.this, HeightActivity.class);
-                startActivity(intent);
+                if (hexapod.isInStandby()) {
+                    Utils.showStandbyDialog(this, JoystickActivity.this);
+                } else {
+                    Intent intent = new Intent(JoystickActivity.this, HeightActivity.class);
+                    startActivity(intent);
+                }
                 break;
 
             case R.id.ibCalibration:
                 closeMenu();
-                Intent intent1 = new Intent(JoystickActivity.this, CalibrationActivity.class);
-                startActivity(intent1);
+                if (hexapod.isInStandby()) {
+                    Utils.showStandbyDialog(this, JoystickActivity.this);
+                } else {
+                    Intent intent1 = new Intent(JoystickActivity.this, CalibrationActivity.class);
+                    startActivity(intent1);
+                }
                 break;
 
             case R.id.ibWalkingStyle:
@@ -333,6 +265,7 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
             case R.id.ibSettings:
                 closeMenu();
                 Intent intent3 = new Intent(JoystickActivity.this, SettingsActivity.class);
+                intent3.putExtra("standby", hexapod.isInStandby());
                 startActivity(intent3);
                 break;
         }
@@ -345,14 +278,14 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void openMenu() {
-        Menu.openMenu();
-        bMenu.setSelected(true);
+        menu.openMenu();
+        menu.bMenu.setSelected(true);
         vOverlay.setVisibility(View.VISIBLE);
     }
 
     private void closeMenu() {
-        Menu.closeMenu();
-        bMenu.setSelected(false);
+        menu.closeMenu();
+        menu.bMenu.setSelected(false);
         vOverlay.setVisibility(View.INVISIBLE);
     }
 
@@ -407,29 +340,10 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
         lay.setVisibility(View.INVISIBLE);
     }
 
-    private void showConnectionDialog() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                builder.setCancelable(false);
-                builder.setTitle("Connection lost");
-                builder.setMessage("Please check connection with your STEMI and try again.");
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Intent i = new Intent(JoystickActivity.this, ConnectingActivity.class);
-                        startActivity(i);
-                        finish();
-                    }
-                });
-                builder.show();
-            }
-        });
-    }
-
     @Override
     public void connectionStatus(boolean isConnected) {
         if (!isConnected) {
-            showConnectionDialog();
+            Utils.showConnectionDialog(this, JoystickActivity.this);
         }
 
     }

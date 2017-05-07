@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.MotionEvent;
@@ -20,30 +19,23 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.stemi.STEMIHexapod.Constants;
 import com.stemi.STEMIHexapod.R;
 
 import stemi.education.stemihexapod.Hexapod;
 
-import static com.stemi.STEMIHexapod.Constants.REPEAT_DELAY;
-
 /**
  * Created by Mario on 29/08/16.
  */
-public class HeightActivity extends AppCompatActivity{
+public class HeightActivity extends AppCompatActivity {
 
     private TextView tvHeightValue;
-
     private MediaPlayer movingSound, movingSoundShort;
-
     private SharedPreferences prefs;
-
     private final Handler repeatUpdateHandler = new Handler();
 
     private boolean mAutoIncrement = false;
     private boolean mAutoDecrement = false;
-
-    private AlertDialog.Builder builder;
-
     private byte height = 50;
 
     private Hexapod hexapod;
@@ -76,13 +68,11 @@ public class HeightActivity extends AppCompatActivity{
 
         String savedIp = prefs.getString("ip", null);
 
-        builder = new AlertDialog.Builder(this);
-
-
         hexapod = new Hexapod();
         hexapod.setIpAddress(savedIp);
         hexapod.setHeight(height);
         hexapod.connect();
+
 
         /*** Increase height listeners ***/
         ibHeightUp.setOnLongClickListener(new View.OnLongClickListener() {
@@ -195,20 +185,18 @@ public class HeightActivity extends AppCompatActivity{
 
     }
 
-    // Handler for long click on increase/decrease value buttons
     private class RepeatUpdater implements Runnable {
         public void run() {
             if (mAutoIncrement) {
                 increment();
-                repeatUpdateHandler.postDelayed(new RepeatUpdater(), REPEAT_DELAY);
+                repeatUpdateHandler.postDelayed(new RepeatUpdater(), Constants.REPEAT_DELAY);
             } else if (mAutoDecrement) {
                 decrement();
-                repeatUpdateHandler.postDelayed(new RepeatUpdater(), REPEAT_DELAY);
+                repeatUpdateHandler.postDelayed(new RepeatUpdater(), Constants.REPEAT_DELAY);
             }
         }
     }
 
-    // Decrements height value
     private void decrement() {
         if (!(height <= 0)) {
             height--;
@@ -220,7 +208,6 @@ public class HeightActivity extends AppCompatActivity{
             stopSound();
     }
 
-    // Increments height value
     private void increment() {
         if (!(height >= 100)) {
             height++;
@@ -248,7 +235,6 @@ public class HeightActivity extends AppCompatActivity{
         super.onBackPressed();
         finish();
     }
-
 
 
 }
