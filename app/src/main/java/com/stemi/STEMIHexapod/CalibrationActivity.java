@@ -2,6 +2,7 @@ package com.stemi.STEMIHexapod;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
@@ -16,6 +17,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -132,9 +134,12 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void run() {
                 calibrationArray = fetchBin(savedIp);
-                newCalibrationArray = calibrationArray.clone();
                 if (calibrationArray != null) {
+                    newCalibrationArray = calibrationArray.clone();
                     sendCommandsOverWiFi(savedIp);
+                } else {
+                    Log.d("CalibrationActivity", "Linearization.bin is null!");
+                    showConnectionDialog();
                 }
             }
         };
@@ -616,10 +621,11 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
 
 
     private byte[] fetchBin(String params) {
-        ByteArrayOutputStream baos = null;
+        ByteArrayOutputStream baos;
         try {
             URL url = new URL("http://" + params + "/linearization.bin");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(2000);
             conn.connect();
 
             if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
@@ -636,6 +642,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
 
             }
         } catch (IOException ignored) {
+            return null;
         }
         return baos.toByteArray();
     }
@@ -725,6 +732,26 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
         }
+    }
+
+    private void showConnectionDialog() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                builder.setCancelable(false);
+                builder.setTitle("Connection lost");
+                builder.setMessage("Please check connection with your STEMI and try again.");
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent i = new Intent(CalibrationActivity.this, ConnectingActivity.class);
+                        startActivity(i);
+                        finish();
+                    }
+                });
+                builder.show();
+            }
+        });
+
     }
 
 }
