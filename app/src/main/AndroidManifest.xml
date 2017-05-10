@@ -54,7 +54,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.stemi.STEMIHexapod.activities.JoystickActivity"
+            android:name="com.stemi.STEMIHexapod.activities.MainActivity"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="com.loncar.stemi.MAINACTIVITY" />

@@ -1,23 +1,15 @@
 package com.stemi.STEMIHexapod.activities;
 
-import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
-import android.graphics.PorterDuff;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.stemi.STEMIHexapod.R;
+import com.stemi.STEMIHexapod.Utils;
+import com.stemi.STEMIHexapod.helpers.SharedPreferencesHelper;
 
 import stemi.education.stemihexapod.WalkingStyle;
 
@@ -27,14 +19,13 @@ import stemi.education.stemihexapod.WalkingStyle;
 public class WalkingstyleActivity extends AppCompatActivity {
 
     private TextView tvWalkDesc;
-    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_walkingstyle);
 
-        initActionBarWithTitle("Walking style");
+        Utils.initActionBarWithTitle(WalkingstyleActivity.this, this, "Walking style");
 
         tvWalkDesc = (TextView) findViewById(R.id.tvWalkDesc);
         RadioGroup rgWalk = (RadioGroup) findViewById(R.id.rgWalk);
@@ -43,54 +34,47 @@ public class WalkingstyleActivity extends AppCompatActivity {
         RadioButton rb3 = (RadioButton) rgWalk.findViewById(R.id.rb3);
         RadioButton rb4 = (RadioButton) rgWalk.findViewById(R.id.rb4);
 
-        Typeface tf = Typeface.createFromAsset(getAssets(),
-                "fonts/ProximaNova-Regular.otf");
-
-        prefs = getSharedPreferences("myPref", MODE_PRIVATE);
-
         tvWalkDesc.setText(R.string.tripod_desc);
-        tvWalkDesc.setTypeface(tf);
-        rb1.setTypeface(tf);
-        rb2.setTypeface(tf);
-        rb3.setTypeface(tf);
-        rb4.setTypeface(tf);
+        tvWalkDesc.setTypeface(Utils.getCustomTypeface(this));
+        rb1.setTypeface(Utils.getCustomTypeface(this));
+        rb2.setTypeface(Utils.getCustomTypeface(this));
+        rb3.setTypeface(Utils.getCustomTypeface(this));
+        rb4.setTypeface(Utils.getCustomTypeface(this));
 
-        int rbStatus = prefs.getInt("rbSelected", R.id.rb1);
+        int rbStatus = SharedPreferencesHelper.getSharedPreferencesInt(this, SharedPreferencesHelper.Key.RB_SELECTED, R.id.rb1);
         if (rbStatus > 0) {
             RadioButton rbtn = (RadioButton) rgWalk.findViewById(rbStatus);
             rbtn.setChecked(true);
         }
 
-        rgWalk.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.rb1:
-                        tvWalkDesc.setText(R.string.tripod_desc);
-                        prefs.edit().putString("walk", WalkingStyle.TRIPOD_GAIT.toString()).apply();
-                        prefs.edit().putInt("rbSelected", R.id.rb1).apply();
-                        break;
-                    case R.id.rb2:
-                        tvWalkDesc.setText(R.string.tripod_delayed_desc);
-                        prefs.edit().putString("walk", WalkingStyle.TRIPOD_GAIT_ANGLED.toString()).apply();
-                        prefs.edit().putInt("rbSelected", R.id.rb2).apply();
-                        break;
-                    case R.id.rb3:
-                        tvWalkDesc.setText(R.string.ripple_desc);
-                        prefs.edit().putString("walk", WalkingStyle.TRIPOD_GAIT_STAR.toString()).apply();
-                        prefs.edit().putInt("rbSelected", R.id.rb3).apply();
-                        break;
-                    case R.id.rb4:
-                        tvWalkDesc.setText(R.string.wave_desc);
-                        prefs.edit().putString("walk", WalkingStyle.WAVE_GAIT.toString()).apply();
-                        prefs.edit().putInt("rbSelected", R.id.rb4).apply();
-                        break;
-                    default:
-                        tvWalkDesc.setText(R.string.tripod_desc);
-                        prefs.edit().putString("walk", WalkingStyle.TRIPOD_GAIT.toString()).apply();
-                        prefs.edit().putInt("rbSelected", R.id.rb1).apply();
-                        break;
-                }
+        rgWalk.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId) {
+                case R.id.rb1:
+                    tvWalkDesc.setText(R.string.tripod_desc);
+                    SharedPreferencesHelper.putSharedPreferencesString(this, SharedPreferencesHelper.Key.WALK, WalkingStyle.TRIPOD_GAIT.toString());
+                    SharedPreferencesHelper.putSharedPreferencesInt(this, SharedPreferencesHelper.Key.RB_SELECTED, R.id.rb1);
+                    break;
+                case R.id.rb2:
+                    tvWalkDesc.setText(R.string.tripod_delayed_desc);
+                    SharedPreferencesHelper.putSharedPreferencesString(this, SharedPreferencesHelper.Key.WALK, WalkingStyle.TRIPOD_GAIT_ANGLED.toString());
+                    SharedPreferencesHelper.putSharedPreferencesInt(this, SharedPreferencesHelper.Key.RB_SELECTED, R.id.rb2);
+                    break;
+                case R.id.rb3:
+                    tvWalkDesc.setText(R.string.ripple_desc);
+                    SharedPreferencesHelper.putSharedPreferencesString(this, SharedPreferencesHelper.Key.WALK, WalkingStyle.TRIPOD_GAIT_STAR.toString());
+                    SharedPreferencesHelper.putSharedPreferencesInt(this, SharedPreferencesHelper.Key.RB_SELECTED, R.id.rb3);
+                    break;
+                case R.id.rb4:
+                    tvWalkDesc.setText(R.string.wave_desc);
+                    SharedPreferencesHelper.putSharedPreferencesString(this, SharedPreferencesHelper.Key.WALK, WalkingStyle.WAVE_GAIT.toString());
+                    SharedPreferencesHelper.putSharedPreferencesInt(this, SharedPreferencesHelper.Key.RB_SELECTED, R.id.rb4);
+
+                    break;
+                default:
+                    tvWalkDesc.setText(R.string.tripod_desc);
+                    SharedPreferencesHelper.putSharedPreferencesString(this, SharedPreferencesHelper.Key.WALK, WalkingStyle.TRIPOD_GAIT.toString());
+                    SharedPreferencesHelper.putSharedPreferencesInt(this, SharedPreferencesHelper.Key.RB_SELECTED, R.id.rb1);
+                    break;
             }
         });
     }
@@ -115,25 +99,4 @@ public class WalkingstyleActivity extends AppCompatActivity {
         super.onBackPressed();
         finish();
     }
-
-    private void initActionBarWithTitle(String title) {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>", Html.FROM_HTML_MODE_LEGACY));
-            } else {
-                actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>"));
-            }
-
-            @SuppressLint("PrivateResource")
-            final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
-            assert upArrow != null;
-            upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
-            actionBar.setHomeAsUpIndicator(upArrow);
-        }
-
-    }
-
 }

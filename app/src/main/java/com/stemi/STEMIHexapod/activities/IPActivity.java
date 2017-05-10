@@ -1,30 +1,20 @@
 package com.stemi.STEMIHexapod.activities;
 
-import android.annotation.SuppressLint;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.graphics.PorterDuff;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
-import android.text.Html;
 import android.text.TextWatcher;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.stemi.STEMIHexapod.R;
+import com.stemi.STEMIHexapod.Utils;
+import com.stemi.STEMIHexapod.helpers.SharedPreferencesHelper;
 
 /**
  * Created by Mario on 11/08/16.
@@ -33,14 +23,13 @@ public class IPActivity extends AppCompatActivity {
 
     private EditText et1, et2, et3, et4;
     private MenuItem menuItem;
-    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ip);
 
-        initActionBarWithTitle("IP address");
+        Utils.initActionBarWithTitle(IPActivity.this, this, "IP address");
 
         et1 = (EditText) findViewById(R.id.et1);
         et2 = (EditText) findViewById(R.id.et2);
@@ -50,22 +39,18 @@ public class IPActivity extends AppCompatActivity {
         TextView textView2 = (TextView) findViewById(R.id.textView2);
         Button bResetIp = (Button) findViewById(R.id.bResetIp);
 
-        Typeface tf = Typeface.createFromAsset(getAssets(),
-                "fonts/ProximaNova-Regular.otf");
-
-        textView.setTypeface(tf);
-        textView2.setTypeface(tf);
-        bResetIp.setTypeface(tf);
+        textView.setTypeface(Utils.getCustomTypeface(this));
+        textView2.setTypeface(Utils.getCustomTypeface(this));
+        bResetIp.setTypeface(Utils.getCustomTypeface(this));
 
         showSoftKeyboard();
 
-        prefs = getSharedPreferences("myPref", MODE_PRIVATE);
-        String savedIp = prefs.getString("ip", null);
+        String savedIp = SharedPreferencesHelper.getSharedPreferencesString(this, SharedPreferencesHelper.Key.IP, null);
 
-        et1.setTypeface(tf);
-        et2.setTypeface(tf);
-        et3.setTypeface(tf);
-        et4.setTypeface(tf);
+        et1.setTypeface(Utils.getCustomTypeface(this));
+        et2.setTypeface(Utils.getCustomTypeface(this));
+        et3.setTypeface(Utils.getCustomTypeface(this));
+        et4.setTypeface(Utils.getCustomTypeface(this));
 
         if (savedIp != null) {
             String[] parts = savedIp.split("\\.");
@@ -81,17 +66,14 @@ public class IPActivity extends AppCompatActivity {
             et4.requestFocus();
         }
 
-        bResetIp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                menuItem.setEnabled(true);
-                et1.setText("192");
-                et2.setText("168");
-                et3.setText("4");
-                et4.setText("1");
-                et4.requestFocus();
-                et4.setSelection(et4.getText().length());
-            }
+        bResetIp.setOnClickListener(v -> {
+            menuItem.setEnabled(true);
+            et1.setText("192");
+            et2.setText("168");
+            et3.setText("4");
+            et4.setText("1");
+            et4.requestFocus();
+            et4.setSelection(et4.getText().length());
         });
 
         // Change focus on fields
@@ -229,7 +211,7 @@ public class IPActivity extends AppCompatActivity {
                 if ((field1 >= 0 && field1 <= 255) && (field2 >= 0 && field2 <= 255) && (field3 >= 0 && field3 <= 255) && (field4 >= 0 && field4 <= 255)) {
                     String customIp = ip1 + "." + ip2 + "." + ip3 + "." + ip4;
                     hideSoftKeyboard();
-                    prefs.edit().putString("ip", customIp).apply();
+                    SharedPreferencesHelper.putSharedPreferencesString(this, SharedPreferencesHelper.Key.IP, customIp);
                     finish();
                 } else
                     showIPAlert();
@@ -258,32 +240,8 @@ public class IPActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.error)
                 .setMessage(R.string.out_of_range)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
+                .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss())
                 .show();
     }
 
-
-    private void initActionBarWithTitle(String title) {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>", Html.FROM_HTML_MODE_LEGACY));
-            } else {
-                actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>"));
-            }
-
-            @SuppressLint("PrivateResource")
-            final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
-            assert upArrow != null;
-            upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
-            actionBar.setHomeAsUpIndicator(upArrow);
-        }
-
-    }
 }

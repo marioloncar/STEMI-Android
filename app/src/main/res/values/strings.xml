@@ -51,5 +51,6 @@
     <string name="canceling">Canceling&#8230;</string>
     <string name="error">Error</string>
     <string name="out_of_range">IP fields must be in range 0&#8211;255</string>
+    <string name="resetting">Resetting&#8230;</string>
 
 </resources>

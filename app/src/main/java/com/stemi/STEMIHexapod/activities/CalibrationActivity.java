@@ -1,24 +1,13 @@
 package com.stemi.STEMIHexapod.activities;
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.graphics.PorterDuff;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,15 +18,14 @@ import android.widget.TextView;
 import com.stemi.STEMIHexapod.Constants;
 import com.stemi.STEMIHexapod.R;
 import com.stemi.STEMIHexapod.Utils;
+import com.stemi.STEMIHexapod.helpers.SharedPreferencesHelper;
 import com.stemi.STEMIHexapod.interfaces.DiscardCalibrationCallback;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import stemi.education.stemihexapod.ConnectingCompleteCallback;
 import stemi.education.stemihexapod.Hexapod;
 import stemi.education.stemihexapod.HexapodStatus;
-import stemi.education.stemihexapod.SavedCalibrationCallback;
 
 /**
  * Created by Mario on 29/08/16.
@@ -74,7 +62,6 @@ public class CalibrationActivity extends AppCompatActivity implements
     private boolean mAutoIncrement = false;
     private boolean mAutoDecrement = false;
     private final Handler repeatUpdateHandler = new Handler();
-    private String savedIp;
     private Hexapod hexapod;
 
     @Override
@@ -82,7 +69,7 @@ public class CalibrationActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calibration);
 
-        initActionBarWithTitle("Calibration");
+        Utils.initActionBarWithTitle(CalibrationActivity.this, this, "Calibration");
 
         ivCircle = (ImageView) findViewById(R.id.ivCircle);
         tvCalibValue = (TextView) findViewById(R.id.tvCalibValue);
@@ -95,14 +82,10 @@ public class CalibrationActivity extends AppCompatActivity implements
             motorsMap.put(motorResIds[i], new Motor(i, (ImageButton) findViewById(motorResIds[i])));
         }
 
-        Typeface tf = Typeface.createFromAsset(getAssets(),
-                "fonts/ProximaNova-Regular.otf");
+        String savedIp = SharedPreferencesHelper.getSharedPreferencesString(this, SharedPreferencesHelper.Key.IP, null);
 
-        final SharedPreferences prefs = getSharedPreferences("myPref", MODE_PRIVATE);
-        savedIp = prefs.getString("ip", null);
-
-        tvSelect.setTypeface(tf);
-        tvCalibValue.setTypeface(tf);
+        tvSelect.setTypeface(Utils.getCustomTypeface(this));
+        tvCalibValue.setTypeface(Utils.getCustomTypeface(this));
 
         movingSound = MediaPlayer.create(this, R.raw.moving_sound);
         movingSoundShort = MediaPlayer.create(this, R.raw.moving_sound_short);
@@ -116,94 +99,73 @@ public class CalibrationActivity extends AppCompatActivity implements
         hexapod.setIpAddress(savedIp);
         hexapod.hexapodStatus = this;
 
-        hexapod.connectWithCompletion(new ConnectingCompleteCallback() {
-            @Override
-            public void onConnectingComplete(boolean connected) {
-                if (connected) {
-                    try {
-                        byte[] fetchedValues = hexapod.fetchDataFromHexapod();
-                        if (fetchedValues != null) {
-                            int n = fetchedValues.length;
-                            System.arraycopy(fetchedValues, 0, calibrationValues, 0, n);
-                            changedCalibrationValues = calibrationValues.clone();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+        hexapod.connectWithCompletion(connected -> {
+            if (connected) {
+                try {
+                    byte[] fetchedValues = hexapod.fetchDataFromHexapod();
+                    if (fetchedValues != null) {
+                        int n = fetchedValues.length;
+                        System.arraycopy(fetchedValues, 0, calibrationValues, 0, n);
+                        changedCalibrationValues = calibrationValues.clone();
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });
-
 
         /* Calibration up listeners */
-        ibCalibUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                increment();
-                if (changedCalibrationValues[index] == 100)
-                    movingSoundShort.pause();
-                else
-                    movingSoundShort.start();
-            }
+        ibCalibUp.setOnClickListener(v -> {
+            increment();
+            if (changedCalibrationValues[index] == 100)
+                movingSoundShort.pause();
+            else
+                movingSoundShort.start();
         });
 
-        ibCalibUp.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                movingSound.seekTo(0);
-                movingSound.start();
-                mAutoIncrement = true;
-                repeatUpdateHandler.post(new RepeatUpdater());
-                return true;
-            }
+
+        ibCalibUp.setOnLongClickListener(v -> {
+            movingSound.seekTo(0);
+            movingSound.start();
+            mAutoIncrement = true;
+            repeatUpdateHandler.post(new RepeatUpdater());
+            return true;
         });
 
-        ibCalibUp.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoIncrement) {
-                    mAutoIncrement = false;
-                    movingSound.pause();
-                }
-                return false;
+        ibCalibUp.setOnTouchListener((v, event) -> {
+            if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoIncrement) {
+                mAutoIncrement = false;
+                movingSound.pause();
             }
+            return false;
         });
 
 
         /* Calibration down listeners */
-        ibCalibD.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                decrement();
-                if (changedCalibrationValues[index] == 0)
-                    movingSoundShort.pause();
-                else
-                    movingSoundShort.start();
+        ibCalibD.setOnClickListener(v -> {
+            decrement();
+            if (changedCalibrationValues[index] == 0)
+                movingSoundShort.pause();
+            else
+                movingSoundShort.start();
 
-            }
         });
 
-        ibCalibD.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                movingSound.seekTo(0);
-                movingSound.start();
-                mAutoDecrement = true;
-                repeatUpdateHandler.post(new RepeatUpdater());
+        ibCalibD.setOnLongClickListener(v -> {
+            movingSound.seekTo(0);
+            movingSound.start();
+            mAutoDecrement = true;
+            repeatUpdateHandler.post(new RepeatUpdater());
 
-                return true;
-            }
+            return true;
         });
 
-        ibCalibD.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoDecrement) {
-                    mAutoDecrement = false;
-                    movingSound.pause();
-                }
-                return false;
+        ibCalibD.setOnTouchListener((v, event) -> {
+            if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoDecrement) {
+                mAutoDecrement = false;
+                movingSound.pause();
             }
+            return false;
         });
 
     }
@@ -269,18 +231,11 @@ public class CalibrationActivity extends AppCompatActivity implements
     private void showBackDialog() {
         builder.setTitle(R.string.warning);
         builder.setMessage(R.string.reset_to_initial);
-        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-            public void onClick(final DialogInterface dialog, int id) {
-                DiscardTask task = new DiscardTask(CalibrationActivity.this);
-                task.execute();
-            }
-
+        builder.setPositiveButton(R.string.yes, (dialog, id) -> {
+            DiscardTask task = new DiscardTask(CalibrationActivity.this);
+            task.execute();
         });
-        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.dismiss();
-            }
-        });
+        builder.setNegativeButton(R.string.no, (dialog, id) -> dialog.dismiss());
         builder.show();
     }
 
@@ -302,12 +257,9 @@ public class CalibrationActivity extends AppCompatActivity implements
 
     private void writeData() {
         try {
-            hexapod.writeDataToHexapod(new SavedCalibrationCallback() {
-                @Override
-                public void onSavedData(Boolean saved) {
-                    if (saved) {
-                        finish();
-                    }
+            hexapod.writeDataToHexapod(saved -> {
+                if (saved) {
+                    finish();
                 }
             });
         } catch (InterruptedException e) {
@@ -420,12 +372,9 @@ public class CalibrationActivity extends AppCompatActivity implements
 
         @Override
         protected Void doInBackground(Void... voids) {
-            discardValuesToInitial(new DiscardCalibrationCallback() {
-                @Override
-                public void onDiscardedData(Boolean finished) {
-                    if (finished) {
-                        finish();
-                    }
+            discardValuesToInitial(finished -> {
+                if (finished) {
+                    finish();
                 }
             });
             return null;
@@ -434,25 +383,6 @@ public class CalibrationActivity extends AppCompatActivity implements
         @Override
         protected void onPostExecute(Void aVoid) {
             progressDialog.dismiss();
-        }
-    }
-
-    private void initActionBarWithTitle(String title) {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>", Html.FROM_HTML_MODE_LEGACY));
-            } else {
-                actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>"));
-            }
-
-            @SuppressLint("PrivateResource")
-            final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
-            assert upArrow != null;
-            upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
-            actionBar.setHomeAsUpIndicator(upArrow);
         }
     }
 

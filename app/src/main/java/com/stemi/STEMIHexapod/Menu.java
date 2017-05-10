@@ -125,7 +125,6 @@ public class Menu extends RelativeLayout {
 
         ivMenuActive.startAnimation(set);
 
-
         for (ImageButton button : buttons) {
             Animation fadeIn = new AlphaAnimation(0, 1);
             fadeIn.setInterpolator(new DecelerateInterpolator());

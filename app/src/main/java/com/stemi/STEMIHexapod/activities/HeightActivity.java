@@ -1,19 +1,9 @@
 package com.stemi.STEMIHexapod.activities;
 
-import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
-import android.graphics.PorterDuff;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
@@ -21,6 +11,8 @@ import android.widget.TextView;
 
 import com.stemi.STEMIHexapod.Constants;
 import com.stemi.STEMIHexapod.R;
+import com.stemi.STEMIHexapod.Utils;
+import com.stemi.STEMIHexapod.helpers.SharedPreferencesHelper;
 
 import stemi.education.stemihexapod.Hexapod;
 
@@ -31,7 +23,6 @@ public class HeightActivity extends AppCompatActivity {
 
     private TextView tvHeightValue;
     private MediaPlayer movingSound, movingSoundShort;
-    private SharedPreferences prefs;
     private final Handler repeatUpdateHandler = new Handler();
 
     private boolean mAutoIncrement = false;
@@ -45,7 +36,7 @@ public class HeightActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_height);
 
-        initActionBarWithTitle("Adjust height");
+        Utils.initActionBarWithTitle(HeightActivity.this, this, "Adjust height");
 
         ImageButton ibHeightUp = (ImageButton) findViewById(R.id.ibHeightUp);
         ImageButton ibHeightD = (ImageButton) findViewById(R.id.ibHeightD);
@@ -54,19 +45,15 @@ public class HeightActivity extends AppCompatActivity {
         movingSound = MediaPlayer.create(this, R.raw.moving_sound);
         movingSoundShort = MediaPlayer.create(this, R.raw.moving_sound_short);
 
-        Typeface tf = Typeface.createFromAsset(getAssets(),
-                "fonts/ProximaNova-Regular.otf");
-
         String s = String.valueOf(height);
         tvHeightValue.setText(s);
 
-        prefs = getSharedPreferences("myPref", MODE_PRIVATE);
-        height = (byte) prefs.getInt("height", 0);
+        height = (byte) SharedPreferencesHelper.getSharedPreferencesInt(this, SharedPreferencesHelper.Key.HEIGHT, 50);
+        String savedIp = SharedPreferencesHelper.getSharedPreferencesString(this, SharedPreferencesHelper.Key.IP, null);
+
         tvHeightValue.setText(String.valueOf(height));
+        tvHeightValue.setTypeface(Utils.getCustomTypeface(this));
 
-        tvHeightValue.setTypeface(tf);
-
-        String savedIp = prefs.getString("ip", null);
 
         hexapod = new Hexapod();
         hexapod.setIpAddress(savedIp);
@@ -74,74 +61,56 @@ public class HeightActivity extends AppCompatActivity {
         hexapod.connect();
 
 
-        /*** Increase height listeners ***/
-        ibHeightUp.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                movingSound.seekTo(0);
-                movingSound.start();
-                mAutoIncrement = true;
-                repeatUpdateHandler.post(new RepeatUpdater());
+        /* Increase height listeners */
+        ibHeightUp.setOnLongClickListener(v -> {
+            movingSound.seekTo(0);
+            movingSound.start();
+            mAutoIncrement = true;
+            repeatUpdateHandler.post(new RepeatUpdater());
 
-                return true;
-            }
+            return true;
         });
 
-        ibHeightUp.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoIncrement) {
-                    mAutoIncrement = false;
-                    movingSound.pause();
-                }
-                return false;
+        ibHeightUp.setOnTouchListener((v, event) -> {
+            if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoIncrement) {
+                mAutoIncrement = false;
+                movingSound.pause();
             }
+            return false;
         });
 
-        ibHeightUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                increment();
-                if (height == 100)
-                    movingSoundShort.pause();
-                else
-                    movingSoundShort.start();
-            }
+        ibHeightUp.setOnClickListener(v -> {
+            increment();
+            if (height == 100)
+                movingSoundShort.pause();
+            else
+                movingSoundShort.start();
         });
 
 
-        /*** Decrease height listeners ***/
-        ibHeightD.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                movingSound.seekTo(0);
-                movingSound.start();
-                mAutoDecrement = true;
-                repeatUpdateHandler.post(new RepeatUpdater());
-                return true;
-            }
+        /* Decrease height listeners */
+        ibHeightD.setOnLongClickListener(v -> {
+            movingSound.seekTo(0);
+            movingSound.start();
+            mAutoDecrement = true;
+            repeatUpdateHandler.post(new RepeatUpdater());
+            return true;
         });
 
-        ibHeightD.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoDecrement) {
-                    mAutoDecrement = false;
-                    movingSound.pause();
-                }
-                return false;
+        ibHeightD.setOnTouchListener((v, event) -> {
+            if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && mAutoDecrement) {
+                mAutoDecrement = false;
+                movingSound.pause();
             }
+            return false;
         });
 
-        ibHeightD.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                decrement();
-                if (height == 0)
-                    movingSoundShort.pause();
-                else
-                    movingSoundShort.start();
-            }
+        ibHeightD.setOnClickListener(v -> {
+            decrement();
+            if (height == 0)
+                movingSoundShort.pause();
+            else
+                movingSoundShort.start();
         });
     }
 
@@ -165,26 +134,6 @@ public class HeightActivity extends AppCompatActivity {
         hexapod.disconnect();
     }
 
-    private void initActionBarWithTitle(String title) {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.navbar));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>", Html.FROM_HTML_MODE_LEGACY));
-            } else {
-                actionBar.setTitle(Html.fromHtml("<font color='#24A8E0'>" + title + "</font>"));
-            }
-
-            @SuppressLint("PrivateResource")
-            final Drawable upArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.abc_ic_ab_back_material, null);
-            assert upArrow != null;
-            upArrow.setColorFilter(ContextCompat.getColor(this, R.color.highlightColor), PorterDuff.Mode.SRC_ATOP);
-            actionBar.setHomeAsUpIndicator(upArrow);
-        }
-
-    }
-
     private class RepeatUpdater implements Runnable {
         public void run() {
             if (mAutoIncrement) {
@@ -202,7 +151,7 @@ public class HeightActivity extends AppCompatActivity {
             height--;
             String sHeight = String.valueOf(height);
             tvHeightValue.setText(sHeight);
-            prefs.edit().putInt("height", height).apply();
+            SharedPreferencesHelper.putSharedPreferencesInt(this, SharedPreferencesHelper.Key.HEIGHT, height);
             hexapod.setHeight(height);
         } else
             stopSound();
@@ -213,7 +162,7 @@ public class HeightActivity extends AppCompatActivity {
             height++;
             String sHeight = String.valueOf(height);
             tvHeightValue.setText(sHeight);
-            prefs.edit().putInt("height", height).apply();
+            SharedPreferencesHelper.putSharedPreferencesInt(this, SharedPreferencesHelper.Key.HEIGHT, height);
             hexapod.setHeight(height);
         } else
             stopSound();

@@ -1,8 +1,6 @@
 package com.stemi.STEMIHexapod.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.stemi.STEMIHexapod.R;
+import com.stemi.STEMIHexapod.Utils;
+import com.stemi.STEMIHexapod.helpers.SharedPreferencesHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,8 +42,6 @@ public class ConnectingActivity extends AppCompatActivity {
     private TextView tvConnectingTitle, tvConnectingHint;
     private Button bConnect, bChangeIP;
     private ImageView ivStemiIcon, ivProgressPath, ivProgress;
-    private Typeface tf;
-    private SharedPreferences prefs = null;
     private String savedIp;
 
     @Override
@@ -59,29 +57,18 @@ public class ConnectingActivity extends AppCompatActivity {
         ivProgressPath = (ImageView) findViewById(R.id.ivProgressPath);
         ivProgress = (ImageView) findViewById(R.id.ivProgress);
 
-        tf = Typeface.createFromAsset(getAssets(),
-                "fonts/ProximaNova-Regular.otf");
+        tvConnectingTitle.setTypeface(Utils.getCustomTypeface(this));
+        tvConnectingHint.setTypeface(Utils.getCustomTypeface(this));
+        bConnect.setTypeface(Utils.getCustomTypeface(this));
 
-        tvConnectingTitle.setTypeface(tf);
-        tvConnectingHint.setTypeface(tf);
-        bConnect.setTypeface(tf);
-
-        prefs = getSharedPreferences("myPref", MODE_PRIVATE);
-
-        bConnect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ConnectionTask connection = new ConnectionTask();
-                connection.execute();
-            }
+        bConnect.setOnClickListener(v -> {
+            ConnectionTask connection = new ConnectionTask();
+            connection.execute();
         });
 
-        bChangeIP.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), IPActivity.class);
-                startActivity(i);
-            }
+        bChangeIP.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), IPActivity.class);
+            startActivity(i);
         });
     }
 
@@ -89,11 +76,12 @@ public class ConnectingActivity extends AppCompatActivity {
         String version = jsonObject.getString("version");
         String stemiId = jsonObject.getString("stemiID");
 
-        prefs.edit().putString("version", version).apply();
-        prefs.edit().putString("stemiId", stemiId).apply();
-        prefs.edit().putString("walk", WalkingStyle.TRIPOD_GAIT.toString()).apply();
-        prefs.edit().putInt("rbSelected", R.id.rb1).apply();
-        prefs.edit().putInt("height", 50).apply();
+        SharedPreferencesHelper.putSharedPreferencesString(this, SharedPreferencesHelper.Key.VERSION, version);
+        SharedPreferencesHelper.putSharedPreferencesString(this, SharedPreferencesHelper.Key.STEMI_ID, stemiId);
+        SharedPreferencesHelper.putSharedPreferencesString(this, SharedPreferencesHelper.Key.WALK, WalkingStyle.TRIPOD_GAIT.toString());
+        SharedPreferencesHelper.putSharedPreferencesInt(this, SharedPreferencesHelper.Key.RB_SELECTED, R.id.rb1);
+        SharedPreferencesHelper.putSharedPreferencesInt(this, SharedPreferencesHelper.Key.HEIGHT, 50);
+
     }
 
     private void animateUI() {
@@ -155,7 +143,7 @@ public class ConnectingActivity extends AppCompatActivity {
         bConnect.startAnimation(fadeIn);
 
         bChangeIP.setVisibility(View.VISIBLE);
-        bChangeIP.setTypeface(tf);
+        bChangeIP.setTypeface(Utils.getCustomTypeface(this));
 
         tvConnectingTitle.setText(R.string.unable_to_connect);
         tvConnectingTitle.startAnimation(error);
@@ -164,7 +152,7 @@ public class ConnectingActivity extends AppCompatActivity {
 
     private void openJoystickActivity() {
         finish();
-        Intent i = new Intent(getApplicationContext(), JoystickActivity.class);
+        Intent i = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(i);
     }
 
@@ -172,11 +160,13 @@ public class ConnectingActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (prefs.getBoolean("firstrun", true)) {
-            prefs.edit().putString("ip", "192.168.4.1").apply();
-            prefs.edit().putBoolean("firstrun", false).apply();
+        boolean firstRun = SharedPreferencesHelper.getSharedPreferencesBoolean(this, SharedPreferencesHelper.Key.FIRST_RUN, true);
+        if (firstRun) {
+            SharedPreferencesHelper.putSharedPreferencesString(this, SharedPreferencesHelper.Key.IP, "192.168.4.1");
+            SharedPreferencesHelper.putSharedPreferencesBoolean(this, SharedPreferencesHelper.Key.FIRST_RUN, false);
         } else {
-            savedIp = prefs.getString("ip", null);
+            savedIp = SharedPreferencesHelper.getSharedPreferencesString(this, SharedPreferencesHelper.Key.IP, null);
+
         }
     }
 
@@ -239,14 +229,15 @@ public class ConnectingActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... voids) {
             String jsonString = "";
-            savedIp = prefs.getString("ip", null);
+            savedIp = SharedPreferencesHelper.getSharedPreferencesString(getApplicationContext(), SharedPreferencesHelper.Key.IP, null);
             jsonString = fetchJSON("http://" + savedIp + "/stemiData.json");
             // if jsonString object exists compare with one saved in SharedPreferences
             if (jsonString != null) {
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(jsonString);
-                    if (Objects.equals(jsonObject.getString("stemiID"), prefs.getString("stemiId", null))) {
+                    String savedStemiID = SharedPreferencesHelper.getSharedPreferencesString(getApplicationContext(), SharedPreferencesHelper.Key.STEMI_ID, null);
+                    if (Objects.equals(jsonObject.getString("stemiID"), savedStemiID)) {
                         Thread.sleep(2000);
                         return true;
                     } else {

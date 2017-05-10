@@ -1,8 +1,6 @@
 package com.stemi.STEMIHexapod.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -26,6 +24,7 @@ import android.widget.Toast;
 import com.stemi.STEMIHexapod.Menu;
 import com.stemi.STEMIHexapod.R;
 import com.stemi.STEMIHexapod.Utils;
+import com.stemi.STEMIHexapod.helpers.SharedPreferencesHelper;
 import com.stemi.STEMIHexapod.interfaces.JoystickMovement;
 import com.stemi.STEMIHexapod.joysticks.JoystickL;
 import com.stemi.STEMIHexapod.joysticks.JoystickR;
@@ -36,7 +35,7 @@ import stemi.education.stemihexapod.Hexapod;
 import stemi.education.stemihexapod.HexapodStatus;
 import stemi.education.stemihexapod.WalkingStyle;
 
-public class JoystickActivity extends AppCompatActivity implements View.OnClickListener,
+public class MainActivity extends AppCompatActivity implements View.OnClickListener,
         SensorEventListener, HexapodStatus, JoystickMovement {
 
     private class ToastText {
@@ -54,7 +53,6 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
     private View vOverlay;
     private RelativeLayout lay;
     private ImageView longToastBck;
-    private Typeface tf;
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -62,7 +60,6 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
     private byte accelerometerX = 0;
     private byte accelerometerY = 0;
 
-    private SharedPreferences prefs;
     private Hexapod hexapod;
 
     @Override
@@ -82,17 +79,13 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
         lay = (RelativeLayout) findViewById(R.id.longToast);
         longToastBck = (ImageView) findViewById(R.id.ivToastLongBck);
 
-        tf = Typeface.createFromAsset(getAssets(),
-                "fonts/ProximaNova-Regular.otf");
-
-        prefs = getSharedPreferences("myPref", MODE_PRIVATE);
-
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         ibMovement.setSelected(true);
         ibStandby.setSelected(true);
 
+        /* Menu buttons */
         Map<ImageButton, ToastText> menuButtons = new ArrayMap<>(7);
         menuButtons.put(ibMovement, new ToastText(getString(R.string.movement), getString(R.string.movement_hint)));
         menuButtons.put(ibRotation, new ToastText(getString(R.string.rotation), getString(R.string.rotation_hint)));
@@ -101,22 +94,17 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
         menuButtons.put(ibCalibration, new ToastText(getString(R.string.calibration), getString(R.string.calibration_hint)));
         menuButtons.put(ibWalkingStyle, new ToastText(getString(R.string.walk_style), getString(R.string.walkstyle_hint)));
 
+        /* Listeners */
         for (ImageButton ib : menuButtons.keySet()) {
             final ToastText toastText = menuButtons.get(ib);
-            ib.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    showLongToast(toastText.title, toastText.message);
-                    return true;
-                }
+            ib.setOnLongClickListener(view -> {
+                showLongToast(toastText.title, toastText.message);
+                return true;
             });
-            ib.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_UP)
-                        hideToast();
-                    return false;
-                }
+            ib.setOnTouchListener((v, event) -> {
+                if (event.getAction() == MotionEvent.ACTION_UP)
+                    hideToast();
+                return false;
             });
         }
 
@@ -133,9 +121,9 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
         super.onResume();
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
 
-        String savedIp = prefs.getString("ip", null);
-        byte heightPref = (byte) prefs.getInt("height", 50);
-        String walkingStyle = prefs.getString("walk", WalkingStyle.TRIPOD_GAIT.toString());
+        String savedIp = SharedPreferencesHelper.getSharedPreferencesString(this, SharedPreferencesHelper.Key.IP, null);
+        byte heightPref = (byte) SharedPreferencesHelper.getSharedPreferencesInt(this, SharedPreferencesHelper.Key.HEIGHT, 50);
+        String walkingStyle = SharedPreferencesHelper.getSharedPreferencesString(this, SharedPreferencesHelper.Key.WALK, WalkingStyle.TRIPOD_GAIT.toString());
 
         hexapod.setIpAddress(savedIp);
         hexapod.setHeight(heightPref);
@@ -197,12 +185,8 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.bMenu:
-                if (menu.bMenu.isSelected()) {
-                    closeMenu();
-                } else {
-                    openMenu();
-                }
-
+                if (menu.bMenu.isSelected()) closeMenu();
+                else openMenu();
                 break;
 
             case R.id.vOverlay:
@@ -210,27 +194,22 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.ibMovement:
-                if (!ibMovement.isSelected()) {
-                    showShortToast(getString(R.string.movement_enabled));
-                }
+                if (!ibMovement.isSelected()) showShortToast(getString(R.string.movement_enabled));
                 setSelectedButtons(true, false, false);
                 hexapod.setMovementMode();
                 closeMenu();
                 break;
 
             case R.id.ibRotation:
-                if (!ibRotation.isSelected()) {
-                    showShortToast(getString(R.string.rotation_enabled));
-                }
+                if (!ibRotation.isSelected()) showShortToast(getString(R.string.rotation_enabled));
                 setSelectedButtons(false, true, false);
                 hexapod.setRotationMode();
                 closeMenu();
                 break;
 
             case R.id.ibOrientation:
-                if (!ibOrientation.isSelected()) {
+                if (!ibOrientation.isSelected())
                     showShortToast(getString(R.string.orientation_enabled));
-                }
                 setSelectedButtons(false, false, true);
                 hexapod.setOrientationMode();
                 closeMenu();
@@ -239,9 +218,9 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
             case R.id.ibHeight:
                 closeMenu();
                 if (hexapod.isInStandby()) {
-                    Utils.showStandbyDialog(this, JoystickActivity.this);
+                    Utils.showStandbyDialog(this, MainActivity.this);
                 } else {
-                    Intent intent = new Intent(JoystickActivity.this, HeightActivity.class);
+                    Intent intent = new Intent(MainActivity.this, HeightActivity.class);
                     startActivity(intent);
                 }
                 break;
@@ -249,22 +228,22 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
             case R.id.ibCalibration:
                 closeMenu();
                 if (hexapod.isInStandby()) {
-                    Utils.showStandbyDialog(this, JoystickActivity.this);
+                    Utils.showStandbyDialog(this, MainActivity.this);
                 } else {
-                    Intent intent1 = new Intent(JoystickActivity.this, CalibrationActivity.class);
+                    Intent intent1 = new Intent(MainActivity.this, CalibrationActivity.class);
                     startActivity(intent1);
                 }
                 break;
 
             case R.id.ibWalkingStyle:
                 closeMenu();
-                Intent intent2 = new Intent(JoystickActivity.this, WalkingstyleActivity.class);
+                Intent intent2 = new Intent(MainActivity.this, WalkingstyleActivity.class);
                 startActivity(intent2);
                 break;
 
             case R.id.ibSettings:
                 closeMenu();
-                Intent intent3 = new Intent(JoystickActivity.this, SettingsActivity.class);
+                Intent intent3 = new Intent(MainActivity.this, SettingsActivity.class);
                 intent3.putExtra("standby", hexapod.isInStandby());
                 startActivity(intent3);
                 break;
@@ -305,11 +284,11 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
 
         TextView tvEnabled = (TextView) rlToastShort.findViewById(R.id.tvEnabled);
 
-        int offset = Math.round(30 * getApplicationContext().getResources().getDisplayMetrics().density);
+        int offset = Math.round(30 * this.getResources().getDisplayMetrics().density);
 
         tvEnabled.setText(message);
-        tvEnabled.setTypeface(tf);
-        Toast toast = new Toast(getApplicationContext());
+        tvEnabled.setTypeface(Utils.getCustomTypeface(this));
+        Toast toast = new Toast(this);
         toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, offset, 0);
         toast.setDuration(Toast.LENGTH_SHORT);
         toast.setView(rlToastShort);
@@ -328,8 +307,8 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
         tvTitle.setText(title);
         tvDesc.setText(message);
 
-        tvTitle.setTypeface(tf);
-        tvDesc.setTypeface(tf);
+        tvTitle.setTypeface(Utils.getCustomTypeface(this));
+        tvDesc.setTypeface(Utils.getCustomTypeface(this));
 
     }
 
@@ -343,7 +322,7 @@ public class JoystickActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void connectionStatus(boolean isConnected) {
         if (!isConnected) {
-            Utils.showConnectionDialog(this, JoystickActivity.this);
+            Utils.showConnectionDialog(this, MainActivity.this);
         }
 
     }
