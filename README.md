@@ -19,8 +19,8 @@ https://github.com/marioloncar/STEMI_Hexapod
 
 This app uses STEMI library for communicating with robot and can be used as example app for Library usage. 
 
-<br>
-<br>
+<br><br>
+
 # Contributing to STEMI Hexapod Commander
 
 ## Git and our Branching model
