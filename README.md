@@ -19,13 +19,53 @@ https://github.com/marioloncar/STEMI_Hexapod
 
 This app uses STEMI library for communicating with robot and can be used as example app for Library usage. 
 
-## Screenshots
+<br><br>
 
-![screenshot_20170102-180601](https://cloud.githubusercontent.com/assets/12370404/23261036/e2459400-f9d4-11e6-9603-1f755c889940.png)
-![screenshot_20170102-180657](https://cloud.githubusercontent.com/assets/12370404/23261041/e2710da6-f9d4-11e6-861e-f97bece449b1.png)
-![screenshot_20170102-180838](https://cloud.githubusercontent.com/assets/12370404/23261043/e27a7ce2-f9d4-11e6-9d49-6a8d2efdc9bd.png)
-![screenshot_20170102-180846](https://cloud.githubusercontent.com/assets/12370404/23261045/e290e5c2-f9d4-11e6-8994-99759f67b721.png)
-![screenshot_20170102-180909](https://cloud.githubusercontent.com/assets/12370404/23261044/e29090ae-f9d4-11e6-8023-7ba08fccf19e.png)
-![screenshot_20170102-180633](https://cloud.githubusercontent.com/assets/12370404/23261042/e271bc42-f9d4-11e6-92a1-99b79c17346d.png)
-![screenshot_20170102-180647](https://cloud.githubusercontent.com/assets/12370404/23261040/e2705a28-f9d4-11e6-8b0e-d7c6c618ce70.png)
-![screenshot_20170102-180713](https://cloud.githubusercontent.com/assets/12370404/23261037/e2605bfa-f9d4-11e6-897d-00561f93b0e7.png)
+# Contributing to STEMI Hexapod Commander
+
+## Git and our Branching model
+
+### Git
+
+We use [Git](http://git-scm.com/) as our [version control
+system](http://en.wikipedia.org/wiki/Revision_control), so the best way to
+contribute is to learn how to use it and put your changes on a Git repository.
+There's a plenty of documentation about Git -- you can start with the [Pro Git
+book](http://git-scm.com/book/).
+
+### Forks + GitHub Pull requests
+
+We use the famous
+[gitflow](http://nvie.com/posts/a-successful-git-branching-model/) to manage our
+branches.
+
+Summary of our git branching model:
+- Fork the desired repository on GitHub to your account;
+- Clone your forked repository locally
+  (`git clone git@github.com:your-username:repository-name.git`);
+- Create a new branch off of `develop` with a descriptive name (for example:
+  `feature/portuguese-sentiment-analysis`, `hotfix/bug-on-downloader`). You can
+  do it switching to `develop` branch (`git checkout develop`) and then
+  creating a new branch (`git checkout -b name-of-the-new-branch`);
+- Do many small commits on that branch locally (`git add files-changed`,
+  `git commit -m "Add some change"`);
+- Push to your fork on GitHub (with the name as your local branch:
+  `git push origin branch-name`);
+- Create a pull request using the GitHub Web interface (asking us to pull the
+  changes from your new branch and add to our `develop` branch);
+- Wait for comments.
+
+
+### Tips
+
+- Write [helpful commit
+  messages](http://robots.thoughtbot.com/5-useful-tips-for-a-better-commit-message).
+- Anything in the `develop` branch should be deployable.
+- Never use `git add .`: it can add unwanted files;
+- Avoid using `git commit -a` unless you know what you're doing;
+- Check every change with `git diff` before adding them to the index (stage
+  area) and with `git diff --cached` before commiting;
+- If you have push access to the main repository, please do not commit directly
+  to `develop`: your access should be used only to accept pull requests; if you
+  want to make a new feature, you should use the same process as other
+  developers so you code will be reviewed.
