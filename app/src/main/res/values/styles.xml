@@ -15,11 +15,11 @@
         <item name="android:textColorSecondary">@color/descColor</item>
     </style>
 
-    <style name="SettingsTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme2" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:windowBackground">@drawable/settingsbck</item>
         <item name="android:textColor">@color/highlightColor</item>
         <item name="android:textColorSecondary">@color/descColor</item>
-        <!--<item name="homeAsUpIndicator">@drawable/arrow_l</item>-->
+        <!--<item name="android:homeAsUpIndicator">@drawable/ic_back</item>-->
         <item name="android:actionMenuTextColor">@color/highlightColor</item>
         <item name="android:soundEffectsEnabled">false</item>
     </style>

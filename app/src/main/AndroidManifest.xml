@@ -35,7 +35,7 @@
             android:name="com.stemi.STEMIHexapod.activities.SettingsActivity"
             android:label="Settings"
             android:screenOrientation="portrait"
-            android:theme="@style/SettingsTheme">
+            android:theme="@style/AppTheme2">
             <intent-filter>
                 <action android:name="com.loncar.stemi.SETTINGSACTIVITY" />
 
@@ -46,7 +46,7 @@
             android:name="com.stemi.STEMIHexapod.activities.IPActivity"
             android:label="IP address"
             android:screenOrientation="portrait"
-            android:theme="@style/SettingsTheme">
+            android:theme="@style/AppTheme2">
             <intent-filter>
                 <action android:name="com.loncar.stemi.IPACTIVITY" />
 
@@ -57,7 +57,7 @@
             android:name="com.stemi.STEMIHexapod.activities.HeightActivity"
             android:label="Adjust height"
             android:screenOrientation="portrait"
-            android:theme="@style/SettingsTheme">
+            android:theme="@style/AppTheme2">
             <intent-filter>
                 <action android:name="com.loncar.stemi.HEIGHTACTIVITY" />
 
@@ -68,7 +68,7 @@
             android:name="com.stemi.STEMIHexapod.activities.CalibrationActivity"
             android:label="Calibration"
             android:screenOrientation="landscape"
-            android:theme="@style/SettingsTheme">
+            android:theme="@style/AppTheme2">
             <intent-filter>
                 <action android:name="com.loncar.stemi.CALIBRATIONACTIVITY" />
 
@@ -79,7 +79,7 @@
             android:name="com.stemi.STEMIHexapod.activities.WalkingstyleActivity"
             android:label="Walking style"
             android:screenOrientation="portrait"
-            android:theme="@style/SettingsTheme">
+            android:theme="@style/AppTheme2">
             <intent-filter>
                 <action android:name="com.loncar.stemi.WALKSTYLEACTIVITY" />
 
