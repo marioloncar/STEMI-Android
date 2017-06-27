@@ -8,8 +8,8 @@ android {
         applicationId "com.stemi.STEMIHexapod"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 100
-        versionName "1.1.1"
+        versionCode 101
+        versionName "1.1.2"
         jackOptions {
             enabled true
         }
@@ -32,7 +32,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
-    compile 'STEMI:stemihexapod:1.1.1'
+    compile 'STEMI:stemihexapod:1.1.2'
 }
 
 
